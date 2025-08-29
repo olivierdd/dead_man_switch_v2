@@ -2,16 +2,17 @@
 Authentication routes for Secret Safe API
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
-from datetime import datetime, timedelta
 from typing import Optional
-import jwt
+from datetime import datetime, timedelta
+import structlog
 from passlib.context import CryptContext
 
-from ..models.user import User, UserCreate, UserLogin, UserProfile
-from ..config import settings
+from ..settings import settings
+from ..models.database import get_db
+from ..models.user import User, UserCreate, UserLogin, UserRole, UserProfile
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -43,7 +44,10 @@ def get_password_hash(password: str):
 # Dependency to get current user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    """Get current user from JWT token"""
+    User = get_user_model()  # Lazy import to avoid circular dependencies
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -119,7 +123,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_user)):
+async def logout(current_user = Depends(get_current_user)):
     """Logout user (invalidate token)"""
     # TODO: Implement token invalidation
     # - Add token to blacklist
@@ -129,7 +133,7 @@ async def logout(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/me", response_model=UserProfile)
-async def get_current_user_profile(current_user: User = Depends(get_current_user)):
+async def get_current_user_profile(current_user = Depends(get_current_user)):
     """Get current user profile"""
     return UserProfile(
         id=current_user.id,
@@ -143,7 +147,7 @@ async def get_current_user_profile(current_user: User = Depends(get_current_user
 
 
 @router.post("/refresh")
-async def refresh_token(current_user: User = Depends(get_current_user)):
+async def refresh_token(current_user = Depends(get_current_user)):
     """Refresh access token"""
     # TODO: Implement token refresh
     # - Validate current token

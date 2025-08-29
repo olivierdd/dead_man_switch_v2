@@ -11,7 +11,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 import structlog
 
-from .config import settings
+from .settings import settings
 from .middleware.auth import AuthMiddleware
 from .middleware.role_based import RoleBasedMiddleware
 from .routes import auth, admin, messages, users, public

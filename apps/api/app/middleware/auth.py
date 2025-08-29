@@ -2,13 +2,15 @@
 Authentication middleware for Secret Safe API
 """
 
+import jwt
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
-from typing import Optional
-import jwt
 import structlog
+from typing import Optional, Dict, Any
+from datetime import datetime, timedelta
 
-from ..config import settings
+from ..settings import settings
+from ..models.user import UserRole
 
 logger = structlog.get_logger()
 

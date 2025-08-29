@@ -6,14 +6,14 @@ User profile management and account settings
 from fastapi import APIRouter, HTTPException, Depends, status
 from datetime import datetime
 
-from ..models.user import User, UserUpdate, UserPasswordUpdate, UserCheckIn
+from ..models import UserUpdate, UserPasswordUpdate, UserCheckIn
 from ..routes.auth import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/profile", response_model=dict)
-async def get_user_profile(current_user: User = Depends(get_current_user)):
+async def get_user_profile(current_user = Depends(get_current_user)):
     """Get current user's profile"""
     # TODO: Implement profile retrieval
     # - Get user details from database
@@ -36,7 +36,7 @@ async def get_user_profile(current_user: User = Depends(get_current_user)):
 @router.put("/profile")
 async def update_user_profile(
     profile_update: UserUpdate,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Update current user's profile"""
     # TODO: Implement profile update
@@ -53,7 +53,7 @@ async def update_user_profile(
 @router.put("/password")
 async def change_password(
     password_update: UserPasswordUpdate,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Change current user's password"""
     # TODO: Implement password change
@@ -71,7 +71,7 @@ async def change_password(
 @router.post("/check-in")
 async def perform_check_in(
     check_in_data: UserCheckIn,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Perform user check-in"""
     # TODO: Implement user check-in
@@ -83,13 +83,13 @@ async def perform_check_in(
         "message": "Check-in successful",
         "user_id": current_user.id,
         "checked_in_at": datetime.utcnow(),
-        "method": check_in_data.method
+        "method": check_in_data.check_in_type
     }
 
 
 @router.get("/check-in/history")
 async def get_check_in_history(
-    current_user: User = Depends(get_current_user),
+    current_user = Depends(get_current_user),
     limit: int = 50,
     offset: int = 0
 ):
@@ -108,7 +108,7 @@ async def get_check_in_history(
 
 
 @router.get("/subscription")
-async def get_subscription_info(current_user: User = Depends(get_current_user)):
+async def get_subscription_info(current_user = Depends(get_current_user)):
     """Get user's subscription information"""
     # TODO: Implement subscription info
     # - Get subscription details

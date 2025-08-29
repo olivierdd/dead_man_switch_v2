@@ -7,8 +7,7 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
 from datetime import datetime
 
-from ..models.user import User, UserProfile, UserRoleUpdate, UserSuspension
-from ..models.message import Message, MessageResponse
+from ..models import UserProfile, UserRoleUpdate, UserSuspension, MessageResponse
 from ..routes.auth import get_current_user
 
 router = APIRouter()
@@ -16,7 +15,7 @@ router = APIRouter()
 # Admin role requirement decorator
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
+def require_admin(current_user=Depends(get_current_user)):
     """Ensure user has admin role"""
     if current_user.role != "admin":
         raise HTTPException(
@@ -27,7 +26,7 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.get("/users", response_model=List[UserProfile])
-async def list_all_users(current_user: User = Depends(require_admin)):
+async def list_all_users(current_user=Depends(require_admin)):
     """List all users in the system (Admin only)"""
     # TODO: Implement user listing
     # - Get users from database
@@ -60,7 +59,7 @@ async def list_all_users(current_user: User = Depends(require_admin)):
 @router.get("/users/{user_id}", response_model=UserProfile)
 async def get_user_details(
     user_id: str,
-    current_user: User = Depends(require_admin)
+    current_user=Depends(require_admin)
 ):
     """Get detailed user information (Admin only)"""
     # TODO: Implement user details retrieval
@@ -82,7 +81,7 @@ async def get_user_details(
 async def change_user_role(
     user_id: str,
     role_update: UserRoleUpdate,
-    current_user: User = Depends(require_admin)
+    current_user=Depends(require_admin)
 ):
     """Change user's role (Admin only)"""
     # TODO: Implement role change
@@ -104,7 +103,7 @@ async def change_user_role(
 async def suspend_user(
     user_id: str,
     suspension: UserSuspension,
-    current_user: User = Depends(require_admin)
+    current_user=Depends(require_admin)
 ):
     """Suspend or reactivate user (Admin only)"""
     # TODO: Implement user suspension
@@ -123,7 +122,7 @@ async def suspend_user(
 
 
 @router.get("/messages", response_model=List[MessageResponse])
-async def list_all_messages(current_user: User = Depends(require_admin)):
+async def list_all_messages(current_user=Depends(require_admin)):
     """List all messages in the system (Admin only)"""
     # TODO: Implement message listing
     # - Get messages from database
@@ -134,7 +133,7 @@ async def list_all_messages(current_user: User = Depends(require_admin)):
 
 
 @router.get("/analytics/overview")
-async def get_system_overview(current_user: User = Depends(require_admin)):
+async def get_system_overview(current_user=Depends(require_admin)):
     """Get system overview and statistics (Admin only)"""
     # TODO: Implement system analytics
     # - User counts by role
@@ -153,7 +152,7 @@ async def get_system_overview(current_user: User = Depends(require_admin)):
 
 @router.get("/audit/logs")
 async def get_audit_logs(
-    current_user: User = Depends(require_admin),
+    current_user=Depends(require_admin),
     limit: int = 100,
     offset: int = 0
 ):
@@ -169,4 +168,3 @@ async def get_audit_logs(
         "limit": limit,
         "offset": offset
     }
-
