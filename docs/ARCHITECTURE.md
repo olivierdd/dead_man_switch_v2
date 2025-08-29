@@ -430,3 +430,4 @@ GET /health/external          # External service status
 ---
 
 *This architecture document is living and will be updated as the system evolves.*
+

@@ -73,3 +73,4 @@ async def public_health_check():
         "timestamp": "2024-01-01T00:00:00Z",
         "service": "Secret Safe API"
     }
+

@@ -1,15 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        appDir: true,
-    },
+    // appDir is now default in Next.js 14+
     images: {
         domains: ['localhost', 'vercel.app', 'supabase.co'],
         formats: ['image/webp', 'image/avif'],
     },
-    env: {
-        CUSTOM_KEY: process.env.CUSTOM_KEY,
-    },
+    // Environment variables are handled by .env.local
     async headers() {
         return [
             {

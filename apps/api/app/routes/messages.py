@@ -211,3 +211,4 @@ async def activate_message(
         "message_id": message_id,
         "activated_at": datetime.utcnow()
     }
+

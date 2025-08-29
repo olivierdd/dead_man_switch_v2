@@ -182,3 +182,4 @@ async def reset_password(token: str, new_password: str):
     # - Invalidate token
 
     return {"message": "Password successfully reset"}
+

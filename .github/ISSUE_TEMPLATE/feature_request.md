@@ -51,3 +51,4 @@ Add any other context, references, or examples about the feature request here.
 - [ ] I have provided all required information
 - [ ] This is not a bug report (use Bug Report template for that)
 - [ ] I have considered the impact on different user roles
+

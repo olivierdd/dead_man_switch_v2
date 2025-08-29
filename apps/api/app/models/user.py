@@ -194,3 +194,4 @@ class CheckIn(SQLModel, table=True):
 
     # Relationships
     user: User = Relationship(back_populates="check_ins")
+

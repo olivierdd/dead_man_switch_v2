@@ -25,3 +25,4 @@ __all__ = [
     'RecipientCreate', 'MessageResponse', 'MessageCheckIn',
     'MessageStatus', 'DissolutionAction'
 ]
+

@@ -113,3 +113,4 @@ class AuthMiddleware:
             "type": "http.response.body",
             "body": response.body
         })
+

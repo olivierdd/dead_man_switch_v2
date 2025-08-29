@@ -120,3 +120,4 @@ async def get_subscription_info(current_user: User = Depends(get_current_user)):
         "expires_at": current_user.subscription_expires_at,
         "is_active": current_user.subscription_expires_at is None or current_user.subscription_expires_at > datetime.utcnow()
     }
+

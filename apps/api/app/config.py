@@ -3,6 +3,7 @@ Configuration settings for Secret Safe API
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from typing import List, Optional
 import os
 
@@ -68,8 +69,12 @@ class Settings(BaseSettings):
 
     # File Upload
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
-    ALLOWED_FILE_TYPES: List[str] = [
-        ".txt", ".pdf", ".jpg", ".png", ".doc", ".docx"]
+    ALLOWED_FILE_TYPES: str = ".txt,.pdf,.jpg,.png,.doc,.docx"
+
+    @property
+    def allowed_file_types_list(self) -> List[str]:
+        """Convert comma-separated string to list"""
+        return [x.strip() for x in self.ALLOWED_FILE_TYPES.split(',')]
 
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60

@@ -127,3 +127,4 @@ const canEditMessage = (user: User, message: Message) => {
 - Role-based access must be bulletproof
 - UI should be both beautiful and functional
 - Always consider the user experience across different roles
+

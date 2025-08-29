@@ -163,8 +163,8 @@ class DissolutionPlan(SQLModel, table=True):
         default=None, max_length=255)
 
     # Emergency contacts
-    emergency_contacts: List[str] = Field(
-        default=[])  # JSON array of email addresses
+    emergency_contacts: str = Field(
+        default="[]")  # JSON string of email addresses
 
     # Execution tracking
     executed: bool = Field(default=False)

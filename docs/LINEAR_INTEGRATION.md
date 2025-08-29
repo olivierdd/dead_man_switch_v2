@@ -310,3 +310,4 @@ After setting up Linear.app:
 ---
 
 *Happy project managing! 🚀*
+

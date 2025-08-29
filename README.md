@@ -71,21 +71,49 @@
    # Edit .env with your configuration
    ```
 
-4. **Start development servers:**
+4. **Verify setup:**
+   ```bash
+   # Run the verification script to check all dependencies
+   python verify_setup.py
+   ```
+
+5. **Start development servers:**
    ```bash
    # Frontend (Next.js)
    cd apps/web
    npm run dev
    
-   # Backend (FastAPI)
+   # Backend (FastAPI) - Use simplified version for now
    cd ../../apps/api
-   uvicorn app.main:app --reload
+   uvicorn app.main_simple:app --reload --host 0.0.0.0 --port 8000
    ```
 
-5. **Open your browser:**
+6. **Open your browser:**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
    - API Docs: http://localhost:8000/docs
+
+## 🛠️ Development Tools
+
+### Setup and Verification
+- **`setup.sh`** - Automated setup script for the entire development environment
+- **`verify_setup.py`** - Python script to verify all dependencies and project structure
+- **`TROUBLESHOOTING.md`** - Comprehensive guide for common issues and solutions
+
+### Quick Commands
+```bash
+# Setup everything
+./setup.sh
+
+# Verify installation
+python verify_setup.py
+
+# Start backend (simplified)
+cd apps/api && uvicorn app.main_simple:app --reload --host 0.0.0.0 --port 8000
+
+# Start frontend
+cd apps/web && npm run dev
+```
 
 ## 📁 Project Structure
 
