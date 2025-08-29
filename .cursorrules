@@ -1,0 +1,129 @@
+# Cursor AI Rules for Secret Safe Project
+
+## Project Overview
+This is a privacy-first digital dead man's switch service with role-based access control. The project uses Next.js 14 frontend with FastAPI backend, implementing a sophisticated role system (Admin, Writer, Reader).
+
+## Technology Stack
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS, shadcn/ui, Three.js
+- **Backend**: FastAPI, Python 3.11+, SQLModel, PostgreSQL (Supabase)
+- **Infrastructure**: Vercel, GitHub Actions, Supabase Cloud
+- **Authentication**: OAuth 2.0 with role-based permissions
+
+## Development Guidelines
+
+### Role-Based Development
+- ALWAYS consider user roles (Admin, Writer, Reader) when implementing features
+- Implement proper permission checks in both frontend and backend
+- Use role-based UI components and navigation
+- Follow the principle of least privilege
+
+### Security First
+- Implement zero-knowledge architecture where possible
+- Use proper encryption for sensitive data
+- Validate all user inputs and permissions
+- Implement comprehensive audit logging
+
+### Code Quality
+- Use TypeScript for frontend with strict type checking
+- Use Python type hints for backend
+- Follow existing patterns and architecture
+- Write comprehensive tests for all role-based functionality
+
+### UI/UX Standards
+- Implement glassmorphic design with Tailwind CSS
+- Use Three.js for particle effects and animations
+- Ensure responsive design across all devices
+- Follow accessibility best practices
+
+## File Structure
+```
+secret-safe/
+├── apps/
+│   ├── web/          # Next.js frontend
+│   └── api/          # FastAPI backend
+├── packages/          # Shared utilities
+└── docs/             # Documentation
+```
+
+## Key Components
+
+### Frontend Components
+- Role-based navigation and menus
+- Glassmorphic UI components
+- Three.js particle systems
+- Form components with validation
+- Role-specific dashboards
+
+### Backend Models
+- User with role-based permissions
+- Message with encryption and sharing
+- Role change audit logging
+- Permission system
+
+### API Endpoints
+- Role-based access control
+- Authentication and authorization
+- Message management
+- User management (Admin only)
+
+## Common Patterns
+
+### Role Checking
+```typescript
+// Frontend role checking
+const hasRole = (user: User, requiredRole: UserRole) => {
+  return user.role === requiredRole || user.role === 'admin';
+};
+
+// Backend role middleware
+@require_role(UserRole.ADMIN, UserRole.WRITER)
+async def create_message(current_user: User):
+    pass
+```
+
+### Glassmorphic Components
+```typescript
+// Use these CSS classes for glassmorphic effects
+const glassCard = "bg-white/5 backdrop-blur-md border border-white/10 rounded-xl";
+const glassButton = "bg-gradient-to-r from-blue-500 to-purple-500 text-white";
+```
+
+### Permission Validation
+```typescript
+// Always validate permissions before actions
+const canEditMessage = (user: User, message: Message) => {
+  return user.id === message.user_id || user.role === 'admin';
+};
+```
+
+## Testing Requirements
+- Test all role-based access controls
+- Test permission boundaries
+- Test UI components across different roles
+- Test security features thoroughly
+
+## Deployment
+- Frontend deploys to Vercel
+- Backend can be deployed to Vercel or other platforms
+- Use environment variables for configuration
+- Follow CI/CD pipeline with GitHub Actions
+
+## Security Considerations
+- Never expose sensitive data in frontend
+- Always validate user permissions on backend
+- Implement rate limiting and security headers
+- Use HTTPS in production
+- Regular security audits
+
+## Performance
+- Optimize Three.js animations for mobile
+- Use proper caching strategies
+- Implement lazy loading for components
+- Monitor and optimize database queries
+
+## Remember
+- This is a privacy-focused application
+- User trust is paramount
+- Role-based access must be bulletproof
+- UI should be both beautiful and functional
+- Always consider the user experience across different roles

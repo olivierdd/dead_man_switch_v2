@@ -1,0 +1,213 @@
+{
+    "project": {
+        "name": "Secret Safe - Digital Dead Man's Switch",
+        "key": "SS",
+        "description": "Privacy-first digital inheritance platform with role-based access control",
+        "icon": "🔐",
+        "color": "#3B82F6"
+    },
+    "teams": [
+        {
+            "name": "Development",
+            "key": "DEV",
+            "description": "Core development team",
+            "workflows": [
+                "Backlog",
+                "To Do",
+                "In Progress",
+                "In Review",
+                "Testing",
+                "Done"
+            ]
+        }
+    ],
+    "workflows": {
+        "Backlog": {
+            "description": "Ideas and future features",
+            "color": "#94A3B8"
+        },
+        "To Do": {
+            "description": "Ready to be worked on",
+            "color": "#3B82F6"
+        },
+        "In Progress": {
+            "description": "Currently being developed",
+            "color": "#F59E0B"
+        },
+        "In Review": {
+            "description": "Ready for code review",
+            "color": "#8B5CF6"
+        },
+        "Testing": {
+            "description": "Being tested",
+            "color": "#10B981"
+        },
+        "Done": {
+            "description": "Completed and deployed",
+            "color": "#059669"
+        }
+    },
+    "labels": [
+        {
+            "name": "Role: Admin",
+            "color": "#8B5CF6",
+            "description": "Admin role functionality"
+        },
+        {
+            "name": "Role: Writer",
+            "color": "#3B82F6",
+            "description": "Writer role functionality"
+        },
+        {
+            "name": "Role: Reader",
+            "color": "#10B981",
+            "description": "Reader role functionality"
+        },
+        {
+            "name": "Role: All",
+            "color": "#6B7280",
+            "description": "Functionality for all roles"
+        },
+        {
+            "name": "Priority: Critical",
+            "color": "#DC2626",
+            "description": "Critical priority items"
+        },
+        {
+            "name": "Priority: High",
+            "color": "#EA580C",
+            "description": "High priority items"
+        },
+        {
+            "name": "Priority: Medium",
+            "color": "#D97706",
+            "description": "Medium priority items"
+        },
+        {
+            "name": "Priority: Low",
+            "color": "#059669",
+            "description": "Low priority items"
+        },
+        {
+            "name": "Component: Frontend",
+            "color": "#3B82F6",
+            "description": "Frontend/UI components"
+        },
+        {
+            "name": "Component: Backend",
+            "color": "#8B5CF6",
+            "description": "Backend/API functionality"
+        },
+        {
+            "name": "Component: Database",
+            "color": "#10B981",
+            "description": "Database and data models"
+        },
+        {
+            "name": "Component: Auth",
+            "color": "#F59E0B",
+            "description": "Authentication and security"
+        },
+        {
+            "name": "Component: UI/UX",
+            "color": "#EC4899",
+            "description": "User interface and experience"
+        },
+        {
+            "name": "Platform: Vercel",
+            "color": "#000000",
+            "description": "Vercel deployment and hosting"
+        },
+        {
+            "name": "Platform: Supabase",
+            "color": "#3ECF8E",
+            "description": "Supabase database and auth"
+        },
+        {
+            "name": "Platform: GitHub",
+            "color": "#181717",
+            "description": "GitHub repository and CI/CD"
+        },
+        {
+            "name": "Type: Feature",
+            "color": "#3B82F6",
+            "description": "New feature implementation"
+        },
+        {
+            "name": "Type: Bug",
+            "color": "#DC2626",
+            "description": "Bug fixes and issues"
+        },
+        {
+            "name": "Type: Enhancement",
+            "color": "#10B981",
+            "description": "Improvements to existing features"
+        },
+        {
+            "name": "Type: Research",
+            "color": "#8B5CF6",
+            "description": "Research and investigation"
+        },
+        {
+            "name": "Type: Security",
+            "color": "#F59E0B",
+            "description": "Security-related items"
+        }
+    ],
+    "github": {
+        "repository": "secret-safe/platform",
+        "autoLinkIssues": true,
+        "createBranchFromIssue": true,
+        "labels": true
+    },
+    "epics": [
+        {
+            "name": "Role System Foundation",
+            "description": "Implement core role-based access control system",
+            "labels": [
+                "Component: Auth",
+                "Component: Database",
+                "Priority: Critical"
+            ]
+        },
+        {
+            "name": "Admin Features",
+            "description": "Admin dashboard and user management functionality",
+            "labels": [
+                "Role: Admin",
+                "Component: Frontend",
+                "Component: Backend",
+                "Priority: High"
+            ]
+        },
+        {
+            "name": "Writer Features",
+            "description": "Message creation and management for Writers",
+            "labels": [
+                "Role: Writer",
+                "Component: Frontend",
+                "Component: Backend",
+                "Priority: High"
+            ]
+        },
+        {
+            "name": "Reader Features",
+            "description": "Shared content access for Readers",
+            "labels": [
+                "Role: Reader",
+                "Component: Frontend",
+                "Component: Backend",
+                "Priority: Medium"
+            ]
+        },
+        {
+            "name": "UI/UX System",
+            "description": "Glassmorphic design system with Three.js particles",
+            "labels": [
+                "Component: UI/UX",
+                "Component: Frontend",
+                "Priority: High"
+            ]
+        }
+    ]
+}
