@@ -1,7 +1,11 @@
-# Middleware package initialization
+"""
+Middleware package for Secret Safe API
+"""
 
-from .auth import AuthMiddleware
-from .role_based import RoleBasedMiddleware
+from .rate_limiting import rate_limit_middleware, rate_limit_auth_endpoint, rate_limit_api_endpoint
 
-__all__ = ['AuthMiddleware', 'RoleBasedMiddleware']
-
+__all__ = [
+    "rate_limit_middleware",
+    "rate_limit_auth_endpoint",
+    "rate_limit_api_endpoint"
+]

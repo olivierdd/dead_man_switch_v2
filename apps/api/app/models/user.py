@@ -9,11 +9,51 @@ from uuid import UUID, uuid4
 from datetime import datetime, timedelta
 from enum import Enum
 from pydantic import validator, EmailStr
+import re
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
     from .message import Message, MessageShare, CheckIn
     from .user import RoleChangeLog, UserPermission
+
+
+def validate_password_strength(password: str) -> str:
+    """
+    Validate password strength requirements:
+    - Minimum 12 characters
+    - At least one uppercase letter
+    - At least one lowercase letter
+    - At least one digit
+    - At least one special character
+    """
+    if len(password) < 12:
+        raise ValueError('Password must be at least 12 characters long')
+
+    if not re.search(r'[A-Z]', password):
+        raise ValueError('Password must contain at least one uppercase letter')
+
+    if not re.search(r'[a-z]', password):
+        raise ValueError('Password must contain at least one lowercase letter')
+
+    if not re.search(r'\d', password):
+        raise ValueError('Password must contain at least one digit')
+
+    if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>/?]', password):
+        raise ValueError(
+            'Password must contain at least one special character')
+
+    # Check for common weak patterns
+    weak_patterns = [
+        r'123', r'abc', r'qwe', r'password', r'admin', r'user',
+        r'123456', r'password123', r'admin123', r'qwerty'
+    ]
+
+    password_lower = password.lower()
+    for pattern in weak_patterns:
+        if pattern in password_lower:
+            raise ValueError('Password contains common weak patterns')
+
+    return password
 
 
 class UserRole(str, Enum):
@@ -106,49 +146,34 @@ class User(SQLModel, table=True):
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
     permissions: List["UserPermission"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    admin_actions: List["AdminLog"] = Relationship(
+        back_populates="admin", sa_relationship_kwargs={"lazy": "selectin"})
+    blacklisted_tokens: List["TokenBlacklist"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            UUID: lambda v: str(v)
-        }
 
-    @validator('check_in_interval', 'grace_period')
-    def validate_intervals(cls, v):
-        if v < 1:
-            raise ValueError('Interval must be at least 1 day')
-        return v
 
-    @validator('email', 'billing_email')
-    def validate_email(cls, v):
-        if v is not None:
-            try:
-                EmailStr.validate(v)
-            except ValueError:
-                raise ValueError('Invalid email format')
-        return v
+class TokenBlacklist(SQLModel, table=True):
+    """Model to track invalidated JWT tokens for secure logout"""
 
-    def is_locked(self) -> bool:
-        """Check if user account is locked"""
-        if self.locked_until and datetime.utcnow() < self.locked_until:
-            return True
-        return False
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    token_hash: str = Field(unique=True, index=True,
+                            max_length=255)  # Hash of the JWT token
+    user_id: UUID = Field(foreign_key="user.id", index=True)
+    # When the token would have expired
+    expires_at: datetime = Field(index=True)
+    blacklisted_at: datetime = Field(
+        default_factory=datetime.utcnow, index=True)
+    # logout, security, admin_action
+    reason: str = Field(default="logout", max_length=100)
 
-    def is_overdue_for_checkin(self) -> bool:
-        """Check if user is overdue for check-in"""
-        if not self.last_check_in:
-            return False
+    # Relationships
+    user: User = Relationship(back_populates="blacklisted_tokens")
 
-        deadline = self.last_check_in + \
-            timedelta(days=self.check_in_interval + self.grace_period)
-        return datetime.utcnow() > deadline
-
-    def get_next_checkin_deadline(self) -> datetime:
-        """Get the next check-in deadline"""
-        if not self.last_check_in:
-            return datetime.utcnow() + timedelta(days=self.check_in_interval)
-        return self.last_check_in + timedelta(days=self.check_in_interval)
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class UserProfile(SQLModel):
@@ -173,7 +198,7 @@ class UserCreate(SQLModel):
     """User creation model"""
 
     email: str = Field(max_length=255)
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(min_length=12, max_length=128)
     first_name: Optional[str] = Field(default=None, max_length=100)
     last_name: Optional[str] = Field(default=None, max_length=100)
     display_name: Optional[str] = Field(default=None, max_length=150)
@@ -191,6 +216,10 @@ class UserCreate(SQLModel):
         except ValueError:
             raise ValueError('Invalid email format')
         return v
+
+    @validator('password')
+    def validate_password(cls, v):
+        return validate_password_strength(v)
 
 
 class UserUpdate(SQLModel):
@@ -228,10 +257,14 @@ class UserPasswordUpdate(SQLModel):
     """User password update model"""
 
     current_password: str
-    new_password: str = Field(min_length=8, max_length=128)
+    new_password: str = Field(min_length=12, max_length=128)
 
     class Config:
         arbitrary_types_allowed = True
+
+    @validator('new_password')
+    def validate_new_password(cls, v):
+        return validate_password_strength(v)
 
 
 class UserLogin(SQLModel):
@@ -252,6 +285,20 @@ class UserLogin(SQLModel):
         except ValueError:
             raise ValueError('Invalid email format')
         return v
+
+
+class PasswordReset(SQLModel):
+    """Password reset model"""
+
+    token: str
+    new_password: str = Field(min_length=12, max_length=128)
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @validator('new_password')
+    def validate_new_password(cls, v):
+        return validate_password_strength(v)
 
 
 class UserCheckIn(SQLModel):

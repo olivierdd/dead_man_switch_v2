@@ -79,6 +79,28 @@ class Settings(BaseSettings):
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 
+    # Authentication Rate Limiting (more restrictive for security)
+    AUTH_LOGIN_RATE_LIMIT_PER_MINUTE: int = 5      # 5 login attempts per minute
+    # 3 registration attempts per minute
+    AUTH_REGISTER_RATE_LIMIT_PER_MINUTE: int = 3
+    # 2 password reset attempts per minute
+    AUTH_PASSWORD_RESET_RATE_LIMIT_PER_MINUTE: int = 2
+    # 5 verification attempts per minute
+    AUTH_VERIFICATION_RATE_LIMIT_PER_MINUTE: int = 5
+
+    # General API Rate Limiting
+    # 100 general API calls per minute
+    API_RATE_LIMIT_PER_MINUTE: int = 100
+    # 1000 general API calls per hour
+    API_RATE_LIMIT_PER_HOUR: int = 1000
+
+    # Rate Limiting Windows
+    RATE_LIMIT_WINDOW_MINUTES: int = 1             # 1 minute sliding window
+    RATE_LIMIT_WINDOW_HOURS: int = 1               # 1 hour sliding window
+
+    # Rate Limiting Storage
+    RATE_LIMIT_STORAGE_BACKEND: str = "memory"     # memory, redis, or database
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
