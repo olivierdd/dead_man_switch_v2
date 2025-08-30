@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import Column, JSON
 import secrets
 import hashlib
 
@@ -37,7 +38,7 @@ class VerificationToken(SQLModel, table=True):
 
     # Additional metadata
     # For storing additional data like new email, etc.
-    metadata: Optional[dict] = Field(default=None)
+    token_metadata: Optional[str] = Field(default=None, sa_column=Column(JSON))
 
     # Relationships
     user: Optional["User"] = Relationship(back_populates="verification_tokens")
@@ -87,7 +88,7 @@ class VerificationTokenCreate(SQLModel):
     user_id: UUID
     token_type: TokenType
     expires_at: datetime
-    metadata: Optional[dict] = None
+    token_metadata: Optional[str] = None
 
 
 class VerificationTokenResponse(SQLModel):
@@ -117,4 +118,4 @@ class TokenValidationResponse(SQLModel):
     user_id: Optional[UUID] = None
     message: str
     expires_at: Optional[datetime] = None
-    metadata: Optional[dict] = None
+    token_metadata: Optional[str] = None

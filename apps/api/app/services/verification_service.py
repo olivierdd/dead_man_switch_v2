@@ -118,7 +118,7 @@ class VerificationService:
                 user_id=verification_token.user_id,
                 message="Token is valid",
                 expires_at=verification_token.expires_at,
-                metadata=verification_token.metadata
+                metadata=verification_token.token_metadata
             )
 
         except Exception as e:
