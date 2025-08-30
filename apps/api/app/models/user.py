@@ -15,6 +15,7 @@ import re
 if TYPE_CHECKING:
     from .message import Message, MessageShare, CheckIn
     from .user import RoleChangeLog, UserPermission
+    from .verification import VerificationToken
 
 
 def validate_password_strength(password: str) -> str:
@@ -149,6 +150,8 @@ class User(SQLModel, table=True):
     admin_actions: List["AdminLog"] = Relationship(
         back_populates="admin", sa_relationship_kwargs={"lazy": "selectin"})
     blacklisted_tokens: List["TokenBlacklist"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    verification_tokens: List["VerificationToken"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
 
     class Config:

@@ -388,8 +388,35 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_user)
 
-        # TODO: Send verification email (will be implemented in task 3.1)
-        # await send_verification_email(new_user.email, new_user.id)
+        # Send verification email automatically
+        try:
+            from ..services.verification_service import VerificationService
+            from ..models.verification import TokenType
+            from ..settings import get_settings
+
+            verification_service = VerificationService(db)
+            settings = get_settings()
+            base_url = settings.BASE_URL or "http://localhost:3000"
+
+            # Send verification email (async, don't wait for result)
+            await verification_service.send_verification_email(
+                user=new_user,
+                token=await verification_service.create_verification_token(
+                    user_id=new_user.id,
+                    token_type=TokenType.EMAIL_VERIFICATION,
+                    expiry_hours=24
+                ),
+                base_url=base_url,
+                expiry_hours=24
+            )
+
+            logger.info(f"Verification email sent to {new_user.email}")
+
+        except Exception as e:
+            # Log error but don't fail registration
+            logger.error(
+                f"Failed to send verification email to {new_user.email}: {e}")
+            # Continue with registration - user can request verification email later
 
         # Return user profile (without sensitive data)
         return UserProfile(
