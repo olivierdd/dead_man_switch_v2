@@ -23,6 +23,7 @@ from ..models.verification import (
 from ..models.user import User
 from .email_service import email_service
 from .email_templates import email_template_manager
+from .notification_service import NotificationService
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ class VerificationService:
     def __init__(self, db: Session):
         self.db = db
         self.token_manager = TokenManager()
+        self.notification_service = NotificationService()
 
     async def create_verification_token(
         self,
@@ -94,31 +96,81 @@ class VerificationService:
             verification_token = self.db.exec(stmt).first()
 
             if not verification_token:
+                # Send failure notification
+                try:
+                    await self.notification_service.send_verification_failure_notification(
+                        user_id=verification_token.user_id if verification_token else None,
+                        failure_reason="Invalid verification token",
+                        verification_type="email",
+                        retry_available=True,
+                        additional_data={
+                            "token_type": token_type.value,
+                            "validation_attempted_at": datetime.utcnow().isoformat()
+                        }
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to send verification failure notification: {e}")
+
                 return TokenValidationResponse(
                     valid=False,
                     message="Invalid verification token"
                 )
 
             # Check if token is expired
-            if self.token_manager.is_expired(verification_token.expires_at):
+            if verification_token.expires_at < datetime.utcnow():
+                # Send failure notification
+                try:
+                    await self.notification_service.send_verification_failure_notification(
+                        user_id=verification_token.user_id,
+                        failure_reason="Verification token has expired",
+                        verification_type="email",
+                        retry_available=True,
+                        additional_data={
+                            "token_type": token_type.value,
+                            "token_expired_at": verification_token.expires_at.isoformat(),
+                            "validation_attempted_at": datetime.utcnow().isoformat()
+                        }
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to send verification failure notification: {e}")
+
                 return TokenValidationResponse(
                     valid=False,
                     message="Verification token has expired"
                 )
 
-            # Check if token has been used
-            if self.token_manager.is_used(verification_token.used_at):
+            # Check if token is already used
+            if verification_token.used_at:
+                # Send failure notification
+                try:
+                    await self.notification_service.send_verification_failure_notification(
+                        user_id=verification_token.user_id,
+                        failure_reason="Verification token has already been used",
+                        verification_type="email",
+                        retry_available=False,
+                        additional_data={
+                            "token_type": token_type.value,
+                            "token_used_at": verification_token.used_at.isoformat(),
+                            "validation_attempted_at": datetime.utcnow().isoformat()
+                        }
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to send verification failure notification: {e}")
+
                 return TokenValidationResponse(
                     valid=False,
                     message="Verification token has already been used"
                 )
 
+            # Mark token as used
+            verification_token.used_at = datetime.utcnow()
+            self.db.commit()
+
             return TokenValidationResponse(
                 valid=True,
+                message="Token validated successfully",
                 user_id=verification_token.user_id,
-                message="Token is valid",
-                expires_at=verification_token.expires_at,
-                metadata=verification_token.token_metadata
+                metadata=verification_token.metadata
             )
 
         except Exception as e:
@@ -312,6 +364,20 @@ class VerificationService:
 
             self.db.commit()
 
+            # Send success notification
+            try:
+                await self.notification_service.send_verification_success_notification(
+                    user_id=user_id,
+                    verification_type="email",
+                    additional_data={
+                        "verification_method": "email",
+                        "verified_at": user.email_verified_at.isoformat()
+                    }
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send verification success notification: {e}")
+                # Don't fail the verification if notification fails
+
             logger.info(f"User {user_id} email verified successfully")
             return True
 
@@ -415,13 +481,94 @@ class VerificationService:
                 return False
 
             # Send verification email
-            return await self.send_verification_email(
+            success = await self.send_verification_email(
                 user=user,
                 token=token,
                 base_url=base_url,
                 expiry_hours=expiry_hours
             )
 
+            if success:
+                # Send reminder notification
+                try:
+                    await self.notification_service.send_verification_reminder_notification(
+                        user_id=user_id,
+                        verification_type="email",
+                        days_since_registration=0,  # TODO: Calculate actual days
+                        additional_data={
+                            "reminder_type": "manual_resend",
+                            "token_expires_at": (datetime.utcnow() + timedelta(hours=expiry_hours)).isoformat(),
+                            "resend_requested_at": datetime.utcnow().isoformat()
+                        }
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to send verification reminder notification: {e}")
+
+            return success
+
         except Exception as e:
             logger.error(f"Error resending verification email: {e}")
+            return False
+
+    async def send_verification_reminder(
+        self,
+        user_id: UUID,
+        base_url: str,
+        expiry_hours: int = 24
+    ) -> bool:
+        """Send verification reminder to user."""
+        try:
+            # Get user
+            stmt = select(User).where(User.id == user_id)
+            user = self.db.exec(stmt).first()
+
+            if not user:
+                logger.error(f"User {user_id} not found for verification reminder")
+                return False
+
+            if user.is_verified:
+                logger.info(f"User {user_id} is already verified")
+                return False
+
+            # Calculate days since registration
+            days_since_registration = 0
+            if user.created_at:
+                days_since_registration = (datetime.utcnow() - user.created_at).days
+
+            # Send reminder notification
+            try:
+                await self.notification_service.send_verification_reminder_notification(
+                    user_id=user_id,
+                    verification_type="email",
+                    days_since_registration=days_since_registration,
+                    additional_data={
+                        "reminder_type": "scheduled",
+                        "reminder_sent_at": datetime.utcnow().isoformat(),
+                        "days_since_registration": days_since_registration
+                    }
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send verification reminder notification: {e}")
+                return False
+
+            # Optionally create new verification token and send email
+            if days_since_registration >= 7:  # Only resend token after 7 days
+                token = await self.create_verification_token(
+                    user_id=user_id,
+                    token_type=TokenType.EMAIL_VERIFICATION,
+                    expiry_hours=expiry_hours
+                )
+
+                if token:
+                    await self.send_verification_email(
+                        user=user,
+                        token=token,
+                        base_url=base_url,
+                        expiry_hours=expiry_hours
+                    )
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Error sending verification reminder: {e}")
             return False

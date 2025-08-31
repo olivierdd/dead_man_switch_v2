@@ -25,7 +25,8 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 @router.get("/users", response_model=dict)
 async def get_all_users(
     skip: int = Query(0, ge=0, description="Number of users to skip"),
-    limit: int = Query(100, ge=1, le=1000, description="Maximum number of users to return"),
+    limit: int = Query(100, ge=1, le=1000,
+                       description="Maximum number of users to return"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -234,7 +235,8 @@ async def delete_user(
 
 @router.get("/cleanup/statistics", response_model=dict)
 async def get_cleanup_statistics(
-    days: int = Query(30, ge=1, le=365, description="Number of days to look back"),
+    days: int = Query(30, ge=1, le=365,
+                      description="Number of days to look back"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -275,9 +277,12 @@ async def get_cleanup_statistics(
 
 @router.post("/cleanup/expired-tokens", response_model=dict)
 async def cleanup_expired_tokens_manual(
-    token_types: Optional[List[str]] = Query(None, description="Specific token types to clean up"),
-    batch_size: int = Query(1000, ge=100, le=5000, description="Batch size for processing"),
-    dry_run: bool = Query(False, description="If True, only count tokens without deleting"),
+    token_types: Optional[List[str]] = Query(
+        None, description="Specific token types to clean up"),
+    batch_size: int = Query(1000, ge=100, le=5000,
+                            description="Batch size for processing"),
+    dry_run: bool = Query(
+        False, description="If True, only count tokens without deleting"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -344,10 +349,10 @@ async def get_cleanup_task_status(
 
         # Import Celery app to check task status
         from ..celery_app import celery_app
-        
+
         # Get task result
         task_result = celery_app.AsyncResult(task_id)
-        
+
         if task_result.ready():
             if task_result.successful():
                 result = task_result.result
@@ -383,7 +388,8 @@ async def get_cleanup_task_status(
 
 @router.post("/cleanup/generate-report", response_model=dict)
 async def generate_cleanup_report_manual(
-    report_type: str = Query("weekly", description="Type of report to generate"),
+    report_type: str = Query(
+        "weekly", description="Type of report to generate"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
     current_user: User = Depends(get_current_user)
 ):
@@ -496,7 +502,8 @@ async def cleanup_health_check(
         stats = await cleanup_service.get_cleanup_statistics(7)  # Last 7 days
 
         # Check if cleanup is needed
-        cleanup_needed = stats.get("cleanup_recommendation", {}).get("should_cleanup", False)
+        cleanup_needed = stats.get("cleanup_recommendation", {}).get(
+            "should_cleanup", False)
         expired_count = stats.get("expired_tokens", 0)
 
         # Health status

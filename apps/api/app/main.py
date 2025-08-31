@@ -14,7 +14,7 @@ import structlog
 from .settings import settings
 from .middleware.auth import AuthMiddleware
 from .middleware.role_based import RoleBasedMiddleware
-from .routes import auth, admin, messages, users, public, verification
+from .routes import auth, admin, messages, users, public, verification, notifications
 
 # Configure structured logging
 structlog.configure(
@@ -115,6 +115,7 @@ app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(public.router, prefix="/api/public", tags=["Public"])
 app.include_router(verification.router,
                    prefix="/api/verification", tags=["Verification"])
+app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
 
 # Health check endpoint
 

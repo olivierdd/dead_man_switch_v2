@@ -171,7 +171,7 @@ class EmailTemplateManager:
                 Generated at {{ timestamp }}
                 """
             },
-            
+
             "daily_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -316,7 +316,7 @@ class EmailTemplateManager:
                 Generated at {{ timestamp }}
                 """
             },
-            
+
             "weekly_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -473,7 +473,7 @@ class EmailTemplateManager:
                 Generated at {{ timestamp }}
                 """
             },
-            
+
             "manual_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -627,7 +627,7 @@ class EmailTemplateManager:
                 Generated at {{ timestamp }}
                 """
             },
-            
+
             "system_alert": {
                 "html": """
                 <!DOCTYPE html>
@@ -785,7 +785,7 @@ class EmailTemplateManager:
                 Generated at {{ timestamp }}
                 """
             },
-            
+
             "cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -859,7 +859,6 @@ class EmailTemplateManager:
                 """
             }
         }
-
 
     def render_template(
         self,

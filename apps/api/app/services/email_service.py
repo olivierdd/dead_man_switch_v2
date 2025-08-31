@@ -375,6 +375,320 @@ class EmailService:
 
         return status
 
+    # Notification Email Methods
+    
+    async def send_verification_success_email(
+        self,
+        to_email: str,
+        to_name: str,
+        verification_type: str = "email",
+        additional_data: Optional[Dict] = None
+    ) -> bool:
+        """Send verification success email notification."""
+        try:
+            subject = "🎉 Verification Successful - Welcome to Secret Safe!"
+            
+            # Create HTML content
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Verification Successful</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .success-icon {{ font-size: 48px; margin-bottom: 20px; }}
+                    .button {{ display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+                    .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎉 Verification Successful!</h1>
+                        <p>Welcome to Secret Safe</p>
+                    </div>
+                    <div class="content">
+                        <div class="success-icon">✅</div>
+                        <h2>Hello {to_name},</h2>
+                        <p>Great news! Your <strong>{verification_type}</strong> has been successfully verified.</p>
+                        <p>You now have full access to all Secret Safe features:</p>
+                        <ul>
+                            <li>🔐 Secure message storage</li>
+                            <li>📱 Cross-platform access</li>
+                            <li>🛡️ Advanced security features</li>
+                            <li>📊 Message analytics</li>
+                        </ul>
+                        <p><a href="{os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/dashboard" class="button">Access Your Dashboard</a></p>
+                        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+                        <p>Welcome aboard!</p>
+                        <p><strong>The Secret Safe Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>This email was sent to {to_email}</p>
+                        <p>© 2025 Secret Safe. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create plain text content
+            text_content = f"""
+            Verification Successful - Welcome to Secret Safe!
+            
+            Hello {to_name},
+            
+            Great news! Your {verification_type} has been successfully verified.
+            
+            You now have full access to all Secret Safe features:
+            - Secure message storage
+            - Cross-platform access
+            - Advanced security features
+            - Message analytics
+            
+            Access your dashboard: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/dashboard
+            
+            If you have any questions or need assistance, please don't hesitate to contact our support team.
+            
+            Welcome aboard!
+            The Secret Safe Team
+            
+            This email was sent to {to_email}
+            © 2025 Secret Safe. All rights reserved.
+            """
+            
+            return await self.send_email(
+                to_email=to_email,
+                subject=subject,
+                html_content=html_content,
+                text_content=text_content
+            )
+            
+        except Exception as e:
+            logger.error(f"Error sending verification success email: {e}")
+            return False
+    
+    async def send_verification_failure_email(
+        self,
+        to_email: str,
+        to_name: str,
+        failure_reason: str,
+        verification_type: str = "email",
+        retry_available: bool = True,
+        additional_data: Optional[Dict] = None
+    ) -> bool:
+        """Send verification failure email notification."""
+        try:
+            subject = "⚠️ Verification Failed - Action Required"
+            
+            # Create HTML content
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Verification Failed</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .warning-icon {{ font-size: 48px; margin-bottom: 20px; }}
+                    .button {{ display: inline-block; background: #ff6b6b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+                    .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+                    .error-box {{ background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>⚠️ Verification Failed</h1>
+                        <p>Action Required</p>
+                    </div>
+                    <div class="content">
+                        <div class="warning-icon">❌</div>
+                        <h2>Hello {to_name},</h2>
+                        <p>We encountered an issue while verifying your <strong>{verification_type}</strong>.</p>
+                        
+                        <div class="error-box">
+                            <strong>Error Details:</strong><br>
+                            {failure_reason}
+                        </div>
+                        
+                        <p>Don't worry! This is usually easy to fix. Here are some common solutions:</p>
+                        <ul>
+                            <li>Check that your {verification_type} address is correct</li>
+                            <li>Ensure the verification link hasn't expired</li>
+                            <li>Try using a different browser or device</li>
+                            <li>Clear your browser cache and cookies</li>
+                        </ul>
+                        
+                        {"<p><strong>You can retry the verification process:</strong></p><p><a href=\"" + os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com') + "/auth/verify-email\" class=\"button\">Retry Verification</a></p>" if retry_available else "<p><strong>Please contact support for assistance.</strong></p>"}
+                        
+                        <p>If you continue to experience issues, please contact our support team and we'll be happy to help.</p>
+                        <p><strong>The Secret Safe Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>This email was sent to {to_email}</p>
+                        <p>© 2025 Secret Safe. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create plain text content
+            text_content = f"""
+            Verification Failed - Action Required
+            
+            Hello {to_name},
+            
+            We encountered an issue while verifying your {verification_type}.
+            
+            Error Details: {failure_reason}
+            
+            Don't worry! This is usually easy to fix. Here are some common solutions:
+            - Check that your {verification_type} address is correct
+            - Ensure the verification link hasn't expired
+            - Try using a different browser or device
+            - Clear your browser cache and cookies
+            
+            {"You can retry the verification process: " + os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com') + "/auth/verify-email" if retry_available else "Please contact support for assistance."}
+            
+            If you continue to experience issues, please contact our support team and we'll be happy to help.
+            
+            The Secret Safe Team
+            
+            This email was sent to {to_email}
+            © 2025 Secret Safe. All rights reserved.
+            """
+            
+            return await self.send_email(
+                to_email=to_email,
+                subject=subject,
+                html_content=html_content,
+                text_content=text_content
+            )
+            
+        except Exception as e:
+            logger.error(f"Error sending verification failure email: {e}")
+            return False
+    
+    async def send_verification_reminder_email(
+        self,
+        to_email: str,
+        to_name: str,
+        verification_type: str = "email",
+        days_since_registration: int = 0,
+        additional_data: Optional[Dict] = None
+    ) -> bool:
+        """Send verification reminder email notification."""
+        try:
+            subject = "🔔 Complete Your Verification - Secret Safe"
+            
+            # Create HTML content
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Complete Your Verification</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .reminder-icon {{ font-size: 48px; margin-bottom: 20px; }}
+                    .button {{ display: inline-block; background: #74b9ff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+                    .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+                    .highlight {{ background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🔔 Verification Reminder</h1>
+                        <p>Complete Your Setup</p>
+                    </div>
+                    <div class="content">
+                        <div class="reminder-icon">⏰</div>
+                        <h2>Hello {to_name},</h2>
+                        <p>We noticed you haven't completed your <strong>{verification_type}</strong> verification yet.</p>
+                        
+                        <div class="highlight">
+                            <strong>Why verify?</strong><br>
+                            Verification ensures your account security and unlocks all Secret Safe features.
+                        </div>
+                        
+                        <p>You're just one step away from accessing:</p>
+                        <ul>
+                            <li>🔐 Secure message storage</li>
+                            <li>📱 Cross-platform access</li>
+                            <li>🛡️ Advanced security features</li>
+                            <li>📊 Message analytics</li>
+                        </ul>
+                        
+                        <p><a href="{os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email" class="button">Complete Verification Now</a></p>
+                        
+                        <p><strong>Need help?</strong> Our support team is here to assist you with any verification issues.</p>
+                        
+                        <p>Best regards,<br><strong>The Secret Safe Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>This email was sent to {to_email}</p>
+                        <p>© 2025 Secret Safe. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create plain text content
+            text_content = f"""
+            Complete Your Verification - Secret Safe
+            
+            Hello {to_name},
+            
+            We noticed you haven't completed your {verification_type} verification yet.
+            
+            Why verify?
+            Verification ensures your account security and unlocks all Secret Safe features.
+            
+            You're just one step away from accessing:
+            - Secure message storage
+            - Cross-platform access
+            - Advanced security features
+            - Message analytics
+            
+            Complete verification now: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email
+            
+            Need help? Our support team is here to assist you with any verification issues.
+            
+            Best regards,
+            The Secret Safe Team
+            
+            This email was sent to {to_email}
+            © 2025 Secret Safe. All rights reserved.
+            """
+            
+            return await self.send_email(
+                to_email=to_email,
+                subject=subject,
+                html_content=html_content,
+                text_content=text_content
+            )
+            
+        except Exception as e:
+            logger.error(f"Error sending verification reminder email: {e}")
+            return False
+
 
 # Global email service instance
 email_service = EmailService()

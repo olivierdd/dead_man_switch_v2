@@ -5,6 +5,8 @@ Celery Startup Script for Secret Safe API
 This script starts Celery workers and the beat scheduler for background tasks.
 """
 
+from app.celery_app import celery_app
+from celery import Celery
 import os
 import sys
 import argparse
@@ -14,14 +16,12 @@ from pathlib import Path
 app_dir = Path(__file__).parent / "app"
 sys.path.insert(0, str(app_dir))
 
-from celery import Celery
-from app.celery_app import celery_app
-
 
 def start_worker(concurrency=2, queue="default"):
     """Start a Celery worker."""
-    print(f"Starting Celery worker with concurrency={concurrency}, queue={queue}")
-    
+    print(
+        f"Starting Celery worker with concurrency={concurrency}, queue={queue}")
+
     # Start worker
     celery_app.worker_main([
         "worker",
@@ -35,7 +35,7 @@ def start_worker(concurrency=2, queue="default"):
 def start_beat():
     """Start the Celery beat scheduler."""
     print("Starting Celery beat scheduler")
-    
+
     # Start beat scheduler
     celery_app.worker_main([
         "beat",
@@ -47,7 +47,7 @@ def start_beat():
 def start_flower():
     """Start Flower monitoring interface."""
     print("Starting Flower monitoring interface")
-    
+
     # Start Flower
     celery_app.worker_main([
         "flower",
@@ -59,7 +59,8 @@ def start_flower():
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="Start Celery services for Secret Safe API")
+    parser = argparse.ArgumentParser(
+        description="Start Celery services for Secret Safe API")
     parser.add_argument(
         "service",
         choices=["worker", "beat", "flower", "all"],
@@ -82,9 +83,9 @@ def main():
         default=5555,
         help="Port for Flower monitoring (default: 5555)"
     )
-    
+
     args = parser.parse_args()
-    
+
     try:
         if args.service == "worker":
             start_worker(args.concurrency, args.queue)
@@ -96,15 +97,16 @@ def main():
             print("Starting all Celery services...")
             print("Note: You may want to run these in separate terminals:")
             print(f"  Terminal 1: {sys.argv[0]} beat")
-            print(f"  Terminal 2: {sys.argv[0]} worker --concurrency={args.concurrency}")
+            print(
+                f"  Terminal 2: {sys.argv[0]} worker --concurrency={args.concurrency}")
             print(f"  Terminal 3: {sys.argv[0]} flower --port={args.port}")
-            
+
             # Start beat in current process
             start_beat()
         else:
             print(f"Unknown service: {args.service}")
             sys.exit(1)
-            
+
     except KeyboardInterrupt:
         print("\nShutting down Celery services...")
         sys.exit(0)
