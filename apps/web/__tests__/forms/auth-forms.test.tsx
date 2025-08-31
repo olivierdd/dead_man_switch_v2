@@ -39,7 +39,18 @@ const mockAuthContext = {
 
 // Mock the auth store
 jest.mock('@/lib/auth/auth-store', () => ({
-    useAuthStore: () => mockAuthContext
+    useAuthStore: () => mockAuthContext,
+    useAuth: () => mockAuthContext,
+    useAuthActions: () => ({
+        login: jest.fn(),
+        register: jest.fn(),
+        logout: jest.fn(),
+        refreshAuth: jest.fn(),
+        clearError: jest.fn(),
+        setError: jest.fn(),
+        setLoading: jest.fn(),
+        updateUser: jest.fn()
+    })
 }))
 
 // Mock the auth API
@@ -55,28 +66,19 @@ jest.mock('@/lib/auth/auth-api', () => ({
     }
 }))
 
-// Mock the auth hooks
-jest.mock('@/lib/auth/auth-hooks', () => ({
-    useAuthActions: () => ({
-        login: jest.fn(),
-        register: jest.fn(),
-        logout: jest.fn(),
-        refreshAuth: jest.fn(),
-        clearError: jest.fn(),
-        setError: jest.fn(),
-        setLoading: jest.fn(),
-        updateUser: jest.fn()
-    }),
-    useAuthState: () => ({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
+// Mock the auth persistence
+jest.mock('@/lib/auth/use-auth-persistence', () => ({
+    useAuthPersistence: () => ({
+        isRestoring: false,
         error: null,
-        accessToken: null,
-        refreshToken: null,
-        tokenExpiry: null
+        isInitialized: true,
+        restoreAuth: jest.fn(),
+        clearAuth: jest.fn(),
+        validateState: jest.fn()
     })
 }))
+
+// Mock the auth hooks (now handled in auth-store mock above)
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
