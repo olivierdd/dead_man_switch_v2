@@ -31,6 +31,13 @@ jobs:
         working-directory: apps/web
         run: npm ci
         
+      - name: Clear TypeScript cache
+        working-directory: apps/web
+        run: |
+          rm -rf .next
+          rm -rf node_modules/.cache
+          rm -f tsconfig.tsbuildinfo
+        
       - name: Run linting
         working-directory: apps/web
         run: npm run lint

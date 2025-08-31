@@ -39,7 +39,9 @@
             "@/styles/*": [
                 "./styles/*"
             ]
-        }
+        },
+        "rootDir": ".",
+        "outDir": "./dist"
     },
     "include": [
         "next-env.d.ts",
