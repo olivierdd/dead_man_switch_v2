@@ -142,6 +142,20 @@ class Message(SQLModel, table=True):
     user: "User" = Relationship(
         back_populates="messages", sa_relationship_kwargs={"lazy": "selectin"})
 
+    # Dissolution plans
+    dissolution_plans: List["DissolutionPlan"] = Relationship(
+        back_populates="message",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "DissolutionPlan.message_id"
+        })
+    alternative_dissolution_plans: List["DissolutionPlan"] = Relationship(
+        back_populates="alternative_message",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "DissolutionPlan.alternative_message_id"
+        })
+
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {
@@ -221,7 +235,23 @@ class MessageShare(SQLModel, table=True):
     message: "Message" = Relationship(
         back_populates="shared_with_readers", sa_relationship_kwargs={"lazy": "selectin"})
     shared_with_user: "User" = Relationship(
-        back_populates="shared_messages", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="shared_messages",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.shared_with_user_id"
+        })
+    shared_by_user: "User" = Relationship(
+        back_populates="shared_by_messages",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.shared_by_user_id"
+        })
+    approved_by_user: Optional["User"] = Relationship(
+        back_populates="approved_message_shares",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.approved_by"
+        })
 
     class Config:
         arbitrary_types_allowed = True
@@ -310,7 +340,17 @@ class DissolutionPlan(SQLModel, table=True):
 
     # Relationships
     message: "Message" = Relationship(
-        sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="dissolution_plans",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "DissolutionPlan.message_id"
+        })
+    alternative_message: Optional["Message"] = Relationship(
+        back_populates="alternative_dissolution_plans",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "DissolutionPlan.alternative_message_id"
+        })
 
     class Config:
         arbitrary_types_allowed = True

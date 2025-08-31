@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Bell, X, Mail, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/auth/auth-context';
+import { useAuthContext } from '@/lib/auth/auth-context'
+import { authAPI } from '@/lib/auth/auth-api'
 import { useVerificationPolling } from '@/lib/hooks/use-verification-polling';
 
 export interface VerificationReminderNotificationProps {
@@ -23,7 +24,7 @@ export function VerificationReminderNotification({
     onDismiss,
     onAction
 }: VerificationReminderNotificationProps) {
-    const { user } = useAuth();
+    const { user } = useAuthContext();
     const [isVisible, setIsVisible] = useState(true);
     const [lastReminder, setLastReminder] = useState<Date | null>(null);
     const [reminderCount, setReminderCount] = useState(0);

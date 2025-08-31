@@ -60,8 +60,7 @@ export default function HomePage() {
 
                         {/* Subtitle */}
                         <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-                            Privacy-first digital dead man's switch service that ensures your critical messages
-                            reach their intended recipients, even if you can't deliver them yourself.
+                            Secure messages that reach your loved ones even when you can't. Zero-knowledge encryption ensures only intended recipients can read your words.
                         </p>
 
                         {/* Call to Action */}
@@ -79,7 +78,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Trust Indicators */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
                             <div className="glass-card p-6">
                                 <div className="text-3xl mb-4">🔒</div>
                                 <h3 className="text-xl font-semibold text-white mb-2">Zero-Knowledge Security</h3>
@@ -104,64 +103,101 @@ export default function HomePage() {
                                 </p>
                             </div>
                         </div>
-                    </div>
-                </main>
 
-                {/* Features Preview */}
-                <section className="py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 className="text-4xl font-bold text-white text-center mb-16">
-                            Built for Every Need
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {/* Role-based Access */}
-                            <div className="glass-card p-8 hover:scale-105 transition-transform duration-300">
-                                <div className="text-4xl mb-4">👥</div>
-                                <h3 className="text-2xl font-semibold text-white mb-4">Role-Based Access</h3>
-                                <p className="text-gray-400 mb-6">
+                        {/* Feature Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                            <div className="glass-card p-6">
+                                <div className="text-3xl mb-4">👥</div>
+                                <h3 className="text-xl font-semibold text-white mb-2">Role-Based Access</h3>
+                                <p className="text-gray-400">
                                     Different access levels for Admins, Writers, and Readers.
                                     Control who can see what, when.
                                 </p>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">Admin</span>
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Writer</span>
-                                    <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Reader</span>
-                                </div>
                             </div>
 
-                            {/* Message Management */}
-                            <div className="glass-card p-8 hover:scale-105 transition-transform duration-300">
-                                <div className="text-4xl mb-4">💬</div>
-                                <h3 className="text-2xl font-semibold text-white mb-4">Smart Messages</h3>
-                                <p className="text-gray-400 mb-6">
+                            <div className="glass-card p-6">
+                                <div className="text-3xl mb-4">💬</div>
+                                <h3 className="text-xl font-semibold text-white mb-2">Smart Messages</h3>
+                                <p className="text-gray-400">
                                     Create encrypted messages with custom check-in schedules,
                                     grace periods, and dissolution plans.
                                 </p>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">Encrypted</span>
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Scheduled</span>
-                                    <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Automated</span>
-                                </div>
                             </div>
 
-                            {/* Security Features */}
-                            <div className="glass-card p-8 hover:scale-105 transition-transform duration-300">
-                                <div className="text-4xl mb-4">🛡️</div>
-                                <h3 className="text-2xl font-semibold text-white mb-4">Enterprise Security</h3>
-                                <p className="text-gray-400 mb-6">
+                            <div className="glass-card p-6">
+                                <div className="text-3xl mb-4">🛡️</div>
+                                <h3 className="text-xl font-semibold text-white mb-2">Enterprise Security</h3>
+                                <p className="text-gray-400">
                                     Military-grade encryption, audit logs, and compliance features
                                     for business and personal use.
                                 </p>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">AES-256</span>
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Audit Logs</span>
-                                    <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Compliance</span>
-                                </div>
                             </div>
                         </div>
                     </div>
-                </section>
+                </main>
+
+                {/* Footer */}
+                <footer className="bg-gradient-to-t from-black via-gray-900 to-gray-800 border-t border-blue-500/20 mt-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {/* Main Footer Content */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            {/* Brand Section */}
+                            <div className="col-span-1 md:col-span-2">
+                                <div className="flex items-center mb-3">
+                                    <div className="text-xl mr-2">🔐</div>
+                                    <div className="text-xl font-bold text-blue-400">Secret Safe</div>
+                                </div>
+                                <p className="text-gray-400 text-sm leading-relaxed max-w-md">
+                                    Protecting your digital legacy with zero-knowledge encryption and blockchain durability.
+                                </p>
+                            </div>
+
+                            {/* Product Links */}
+                            <div>
+                                <h4 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Product</h4>
+                                <ul className="space-y-1">
+                                    <li><a href="/features" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Features</a></li>
+                                    <li><a href="/pricing" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Pricing</a></li>
+                                    <li><a href="/auth/register" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Get Started</a></li>
+                                    <li><a href="/dashboard" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Dashboard</a></li>
+                                </ul>
+                            </div>
+
+                            {/* Support Links */}
+                            <div>
+                                <h4 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Support</h4>
+                                <ul className="space-y-1">
+                                    <li><a href="/help" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Help Center</a></li>
+                                    <li><a href="/contact" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Contact Us</a></li>
+                                    <li><a href="/status" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Service Status</a></li>
+                                    <li><a href="/api-docs" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">API Documentation</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Legal Links */}
+                        <div className="border-t border-gray-700 pt-6 mb-6">
+                            <div className="flex flex-wrap gap-4 justify-center">
+                                <a href="/privacy" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Privacy Policy</a>
+                                <a href="/terms" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Terms of Service</a>
+                                <a href="/cookies" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Cookie Policy</a>
+                                <a href="/security" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Security</a>
+                                <a href="/gdpr" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">GDPR Compliance</a>
+                            </div>
+                        </div>
+
+                        {/* Copyright and Description */}
+                        <div className="border-t border-gray-700 pt-6 text-center">
+                            <div className="text-gray-400 text-sm mb-3">
+                                © 2025 Secret Safe. All rights reserved.
+                            </div>
+                            <div className="text-gray-500 text-xs leading-relaxed max-w-3xl mx-auto">
+                                Secret Safe is a digital legacy protection service. We use zero-knowledge encryption to ensure your messages remain private. While we strive for 100% reliability, we cannot guarantee message delivery in all circumstances. Users are responsible for maintaining their check-in schedule and ensuring their recipients can access the service.
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
             </div>
         </div>
     )

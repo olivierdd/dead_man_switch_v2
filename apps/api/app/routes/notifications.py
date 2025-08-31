@@ -45,21 +45,21 @@ async def get_user_notifications(
 ):
     """
     Get notifications for the current user
-    
+
     Args:
         limit: Maximum number of notifications to return (1-100)
         offset: Number of notifications to skip
         notification_type: Filter by notification type
         status: Filter by notification status
         unread_only: Return only unread notifications
-        
+
     Returns:
         List of user notifications
     """
     try:
         if unread_only:
             status = NotificationStatus.SENT
-        
+
         notifications = notification_service.get_user_notifications(
             user_id=current_user.id,
             limit=limit,
@@ -67,9 +67,9 @@ async def get_user_notifications(
             notification_type=notification_type,
             status=status
         )
-        
+
         return notifications
-        
+
     except Exception as e:
         logger.error(f"Failed to get user notifications: {e}")
         raise HTTPException(
@@ -85,27 +85,28 @@ async def get_notification_statistics(
 ):
     """
     Get notification statistics for the current user
-    
+
     Returns:
         Notification statistics including counts and preferences
     """
     try:
         # Get notification statistics
-        stats = notification_service.get_notification_statistics(current_user.id)
-        
+        stats = notification_service.get_notification_statistics(
+            current_user.id)
+
         # Get user preferences
         preferences = db.exec(
             select(NotificationPreferences)
             .where(NotificationPreferences.user_id == current_user.id)
         ).first()
-        
+
         if not preferences:
             # Create default preferences if none exist
             preferences = NotificationPreferences(user_id=current_user.id)
             db.add(preferences)
             db.commit()
             db.refresh(preferences)
-        
+
         # Create response with preferences
         response = NotificationStatistics(
             total_notifications=stats.get("total", 0),
@@ -117,9 +118,9 @@ async def get_notification_statistics(
             success_rate=None,  # TODO: Implement success rate calculation
             user_preferences=preferences
         )
-        
+
         return response
-        
+
     except Exception as e:
         logger.error(f"Failed to get notification statistics: {e}")
         raise HTTPException(
@@ -135,10 +136,10 @@ async def mark_notification_read(
 ):
     """
     Mark a notification as read
-    
+
     Args:
         notification_id: ID of the notification to mark as read
-        
+
     Returns:
         Success message
     """
@@ -147,15 +148,15 @@ async def mark_notification_read(
             notification_id=notification_id,
             user_id=current_user.id
         )
-        
+
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Notification not found or access denied"
             )
-        
+
         return {"message": "Notification marked as read"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -173,7 +174,7 @@ async def mark_all_notifications_read(
 ):
     """
     Mark all notifications as read for the current user
-    
+
     Returns:
         Success message with count of notifications marked
     """
@@ -185,20 +186,20 @@ async def mark_all_notifications_read(
                 Notification.read_at.is_(None)
             )
         ).all()
-        
+
         # Mark all as read
         from datetime import datetime, timezone
         current_time = datetime.now(timezone.utc)
-        
+
         for notification in unread_notifications:
             notification.read_at = current_time
-        
+
         db.commit()
-        
+
         return {
             "message": f"Marked {len(unread_notifications)} notifications as read"
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to mark all notifications as read: {e}")
         raise HTTPException(
@@ -214,7 +215,7 @@ async def get_notification_preferences(
 ):
     """
     Get notification preferences for the current user
-    
+
     Returns:
         User's notification preferences
     """
@@ -223,16 +224,16 @@ async def get_notification_preferences(
             select(NotificationPreferences)
             .where(NotificationPreferences.user_id == current_user.id)
         ).first()
-        
+
         if not preferences:
             # Create default preferences if none exist
             preferences = NotificationPreferences(user_id=current_user.id)
             db.add(preferences)
             db.commit()
             db.refresh(preferences)
-        
+
         return preferences
-        
+
     except Exception as e:
         logger.error(f"Failed to get notification preferences: {e}")
         raise HTTPException(
@@ -249,10 +250,10 @@ async def update_notification_preferences(
 ):
     """
     Update notification preferences for the current user
-    
+
     Args:
         preferences_update: Updated preference values
-        
+
     Returns:
         Updated notification preferences
     """
@@ -261,27 +262,27 @@ async def update_notification_preferences(
             select(NotificationPreferences)
             .where(NotificationPreferences.user_id == current_user.id)
         ).first()
-        
+
         if not preferences:
             # Create preferences if none exist
             preferences = NotificationPreferences(user_id=current_user.id)
             db.add(preferences)
-        
+
         # Update only provided fields
         update_data = preferences_update.dict(exclude_unset=True)
         for field, value in update_data.items():
             if hasattr(preferences, field):
                 setattr(preferences, field, value)
-        
+
         # Update timestamp
         from datetime import datetime, timezone
         preferences.updated_at = datetime.now(timezone.utc)
-        
+
         db.commit()
         db.refresh(preferences)
-        
+
         return preferences
-        
+
     except Exception as e:
         logger.error(f"Failed to update notification preferences: {e}")
         raise HTTPException(
@@ -298,10 +299,10 @@ async def delete_notification(
 ):
     """
     Delete a notification for the current user
-    
+
     Args:
         notification_id: ID of the notification to delete
-        
+
     Returns:
         Success message
     """
@@ -312,18 +313,18 @@ async def delete_notification(
                 Notification.user_id == current_user.id
             )
         ).first()
-        
+
         if not notification:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Notification not found or access denied"
             )
-        
+
         db.delete(notification)
         db.commit()
-        
+
         return {"message": "Notification deleted successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -343,11 +344,11 @@ async def track_notification_click(
 ):
     """
     Track when a user clicks/interacts with a notification
-    
+
     Args:
         notification_id: ID of the notification
         action: Optional action description
-        
+
     Returns:
         Success message
     """
@@ -358,23 +359,23 @@ async def track_notification_click(
                 Notification.user_id == current_user.id
             )
         ).first()
-        
+
         if not notification:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Notification not found or access denied"
             )
-        
+
         # Update click tracking
         from datetime import datetime, timezone
         notification.clicked_at = datetime.now(timezone.utc)
         if action:
             notification.action_taken = action
-        
+
         db.commit()
-        
+
         return {"message": "Notification click tracked"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -389,7 +390,7 @@ async def track_notification_click(
 async def get_notification_types():
     """
     Get all available notification types
-    
+
     Returns:
         List of notification type values
     """
@@ -400,7 +401,7 @@ async def get_notification_types():
 async def get_notification_statuses():
     """
     Get all available notification statuses
-    
+
     Returns:
         List of notification status values
     """

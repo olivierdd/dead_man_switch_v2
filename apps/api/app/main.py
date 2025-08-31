@@ -115,7 +115,8 @@ app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(public.router, prefix="/api/public", tags=["Public"])
 app.include_router(verification.router,
                    prefix="/api/verification", tags=["Verification"])
-app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
+app.include_router(notifications.router,
+                   prefix="/api/notifications", tags=["Notifications"])
 
 # Health check endpoint
 

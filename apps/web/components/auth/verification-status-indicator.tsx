@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock, AlertCircle, Mail, Pause, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/auth/auth-context';
-import { authApi } from '@/lib/auth/auth-api';
+import { useAuthContext } from '@/lib/auth/auth-context'
+import { authAPI } from '@/lib/auth/auth-api'
 import { useVerificationPolling } from '@/lib/hooks/use-verification-polling';
 import { useNotificationManager } from '@/lib/hooks/use-notification-manager';
 
@@ -25,7 +25,7 @@ export function VerificationStatusIndicator({
     onStatusChange,
     enablePolling = true
 }: VerificationStatusIndicatorProps) {
-    const { user } = useAuth();
+    const { user } = useAuthContext();
 
     const {
         status,
@@ -72,18 +72,14 @@ export function VerificationStatusIndicator({
 
     const handleResendVerification = async () => {
         try {
-            setIsLoading(true);
             // This would call the resend verification endpoint
-            await authApi.resendVerification();
-            setStatus('pending');
+            await authAPI.resendVerification();
             // Show success notification
-            addVerificationReminder('info');
+            addVerificationReminder('medium');
         } catch (error) {
             console.error('Error resending verification:', error);
             // Show error notification
             addVerificationError('Failed to resend verification email. Please try again.');
-        } finally {
-            setIsLoading(false);
         }
     };
 

@@ -109,7 +109,8 @@ class VerificationService:
                         }
                     )
                 except Exception as e:
-                    logger.warning(f"Failed to send verification failure notification: {e}")
+                    logger.warning(
+                        f"Failed to send verification failure notification: {e}")
 
                 return TokenValidationResponse(
                     valid=False,
@@ -132,7 +133,8 @@ class VerificationService:
                         }
                     )
                 except Exception as e:
-                    logger.warning(f"Failed to send verification failure notification: {e}")
+                    logger.warning(
+                        f"Failed to send verification failure notification: {e}")
 
                 return TokenValidationResponse(
                     valid=False,
@@ -155,7 +157,8 @@ class VerificationService:
                         }
                     )
                 except Exception as e:
-                    logger.warning(f"Failed to send verification failure notification: {e}")
+                    logger.warning(
+                        f"Failed to send verification failure notification: {e}")
 
                 return TokenValidationResponse(
                     valid=False,
@@ -375,7 +378,8 @@ class VerificationService:
                     }
                 )
             except Exception as e:
-                logger.warning(f"Failed to send verification success notification: {e}")
+                logger.warning(
+                    f"Failed to send verification success notification: {e}")
                 # Don't fail the verification if notification fails
 
             logger.info(f"User {user_id} email verified successfully")
@@ -502,7 +506,8 @@ class VerificationService:
                         }
                     )
                 except Exception as e:
-                    logger.warning(f"Failed to send verification reminder notification: {e}")
+                    logger.warning(
+                        f"Failed to send verification reminder notification: {e}")
 
             return success
 
@@ -523,7 +528,8 @@ class VerificationService:
             user = self.db.exec(stmt).first()
 
             if not user:
-                logger.error(f"User {user_id} not found for verification reminder")
+                logger.error(
+                    f"User {user_id} not found for verification reminder")
                 return False
 
             if user.is_verified:
@@ -533,7 +539,8 @@ class VerificationService:
             # Calculate days since registration
             days_since_registration = 0
             if user.created_at:
-                days_since_registration = (datetime.utcnow() - user.created_at).days
+                days_since_registration = (
+                    datetime.utcnow() - user.created_at).days
 
             # Send reminder notification
             try:
@@ -548,7 +555,8 @@ class VerificationService:
                     }
                 )
             except Exception as e:
-                logger.warning(f"Failed to send verification reminder notification: {e}")
+                logger.warning(
+                    f"Failed to send verification reminder notification: {e}")
                 return False
 
             # Optionally create new verification token and send email

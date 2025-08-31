@@ -139,20 +139,62 @@ class User(SQLModel, table=True):
     # Relationships - using forward references to avoid circular imports
     messages: List["Message"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+
+    # Message sharing relationships - explicitly specify foreign keys to avoid ambiguity
     shared_messages: List["MessageShare"] = Relationship(
-        back_populates="shared_with_user", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="shared_with_user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.shared_with_user_id"
+        })
+    shared_by_messages: List["MessageShare"] = Relationship(
+        back_populates="shared_by_user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.shared_by_user_id"
+        })
+    approved_message_shares: List["MessageShare"] = Relationship(
+        back_populates="approved_by_user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "MessageShare.approved_by"
+        })
+
     check_ins: List["CheckIn"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
     role_changes: List["RoleChangeLog"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "RoleChangeLog.user_id"
+        })
+    role_changes_made: List["RoleChangeLog"] = Relationship(
+        back_populates="changed_by_user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "RoleChangeLog.changed_by"
+        })
     permissions: List["UserPermission"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    admin_actions: List["AdminLog"] = Relationship(
-        back_populates="admin", sa_relationship_kwargs={"lazy": "selectin"})
-    blacklisted_tokens: List["TokenBlacklist"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    verification_tokens: List["VerificationToken"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "UserPermission.user_id"
+        })
+    permissions_granted: List["UserPermission"] = Relationship(
+        back_populates="granted_by_user",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "UserPermission.granted_by"
+        })
+    # admin_actions: List["AdminLog"] = Relationship(
+    #     back_populates="admin", sa_relationship_kwargs={"lazy": "selectin"})
+    # TODO: Implement AdminLog model when needed
+    # blacklisted_tokens: List["TokenBlacklist"] = Relationship(
+    #     back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    # TODO: Re-enable when TokenBlacklist table is created
+    # verification_tokens: List["VerificationToken"] = Relationship(
+    #     back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    # TODO: Re-enable when verification system is fully implemented
 
     class Config:
         arbitrary_types_allowed = True
@@ -173,7 +215,8 @@ class TokenBlacklist(SQLModel, table=True):
     reason: str = Field(default="logout", max_length=100)
 
     # Relationships
-    user: User = Relationship(back_populates="blacklisted_tokens")
+    # user: User = Relationship(back_populates="blacklisted_tokens")
+    # TODO: Re-enable when blacklisted_tokens relationship is restored
 
     class Config:
         arbitrary_types_allowed = True
@@ -346,7 +389,17 @@ class RoleChangeLog(SQLModel, table=True):
 
     # Relationships
     user: "User" = Relationship(
-        back_populates="role_changes", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="role_changes",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "RoleChangeLog.user_id"
+        })
+    changed_by_user: "User" = Relationship(
+        back_populates="role_changes_made",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "RoleChangeLog.changed_by"
+        })
 
     class Config:
         arbitrary_types_allowed = True
@@ -366,7 +419,17 @@ class UserPermission(SQLModel, table=True):
 
     # Relationships
     user: "User" = Relationship(
-        back_populates="permissions", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="permissions",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "UserPermission.user_id"
+        })
+    granted_by_user: "User" = Relationship(
+        back_populates="permissions_granted",
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "UserPermission.granted_by"
+        })
 
     class Config:
         arbitrary_types_allowed = True

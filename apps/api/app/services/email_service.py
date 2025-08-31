@@ -376,7 +376,7 @@ class EmailService:
         return status
 
     # Notification Email Methods
-    
+
     async def send_verification_success_email(
         self,
         to_email: str,
@@ -387,7 +387,7 @@ class EmailService:
         """Send verification success email notification."""
         try:
             subject = "🎉 Verification Successful - Welcome to Secret Safe!"
-            
+
             # Create HTML content
             html_content = f"""
             <!DOCTYPE html>
@@ -436,7 +436,7 @@ class EmailService:
             </body>
             </html>
             """
-            
+
             # Create plain text content
             text_content = f"""
             Verification Successful - Welcome to Secret Safe!
@@ -461,18 +461,18 @@ class EmailService:
             This email was sent to {to_email}
             © 2025 Secret Safe. All rights reserved.
             """
-            
+
             return await self.send_email(
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
                 text_content=text_content
             )
-            
+
         except Exception as e:
             logger.error(f"Error sending verification success email: {e}")
             return False
-    
+
     async def send_verification_failure_email(
         self,
         to_email: str,
@@ -485,7 +485,7 @@ class EmailService:
         """Send verification failure email notification."""
         try:
             subject = "⚠️ Verification Failed - Action Required"
-            
+
             # Create HTML content
             html_content = f"""
             <!DOCTYPE html>
@@ -542,7 +542,7 @@ class EmailService:
             </body>
             </html>
             """
-            
+
             # Create plain text content
             text_content = f"""
             Verification Failed - Action Required
@@ -568,18 +568,18 @@ class EmailService:
             This email was sent to {to_email}
             © 2025 Secret Safe. All rights reserved.
             """
-            
+
             return await self.send_email(
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
                 text_content=text_content
             )
-            
+
         except Exception as e:
             logger.error(f"Error sending verification failure email: {e}")
             return False
-    
+
     async def send_verification_reminder_email(
         self,
         to_email: str,
@@ -591,7 +591,7 @@ class EmailService:
         """Send verification reminder email notification."""
         try:
             subject = "🔔 Complete Your Verification - Secret Safe"
-            
+
             # Create HTML content
             html_content = f"""
             <!DOCTYPE html>
@@ -649,7 +649,7 @@ class EmailService:
             </body>
             </html>
             """
-            
+
             # Create plain text content
             text_content = f"""
             Complete Your Verification - Secret Safe
@@ -677,14 +677,14 @@ class EmailService:
             This email was sent to {to_email}
             © 2025 Secret Safe. All rights reserved.
             """
-            
+
             return await self.send_email(
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
                 text_content=text_content
             )
-            
+
         except Exception as e:
             logger.error(f"Error sending verification reminder email: {e}")
             return False
