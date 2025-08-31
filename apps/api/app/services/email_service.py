@@ -76,17 +76,9 @@ class SendGridProvider(EmailProvider):
     ) -> bool:
         """Send email via SendGrid."""
         try:
-            from sendgrid.helpers.mail import (
-                Attachment,
-                Content,
-                Disposition,
-                Email,
-                FileContent,
-                FileName,
-                FileType,
-                Mail,
-                To,
-            )
+            from sendgrid.helpers.mail import (Attachment, Content,
+                                               Disposition, Email, FileContent,
+                                               FileName, FileType, Mail, To)
 
             client = await self._get_client()
 
