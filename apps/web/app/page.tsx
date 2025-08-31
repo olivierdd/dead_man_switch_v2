@@ -156,10 +156,9 @@ export default function HomePage() {
                             <div>
                                 <h4 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Product</h4>
                                 <ul className="space-y-1">
-                                    <li><a href="/features" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Features</a></li>
+                                    <li><a href="/how-it-works" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">How It Works</a></li>
                                     <li><a href="/pricing" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Pricing</a></li>
-                                    <li><a href="/auth/register" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Get Started</a></li>
-                                    <li><a href="/dashboard" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Dashboard</a></li>
+                                    <li><a href="/api-docs" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">API Documentation</a></li>
                                 </ul>
                             </div>
 
@@ -169,22 +168,12 @@ export default function HomePage() {
                                 <ul className="space-y-1">
                                     <li><a href="/help" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Help Center</a></li>
                                     <li><a href="/contact" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Contact Us</a></li>
-                                    <li><a href="/status" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Service Status</a></li>
-                                    <li><a href="/api-docs" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">API Documentation</a></li>
+                                    <li><a href="/terms" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Terms of Service</a></li>
                                 </ul>
                             </div>
                         </div>
 
-                        {/* Legal Links */}
-                        <div className="border-t border-gray-700 pt-6 mb-6">
-                            <div className="flex flex-wrap gap-4 justify-center">
-                                <a href="/privacy" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Privacy Policy</a>
-                                <a href="/terms" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Terms of Service</a>
-                                <a href="/cookies" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Cookie Policy</a>
-                                <a href="/security" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">Security</a>
-                                <a href="/gdpr" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">GDPR Compliance</a>
-                            </div>
-                        </div>
+
 
                         {/* Copyright and Description */}
                         <div className="border-t border-gray-700 pt-6 text-center">
