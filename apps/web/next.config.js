@@ -28,12 +28,16 @@ const nextConfig = {
         ];
     },
     async rewrites() {
-        return [
-            {
-                source: '/api/:path*',
-                destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
-            },
-        ];
+        // Only add rewrite if API URL is defined
+        if (process.env.NEXT_PUBLIC_API_URL) {
+            return [
+                {
+                    source: '/api/:path*',
+                    destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+                },
+            ];
+        }
+        return [];
     },
     webpack: (config, { isServer }) => {
         // Optimize for Three.js
