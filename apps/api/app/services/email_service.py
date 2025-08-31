@@ -76,9 +76,17 @@ class SendGridProvider(EmailProvider):
     ) -> bool:
         """Send email via SendGrid."""
         try:
-            from sendgrid.helpers.mail import (Attachment, Content,
-                                               Disposition, Email, FileContent,
-                                               FileName, FileType, Mail, To)
+            from sendgrid.helpers.mail import (
+                Attachment,
+                Content,
+                Disposition,
+                Email,
+                FileContent,
+                FileName,
+                FileType,
+                Mail,
+                To,
+            )
 
             client = await self._get_client()
 
@@ -564,6 +572,12 @@ class EmailService:
             """
 
             # Create plain text content
+            retry_message = (
+                f"You can retry the verification process: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email"
+                if retry_available
+                else "Please contact support for assistance."
+            )
+
             text_content = f"""
             Verification Failed - Action Required
             
@@ -579,7 +593,7 @@ class EmailService:
             - Try using a different browser or device
             - Clear your browser cache and cookies
             
-            {f"You can retry the verification process: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email" if retry_available else "Please contact support for assistance."}
+            {retry_message}
             
             If you continue to experience issues, please contact our support team and we'll be happy to help.
             
