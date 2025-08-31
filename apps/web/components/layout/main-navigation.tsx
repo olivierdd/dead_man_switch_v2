@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { AuthStatusIndicator } from '@/components/auth/auth-status-indicator'
 import { SessionTimer } from '@/components/auth/session-timer'
 import { UserActivityIndicator } from '@/components/auth/user-activity-indicator'
+import { ForevrLogo } from '@/components/ui/forevr-logo'
 import {
     Home,
     LayoutDashboard,
@@ -195,10 +196,7 @@ export const MainNavigation: React.FC = () => {
                     {/* Logo and Brand */}
                     <div className="flex items-center space-x-4">
                         <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                <Shield className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-xl font-bold text-white">Secret Safe</span>
+                            <ForevrLogo variant="compact" className="h-8 w-auto" />
                         </Link>
                     </div>
 
@@ -282,9 +280,7 @@ export const MainNavigation: React.FC = () => {
                                     className="flex items-center space-x-2 text-gray-300 hover:text-white hover:bg-white/5"
                                 >
                                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                                        <span className="text-sm font-medium text-white">
-                                            {user.display_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                                        </span>
+                                        <ForevrLogo variant="icon" className="w-5 h-5" />
                                     </div>
                                     <span className="hidden sm:block">{user.display_name || user.email}</span>
                                 </Button>
