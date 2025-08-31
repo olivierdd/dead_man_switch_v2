@@ -5,18 +5,20 @@ Models for managing email verification tokens, password reset tokens,
 and other verification-related functionality.
 """
 
+import hashlib
+import secrets
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
 from uuid import UUID
-from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import Column, JSON
-import secrets
-import hashlib
+
+from sqlalchemy import JSON, Column
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class TokenType(str, Enum):
     """Types of verification tokens."""
+
     EMAIL_VERIFICATION = "email_verification"
     PASSWORD_RESET = "password_reset"
     EMAIL_CHANGE = "email_change"

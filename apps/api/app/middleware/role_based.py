@@ -2,10 +2,11 @@
 Role-based access control middleware for Secret Safe API
 """
 
-from fastapi import Request, HTTPException, status
-from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import List, Optional
+
 import structlog
+from fastapi import HTTPException, Request, status
+from fastapi.responses import JSONResponse
 
 logger = structlog.get_logger()
 
@@ -20,15 +21,12 @@ class RoleBasedMiddleware:
         self.role_requirements = {
             # Admin-only endpoints
             "/api/admin/": ["admin"],
-
             # Writer and Admin endpoints
             "/api/messages/": ["writer", "admin"],
             "/api/users/profile": ["writer", "admin", "reader"],
             "/api/users/check-in": ["writer", "admin"],
-
             # Reader endpoints (shared with higher roles)
             "/api/shared/": ["reader", "writer", "admin"],
-
             # Auth endpoints (no role requirement)
             "/api/auth/": [],
         }
@@ -56,12 +54,12 @@ class RoleBasedMiddleware:
                     user_id=user.get("id"),
                     user_role=user.get("role"),
                     required_roles=required_roles,
-                    path=request.url.path
+                    path=request.url.path,
                 )
 
                 await self._send_forbidden_response(
                     send,
-                    f"Insufficient permissions. Required roles: {', '.join(required_roles)}"
+                    f"Insufficient permissions. Required roles: {', '.join(required_roles)}",
                 )
                 return
 
@@ -70,7 +68,7 @@ class RoleBasedMiddleware:
                 "Access granted",
                 user_id=user.get("id"),
                 user_role=user.get("role"),
-                path=request.url.path
+                path=request.url.path,
             )
 
         await self.app(scope, receive, send)
@@ -85,7 +83,7 @@ class RoleBasedMiddleware:
             "/api/public/",
             "/api/auth/register",
             "/api/auth/login",
-            "/api/auth/forgot-password"
+            "/api/auth/forgot-password",
         ]
 
         return any(path.startswith(public_path) for public_path in public_paths)
@@ -103,20 +101,15 @@ class RoleBasedMiddleware:
         """Send forbidden response"""
         response = JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
-            content={
-                "detail": detail,
-                "error_code": "insufficient_permissions"
+            content={"detail": detail, "error_code": "insufficient_permissions"},
+        )
+
+        await send(
+            {
+                "type": "http.response.start",
+                "status": response.status_code,
+                "headers": response.headers.raw,
             }
         )
 
-        await send({
-            "type": "http.response.start",
-            "status": response.status_code,
-            "headers": response.headers.raw
-        })
-
-        await send({
-            "type": "http.response.body",
-            "body": response.body
-        })
-
+        await send({"type": "http.response.body", "body": response.body})

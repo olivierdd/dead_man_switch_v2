@@ -5,22 +5,20 @@ Handles email verification, password reset, and other verification-related
 API endpoints for the Secret Safe platform.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from fastapi.responses import JSONResponse
-from sqlmodel import Session
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from datetime import datetime
 
-from ..models.verification import (
-    TokenValidationRequest,
-    TokenValidationResponse,
-    TokenType
-)
-from ..models.user import User
-from ..services.verification_service import VerificationService
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
+
 from ..models.database import get_db
+from ..models.user import User
+from ..models.verification import (TokenType, TokenValidationRequest,
+                                   TokenValidationResponse)
 from ..routes.auth import get_current_user
+from ..services.verification_service import VerificationService
 from ..settings import settings
 
 router = APIRouter(prefix="/verification", tags=["verification"])
@@ -30,8 +28,9 @@ router = APIRouter(prefix="/verification", tags=["verification"])
 async def send_verification_email(
     user_id: UUID,
     base_url: Optional[str] = Query(
-        None, description="Base URL for verification links"),
-    db: Session = Depends(get_db)
+        None, description="Base URL for verification links"
+    ),
+    db: Session = Depends(get_db),
 ):
     """Send verification email to a user."""
     try:
@@ -43,57 +42,52 @@ async def send_verification_email(
         verification_service = VerificationService(db)
 
         # Get user
-        from ..models.user import User
         from sqlmodel import select
+
+        from ..models.user import User
 
         stmt = select(User).where(User.id == user_id)
         user = db.exec(stmt).first()
 
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
 
         if user.is_verified:
             return {
                 "success": True,
                 "message": "User is already verified",
-                "user_id": str(user_id)
+                "user_id": str(user_id),
             }
 
         # Create verification token
         token = await verification_service.create_verification_token(
-            user_id=user_id,
-            token_type=TokenType.EMAIL_VERIFICATION,
-            expiry_hours=24
+            user_id=user_id, token_type=TokenType.EMAIL_VERIFICATION, expiry_hours=24
         )
 
         if not token:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create verification token"
+                detail="Failed to create verification token",
             )
 
         # Send verification email
         email_sent = await verification_service.send_verification_email(
-            user=user,
-            token=token,
-            base_url=base_url,
-            expiry_hours=24
+            user=user, token=token, base_url=base_url, expiry_hours=24
         )
 
         if not email_sent:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to send verification email"
+                detail="Failed to send verification email",
             )
 
         return {
             "success": True,
             "message": "Verification email sent successfully",
             "user_id": str(user_id),
-            "expires_in_hours": 24
+            "expires_in_hours": 24,
         }
 
     except HTTPException:
@@ -101,14 +95,14 @@ async def send_verification_email(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
 @router.post("/verify-email", response_model=dict)
 async def verify_email(
     token: str = Query(..., description="Verification token"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Verify user email with token."""
     try:
@@ -116,26 +110,24 @@ async def verify_email(
 
         # Validate token
         validation_result = await verification_service.validate_token(
-            token=token,
-            token_type=TokenType.EMAIL_VERIFICATION
+            token=token, token_type=TokenType.EMAIL_VERIFICATION
         )
 
         if not validation_result.valid:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=validation_result.message
+                detail=validation_result.message,
             )
 
         # Mark token as used
         token_marked = await verification_service.mark_token_used(
-            token=token,
-            token_type=TokenType.EMAIL_VERIFICATION
+            token=token, token_type=TokenType.EMAIL_VERIFICATION
         )
 
         if not token_marked:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to process verification token"
+                detail="Failed to process verification token",
             )
 
         # Verify user email
@@ -146,12 +138,13 @@ async def verify_email(
         if not email_verified:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to verify user email"
+                detail="Failed to verify user email",
             )
 
         # Get user for welcome email
-        from ..models.user import User
         from sqlmodel import select
+
+        from ..models.user import User
 
         stmt = select(User).where(User.id == validation_result.user_id)
         user = db.exec(stmt).first()
@@ -163,8 +156,7 @@ async def verify_email(
             # Note: In production, this should be sent via background task
             try:
                 await verification_service.send_welcome_email(
-                    user=user,
-                    base_url=base_url
+                    user=user, base_url=base_url
                 )
             except Exception as e:
                 # Log error but don't fail verification
@@ -174,7 +166,7 @@ async def verify_email(
             "success": True,
             "message": "Email verified successfully",
             "user_id": str(validation_result.user_id),
-            "verified_at": "now"
+            "verified_at": "now",
         }
 
     except HTTPException:
@@ -182,16 +174,15 @@ async def verify_email(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
 @router.post("/send-password-reset", response_model=dict)
 async def send_password_reset_email(
     email: str = Query(..., description="User email address"),
-    base_url: Optional[str] = Query(
-        None, description="Base URL for reset links"),
-    db: Session = Depends(get_db)
+    base_url: Optional[str] = Query(None, description="Base URL for reset links"),
+    db: Session = Depends(get_db),
 ):
     """Send password reset email to user."""
     try:
@@ -203,8 +194,9 @@ async def send_password_reset_email(
         verification_service = VerificationService(db)
 
         # Get user by email
-        from ..models.user import User
         from sqlmodel import select
+
+        from ..models.user import User
 
         stmt = select(User).where(User.email == email)
         user = db.exec(stmt).first()
@@ -214,41 +206,36 @@ async def send_password_reset_email(
             return {
                 "success": True,
                 "message": "If an account with this email exists, a password reset link has been sent",
-                "email": email
+                "email": email,
             }
 
         # Create password reset token
         token = await verification_service.create_verification_token(
-            user_id=user.id,
-            token_type=TokenType.PASSWORD_RESET,
-            expiry_hours=24
+            user_id=user.id, token_type=TokenType.PASSWORD_RESET, expiry_hours=24
         )
 
         if not token:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create password reset token"
+                detail="Failed to create password reset token",
             )
 
         # Send password reset email
         email_sent = await verification_service.send_password_reset_email(
-            user=user,
-            token=token,
-            base_url=base_url,
-            expiry_hours=24
+            user=user, token=token, base_url=base_url, expiry_hours=24
         )
 
         if not email_sent:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to send password reset email"
+                detail="Failed to send password reset email",
             )
 
         return {
             "success": True,
             "message": "Password reset email sent successfully",
             "email": email,
-            "expires_in_hours": 24
+            "expires_in_hours": 24,
         }
 
     except HTTPException:
@@ -256,14 +243,14 @@ async def send_password_reset_email(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
 @router.post("/verify-password-reset-token", response_model=TokenValidationResponse)
 async def verify_password_reset_token(
     token: str = Query(..., description="Password reset token"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Verify password reset token validity."""
     try:
@@ -271,8 +258,7 @@ async def verify_password_reset_token(
 
         # Validate token
         validation_result = await verification_service.validate_token(
-            token=token,
-            token_type=TokenType.PASSWORD_RESET
+            token=token, token_type=TokenType.PASSWORD_RESET
         )
 
         return validation_result
@@ -280,7 +266,7 @@ async def verify_password_reset_token(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
@@ -288,17 +274,17 @@ async def verify_password_reset_token(
 async def resend_verification_email(
     user_id: UUID,
     base_url: Optional[str] = Query(
-        None, description="Base URL for verification links"),
+        None, description="Base URL for verification links"
+    ),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Resend verification email for a user (requires authentication)."""
     try:
         # Check if user is requesting their own verification or is admin
         if current_user.id != user_id and current_user.role != "admin":
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions"
             )
 
         # Get settings for default base URL
@@ -310,22 +296,20 @@ async def resend_verification_email(
 
         # Resend verification email
         success = await verification_service.resend_verification_email(
-            user_id=user_id,
-            base_url=base_url,
-            expiry_hours=24
+            user_id=user_id, base_url=base_url, expiry_hours=24
         )
 
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to resend verification email"
+                detail="Failed to resend verification email",
             )
 
         return {
             "success": True,
             "message": "Verification email resent successfully",
             "user_id": str(user_id),
-            "expires_in_hours": 24
+            "expires_in_hours": 24,
         }
 
     except HTTPException:
@@ -333,7 +317,7 @@ async def resend_verification_email(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
@@ -341,15 +325,14 @@ async def resend_verification_email(
 async def get_verification_status(
     user_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Get verification status for a user (requires authentication)."""
     try:
         # Check if user is requesting their own status or is admin
         if current_user.id != user_id and current_user.role != "admin":
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions"
             )
 
         # Create verification service
@@ -360,8 +343,7 @@ async def get_verification_status(
 
         if "error" in status_info:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=status_info["error"]
+                status_code=status.HTTP_404_NOT_FOUND, detail=status_info["error"]
             )
 
         return status_info
@@ -371,22 +353,20 @@ async def get_verification_status(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
 @router.post("/cleanup-expired", response_model=dict)
 async def cleanup_expired_tokens(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Clean up expired verification tokens (admin only)."""
     try:
         # Check if user is admin
         if current_user.role != "admin":
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Admin access required"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
             )
 
         # Create verification service
@@ -398,7 +378,7 @@ async def cleanup_expired_tokens(
         return {
             "success": True,
             "message": f"Cleaned up {cleaned_count} expired tokens",
-            "cleaned_count": cleaned_count
+            "cleaned_count": cleaned_count,
         }
 
     except HTTPException:
@@ -406,7 +386,7 @@ async def cleanup_expired_tokens(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )
 
 
@@ -414,31 +394,30 @@ async def cleanup_expired_tokens(
 async def test_email_service(
     email: str = Query(..., description="Test email address"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Test email service functionality (admin only)."""
     try:
         # Check if user is admin
         if current_user.role != "admin":
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Admin access required"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
             )
 
         # Create verification service
         verification_service = VerificationService(db)
 
         # Get user
-        from ..models.user import User
         from sqlmodel import select
+
+        from ..models.user import User
 
         stmt = select(User).where(User.email == email)
         user = db.exec(stmt).first()
 
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
 
         # Test email sending with a simple message
@@ -452,7 +431,9 @@ async def test_email_service(
             <p>Sent at: {timestamp}</p>
         </body>
         </html>
-        """.format(timestamp=datetime.utcnow().isoformat())
+        """.format(
+            timestamp=datetime.utcnow().isoformat()
+        )
 
         test_text = f"""
         Email Service Test
@@ -467,7 +448,7 @@ async def test_email_service(
             to_email=email,
             subject="Email Service Test - Secret Safe",
             html_content=test_html,
-            text_content=test_text
+            text_content=test_text,
         )
 
         if success:
@@ -475,12 +456,12 @@ async def test_email_service(
                 "success": True,
                 "message": "Test email sent successfully",
                 "email": email,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
         else:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to send test email"
+                detail="Failed to send test email",
             )
 
     except HTTPException:
@@ -488,5 +469,5 @@ async def test_email_service(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )

@@ -3,17 +3,18 @@ User models for Secret Safe API
 Role-based access control implementation
 """
 
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List, TYPE_CHECKING
-from uuid import UUID, uuid4
+import re
 from datetime import datetime, timedelta
 from enum import Enum
-from pydantic import validator, EmailStr
-import re
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID, uuid4
+
+from pydantic import EmailStr, validator
+from sqlmodel import Field, Relationship, SQLModel
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
-    from .message import Message, MessageShare, CheckIn
+    from .message import CheckIn, Message, MessageShare
     from .user import RoleChangeLog, UserPermission
     from .verification import VerificationToken
 
@@ -28,37 +29,45 @@ def validate_password_strength(password: str) -> str:
     - At least one special character
     """
     if len(password) < 12:
-        raise ValueError('Password must be at least 12 characters long')
+        raise ValueError("Password must be at least 12 characters long")
 
-    if not re.search(r'[A-Z]', password):
-        raise ValueError('Password must contain at least one uppercase letter')
+    if not re.search(r"[A-Z]", password):
+        raise ValueError("Password must contain at least one uppercase letter")
 
-    if not re.search(r'[a-z]', password):
-        raise ValueError('Password must contain at least one lowercase letter')
+    if not re.search(r"[a-z]", password):
+        raise ValueError("Password must contain at least one lowercase letter")
 
-    if not re.search(r'\d', password):
-        raise ValueError('Password must contain at least one digit')
+    if not re.search(r"\d", password):
+        raise ValueError("Password must contain at least one digit")
 
     if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>/?]', password):
-        raise ValueError(
-            'Password must contain at least one special character')
+        raise ValueError("Password must contain at least one special character")
 
     # Check for common weak patterns
     weak_patterns = [
-        r'123', r'abc', r'qwe', r'password', r'admin', r'user',
-        r'123456', r'password123', r'admin123', r'qwerty'
+        r"123",
+        r"abc",
+        r"qwe",
+        r"password",
+        r"admin",
+        r"user",
+        r"123456",
+        r"password123",
+        r"admin123",
+        r"qwerty",
     ]
 
     password_lower = password.lower()
     for pattern in weak_patterns:
         if pattern in password_lower:
-            raise ValueError('Password contains common weak patterns')
+            raise ValueError("Password contains common weak patterns")
 
     return password
 
 
 class UserRole(str, Enum):
     """User roles for access control"""
+
     ADMIN = "admin"
     WRITER = "writer"
     READER = "reader"
@@ -66,6 +75,7 @@ class UserRole(str, Enum):
 
 class SubscriptionTier(str, Enum):
     """Subscription tiers for the service"""
+
     FREE = "free"
     BASIC = "basic"
     PREMIUM = "premium"
@@ -83,8 +93,7 @@ class User(SQLModel, table=True):
     # Profile information
     first_name: Optional[str] = Field(default=None, max_length=100, index=True)
     last_name: Optional[str] = Field(default=None, max_length=100, index=True)
-    display_name: Optional[str] = Field(
-        default=None, max_length=150, index=True)
+    display_name: Optional[str] = Field(default=None, max_length=150, index=True)
     avatar_url: Optional[str] = Field(default=None, max_length=500)
     bio: Optional[str] = Field(default=None, max_length=1000)
 
@@ -96,9 +105,9 @@ class User(SQLModel, table=True):
 
     # Subscription and billing
     subscription_tier: SubscriptionTier = Field(
-        default=SubscriptionTier.FREE, index=True)
-    subscription_expires_at: Optional[datetime] = Field(
-        default=None, index=True)
+        default=SubscriptionTier.FREE, index=True
+    )
+    subscription_expires_at: Optional[datetime] = Field(default=None, index=True)
     billing_email: Optional[str] = Field(default=None, max_length=255)
     payment_method_id: Optional[str] = Field(default=None, max_length=100)
 
@@ -124,10 +133,10 @@ class User(SQLModel, table=True):
     last_activity_at: Optional[datetime] = Field(default=None, index=True)
 
     # Role management
-    created_by: Optional[UUID] = Field(
-        default=None, foreign_key="user.id", index=True)
+    created_by: Optional[UUID] = Field(default=None, foreign_key="user.id", index=True)
     role_changed_by: Optional[UUID] = Field(
-        default=None, foreign_key="user.id", index=True)
+        default=None, foreign_key="user.id", index=True
+    )
     role_changed_at: Optional[datetime] = Field(default=None, index=True)
 
     # Preferences
@@ -138,54 +147,63 @@ class User(SQLModel, table=True):
 
     # Relationships - using forward references to avoid circular imports
     messages: List["Message"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     # Message sharing relationships - explicitly specify foreign keys to avoid ambiguity
     shared_messages: List["MessageShare"] = Relationship(
         back_populates="shared_with_user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.shared_with_user_id"
-        })
+            "foreign_keys": "MessageShare.shared_with_user_id",
+        },
+    )
     shared_by_messages: List["MessageShare"] = Relationship(
         back_populates="shared_by_user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.shared_by_user_id"
-        })
+            "foreign_keys": "MessageShare.shared_by_user_id",
+        },
+    )
     approved_message_shares: List["MessageShare"] = Relationship(
         back_populates="approved_by_user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.approved_by"
-        })
+            "foreign_keys": "MessageShare.approved_by",
+        },
+    )
 
     check_ins: List["CheckIn"] = Relationship(
-        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
+    )
     role_changes: List["RoleChangeLog"] = Relationship(
         back_populates="user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "RoleChangeLog.user_id"
-        })
+            "foreign_keys": "RoleChangeLog.user_id",
+        },
+    )
     role_changes_made: List["RoleChangeLog"] = Relationship(
         back_populates="changed_by_user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "RoleChangeLog.changed_by"
-        })
+            "foreign_keys": "RoleChangeLog.changed_by",
+        },
+    )
     permissions: List["UserPermission"] = Relationship(
         back_populates="user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "UserPermission.user_id"
-        })
+            "foreign_keys": "UserPermission.user_id",
+        },
+    )
     permissions_granted: List["UserPermission"] = Relationship(
         back_populates="granted_by_user",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "UserPermission.granted_by"
-        })
+            "foreign_keys": "UserPermission.granted_by",
+        },
+    )
     # admin_actions: List["AdminLog"] = Relationship(
     #     back_populates="admin", sa_relationship_kwargs={"lazy": "selectin"})
     # TODO: Implement AdminLog model when needed
@@ -204,13 +222,13 @@ class TokenBlacklist(SQLModel, table=True):
     """Model to track invalidated JWT tokens for secure logout"""
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    token_hash: str = Field(unique=True, index=True,
-                            max_length=255)  # Hash of the JWT token
+    token_hash: str = Field(
+        unique=True, index=True, max_length=255
+    )  # Hash of the JWT token
     user_id: UUID = Field(foreign_key="user.id", index=True)
     # When the token would have expired
     expires_at: datetime = Field(index=True)
-    blacklisted_at: datetime = Field(
-        default_factory=datetime.utcnow, index=True)
+    blacklisted_at: datetime = Field(default_factory=datetime.utcnow, index=True)
     # logout, security, admin_action
     reason: str = Field(default="logout", max_length=100)
 
@@ -255,15 +273,15 @@ class UserCreate(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('email')
+    @validator("email")
     def validate_email(cls, v):
         try:
             EmailStr.validate(v)
         except ValueError:
-            raise ValueError('Invalid email format')
+            raise ValueError("Invalid email format")
         return v
 
-    @validator('password')
+    @validator("password")
     def validate_password(cls, v):
         return validate_password_strength(v)
 
@@ -308,7 +326,7 @@ class UserPasswordUpdate(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('new_password')
+    @validator("new_password")
     def validate_new_password(cls, v):
         return validate_password_strength(v)
 
@@ -324,12 +342,12 @@ class UserLogin(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('email')
+    @validator("email")
     def validate_email(cls, v):
         try:
             EmailStr.validate(v)
         except ValueError:
-            raise ValueError('Invalid email format')
+            raise ValueError("Invalid email format")
         return v
 
 
@@ -342,7 +360,7 @@ class PasswordReset(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('new_password')
+    @validator("new_password")
     def validate_new_password(cls, v):
         return validate_password_strength(v)
 
@@ -392,14 +410,16 @@ class RoleChangeLog(SQLModel, table=True):
         back_populates="role_changes",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "RoleChangeLog.user_id"
-        })
+            "foreign_keys": "RoleChangeLog.user_id",
+        },
+    )
     changed_by_user: "User" = Relationship(
         back_populates="role_changes_made",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "RoleChangeLog.changed_by"
-        })
+            "foreign_keys": "RoleChangeLog.changed_by",
+        },
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -422,14 +442,16 @@ class UserPermission(SQLModel, table=True):
         back_populates="permissions",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "UserPermission.user_id"
-        })
+            "foreign_keys": "UserPermission.user_id",
+        },
+    )
     granted_by_user: "User" = Relationship(
         back_populates="permissions_granted",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "UserPermission.granted_by"
-        })
+            "foreign_keys": "UserPermission.granted_by",
+        },
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -452,7 +474,8 @@ class CheckIn(SQLModel, table=True):
 
     # Relationships
     user: "User" = Relationship(
-        back_populates="check_ins", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="check_ins", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     class Config:
         arbitrary_types_allowed = True

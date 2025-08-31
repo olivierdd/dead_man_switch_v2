@@ -38,18 +38,7 @@ jobs:
           rm -rf node_modules/.cache
           rm -f tsconfig.tsbuildinfo
           
-      - name: Debug TypeScript configuration
-        working-directory: apps/web
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
-          echo "tsconfig.json contents:"
-          cat tsconfig.json
-          echo "lib directory contents:"
-          ls -la lib/
-          echo "TypeScript version:"
-          npx tsc --version
+
         
       - name: Run linting
         working-directory: apps/web

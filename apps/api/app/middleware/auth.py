@@ -2,15 +2,16 @@
 Authentication middleware for Secret Safe API
 """
 
-import jwt
-from fastapi import Request, HTTPException, status
-from fastapi.responses import JSONResponse
-import structlog
-from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
 
-from ..settings import settings
+import jwt
+import structlog
+from fastapi import HTTPException, Request, status
+from fastapi.responses import JSONResponse
+
 from ..models.user import UserRole
+from ..settings import settings
 
 logger = structlog.get_logger()
 
@@ -39,22 +40,20 @@ class AuthMiddleware:
             try:
                 # Validate JWT token
                 payload = jwt.decode(
-                    token,
-                    settings.SECRET_KEY,
-                    algorithms=[settings.ALGORITHM]
+                    token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
                 )
 
                 # Add user info to request state
                 scope["user"] = {
                     "id": payload.get("sub"),
                     "email": payload.get("email"),
-                    "role": payload.get("role")
+                    "role": payload.get("role"),
                 }
 
                 logger.info(
                     "User authenticated",
                     user_id=payload.get("sub"),
-                    path=request.url.path
+                    path=request.url.path,
                 )
 
             except jwt.ExpiredSignatureError:
@@ -79,7 +78,7 @@ class AuthMiddleware:
             "/api/public/",
             "/api/auth/register",
             "/api/auth/login",
-            "/api/auth/forgot-password"
+            "/api/auth/forgot-password",
         ]
 
         return any(path.startswith(public_path) for public_path in public_paths)
@@ -95,24 +94,21 @@ class AuthMiddleware:
 
         return auth_header.split(" ")[1]
 
-    async def _send_unauthorized_response(self, send, detail: str = "Authentication required"):
+    async def _send_unauthorized_response(
+        self, send, detail: str = "Authentication required"
+    ):
         """Send unauthorized response"""
         response = JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "detail": detail,
-                "error_code": "authentication_required"
+            content={"detail": detail, "error_code": "authentication_required"},
+        )
+
+        await send(
+            {
+                "type": "http.response.start",
+                "status": response.status_code,
+                "headers": response.headers.raw,
             }
         )
 
-        await send({
-            "type": "http.response.start",
-            "status": response.status_code,
-            "headers": response.headers.raw
-        })
-
-        await send({
-            "type": "http.response.body",
-            "body": response.body
-        })
-
+        await send({"type": "http.response.body", "body": response.body})

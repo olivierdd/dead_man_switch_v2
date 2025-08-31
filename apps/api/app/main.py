@@ -3,18 +3,20 @@ Secret Safe API - Main Application
 FastAPI backend with role-based access control
 """
 
-from fastapi import FastAPI, Request, HTTPException
+from contextlib import asynccontextmanager
+
+import structlog
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-import uvicorn
-from contextlib import asynccontextmanager
-import structlog
 
-from .settings import settings
 from .middleware.auth import AuthMiddleware
 from .middleware.role_based import RoleBasedMiddleware
-from .routes import auth, admin, messages, users, public, verification, notifications
+from .routes import (admin, auth, messages, notifications, public, users,
+                     verification)
+from .settings import settings
 
 # Configure structured logging
 structlog.configure(
@@ -27,7 +29,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer()
+        structlog.processors.JSONRenderer(),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
@@ -56,6 +58,7 @@ async def lifespan(app: FastAPI):
     # await close_database()
     # await close_redis()
 
+
 # Create FastAPI application
 app = FastAPI(
     title="Secret Safe API",
@@ -63,14 +66,11 @@ app = FastAPI(
     version=settings.VERSION,
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Security middleware
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=settings.ALLOWED_HOSTS
-)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 
 # CORS middleware
 app.add_middleware(
@@ -96,16 +96,14 @@ async def global_exception_handler(request: Request, exc: Exception):
         path=request.url.path,
         method=request.method,
         error=str(exc),
-        exc_info=True
+        exc_info=True,
     )
 
     return JSONResponse(
         status_code=500,
-        content={
-            "detail": "Internal server error",
-            "error_id": "internal_error"
-        }
+        content={"detail": "Internal server error", "error_id": "internal_error"},
     )
+
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -113,10 +111,12 @@ app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(messages.router, prefix="/api/messages", tags=["Messages"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(public.router, prefix="/api/public", tags=["Public"])
-app.include_router(verification.router,
-                   prefix="/api/verification", tags=["Verification"])
-app.include_router(notifications.router,
-                   prefix="/api/notifications", tags=["Notifications"])
+app.include_router(
+    verification.router, prefix="/api/verification", tags=["Verification"]
+)
+app.include_router(
+    notifications.router, prefix="/api/notifications", tags=["Notifications"]
+)
 
 # Health check endpoint
 
@@ -127,8 +127,9 @@ async def health_check():
     return {
         "status": "healthy",
         "version": settings.VERSION,
-        "environment": settings.ENVIRONMENT
+        "environment": settings.ENVIRONMENT,
     }
+
 
 # Root endpoint
 
@@ -140,8 +141,9 @@ async def root():
         "message": "Secret Safe API",
         "version": settings.VERSION,
         "docs": "/docs" if settings.DEBUG else "Documentation disabled in production",
-        "health": "/health"
+        "health": "/health",
     }
+
 
 if __name__ == "__main__":
     uvicorn.run(
@@ -149,5 +151,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         reload=settings.DEBUG,
-        log_level="info"
+        log_level="info",
     )

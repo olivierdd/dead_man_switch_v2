@@ -1,6 +1,5 @@
 # Routes package initialization
 
-from . import auth, admin, messages, users, public
+from . import admin, auth, messages, public, users
 
-__all__ = ['auth', 'admin', 'messages', 'users', 'public']
-
+__all__ = ["auth", "admin", "messages", "users", "public"]

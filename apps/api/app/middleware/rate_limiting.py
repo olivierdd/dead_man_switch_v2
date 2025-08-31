@@ -2,13 +2,15 @@
 Rate limiting middleware for Secret Safe API
 """
 
-import time
 import hashlib
-from typing import Dict, Optional, Callable, Any
-from fastapi import Request, HTTPException, status
-from fastapi.responses import JSONResponse
+import time
 from collections import defaultdict, deque
+from typing import Any, Callable, Dict, Optional
+
 import structlog
+from fastapi import HTTPException, Request, status
+from fastapi.responses import JSONResponse
+
 from ..settings import settings
 
 logger = structlog.get_logger(__name__)
@@ -26,10 +28,12 @@ class RateLimiter:
         """Get unique client identifier (IP address or user ID)"""
         # Try to get real IP from various headers
         real_ip = (
-            request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or
-            request.headers.get("X-Real-IP") or
-            request.headers.get("X-Client-IP") or
-            request.client.host if request.client else "unknown"
+            request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+            or request.headers.get("X-Real-IP")
+            or request.headers.get("X-Client-IP")
+            or request.client.host
+            if request.client
+            else "unknown"
         )
 
         # Hash the IP for privacy and consistent storage
@@ -54,14 +58,11 @@ class RateLimiter:
         """Temporarily blacklist an IP address"""
         self._ip_blacklist[client_id] = time.time() + duration_seconds
         logger.warning(
-            f"IP blacklisted for {duration_seconds} seconds", client_id=client_id)
+            f"IP blacklisted for {duration_seconds} seconds", client_id=client_id
+        )
 
     def _check_rate_limit(
-        self,
-        key: str,
-        max_requests: int,
-        window_seconds: int,
-        request: Request
+        self, key: str, max_requests: int, window_seconds: int, request: Request
     ) -> bool:
         """Check if request is within rate limit"""
         current_time = time.time()
@@ -71,7 +72,7 @@ class RateLimiter:
         if self._is_ip_blacklisted(client_id):
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="IP address temporarily blocked due to excessive requests"
+                detail="IP address temporarily blocked due to excessive requests",
             )
 
         # Get or create rate limit window
@@ -92,7 +93,7 @@ class RateLimiter:
                 key=key,
                 client_id=client_id,
                 max_requests=max_requests,
-                window_seconds=window_seconds
+                window_seconds=window_seconds,
             )
 
             # Blacklist IP if this is an authentication endpoint
@@ -127,7 +128,7 @@ class RateLimiter:
             key=key,
             max_requests=max_requests,
             window_seconds=60,  # 1 minute window for auth
-            request=request
+            request=request,
         )
 
     def check_api_rate_limit(self, request: Request, endpoint: str) -> bool:
@@ -143,7 +144,7 @@ class RateLimiter:
             key=key,
             max_requests=settings.API_RATE_LIMIT_PER_MINUTE,
             window_seconds=60,  # 1 minute window
-            request=request
+            request=request,
         )
 
     def check_hourly_rate_limit(self, request: Request, endpoint: str) -> bool:
@@ -159,7 +160,7 @@ class RateLimiter:
             key=key,
             max_requests=settings.API_RATE_LIMIT_PER_HOUR,
             window_seconds=3600,  # 1 hour window
-            request=request
+            request=request,
         )
 
 
@@ -169,6 +170,7 @@ rate_limiter = RateLimiter()
 
 def rate_limit_auth_endpoint(endpoint: str):
     """Decorator to apply rate limiting to authentication endpoints"""
+
     def decorator(func: Callable) -> Callable:
         async def wrapper(*args, **kwargs):
             # Extract request from kwargs or function signature
@@ -180,23 +182,26 @@ def rate_limit_auth_endpoint(endpoint: str):
 
             if not request:
                 # Try to get from kwargs
-                request = kwargs.get('request')
+                request = kwargs.get("request")
 
             if request:
                 # Check rate limit
                 if not rate_limiter.check_auth_rate_limit(request, endpoint):
                     raise HTTPException(
                         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Too many {endpoint} attempts. Please try again later."
+                        detail=f"Too many {endpoint} attempts. Please try again later.",
                     )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
 def rate_limit_api_endpoint(endpoint: str):
     """Decorator to apply rate limiting to general API endpoints"""
+
     def decorator(func: Callable) -> Callable:
         async def wrapper(*args, **kwargs):
             # Extract request from kwargs or function signature
@@ -208,24 +213,26 @@ def rate_limit_api_endpoint(endpoint: str):
 
             if not request:
                 # Try to get from kwargs
-                request = kwargs.get('request')
+                request = kwargs.get("request")
 
             if request:
                 # Check both minute and hourly rate limits
                 if not rate_limiter.check_api_rate_limit(request, endpoint):
                     raise HTTPException(
                         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Too many requests to {endpoint}. Please try again later."
+                        detail=f"Too many requests to {endpoint}. Please try again later.",
                     )
 
                 if not rate_limiter.check_hourly_rate_limit(request, endpoint):
                     raise HTTPException(
                         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Hourly rate limit exceeded for {endpoint}. Please try again later."
+                        detail=f"Hourly rate limit exceeded for {endpoint}. Please try again later.",
                     )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -240,29 +247,27 @@ async def rate_limit_middleware(request: Request, call_next):
 
         if path.startswith("/auth/"):
             # Authentication endpoints - more restrictive
-            endpoint = path.split(
-                "/")[-1] if path.split("/")[-1] else "general"
+            endpoint = path.split("/")[-1] if path.split("/")[-1] else "general"
             if not rate_limiter.check_auth_rate_limit(request, endpoint):
                 return JSONResponse(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     content={
                         "detail": "Too many authentication attempts. Please try again later.",
-                        "retry_after": 60
+                        "retry_after": 60,
                     },
-                    headers={"Retry-After": "60"}
+                    headers={"Retry-After": "60"},
                 )
         else:
             # General API endpoints
-            endpoint = path.split(
-                "/")[-1] if path.split("/")[-1] else "general"
+            endpoint = path.split("/")[-1] if path.split("/")[-1] else "general"
             if not rate_limiter.check_api_rate_limit(request, endpoint):
                 return JSONResponse(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     content={
                         "detail": "Too many requests. Please try again later.",
-                        "retry_after": 60
+                        "retry_after": 60,
                     },
-                    headers={"Retry-After": "60"}
+                    headers={"Retry-After": "60"},
                 )
 
         # Process request
@@ -292,13 +297,13 @@ def get_rate_limit_info(request: Request) -> Dict[str, Any]:
                 "login": settings.AUTH_LOGIN_RATE_LIMIT_PER_MINUTE,
                 "register": settings.AUTH_REGISTER_RATE_LIMIT_PER_MINUTE,
                 "password_reset": settings.AUTH_PASSWORD_RESET_RATE_LIMIT_PER_MINUTE,
-                "verification": settings.AUTH_VERIFICATION_RATE_LIMIT_PER_MINUTE
+                "verification": settings.AUTH_VERIFICATION_RATE_LIMIT_PER_MINUTE,
             },
             "api": {
                 "per_minute": settings.API_RATE_LIMIT_PER_MINUTE,
-                "per_hour": settings.API_RATE_LIMIT_PER_HOUR
-            }
-        }
+                "per_hour": settings.API_RATE_LIMIT_PER_HOUR,
+            },
+        },
     }
 
     return info

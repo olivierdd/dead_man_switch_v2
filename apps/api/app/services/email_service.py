@@ -5,13 +5,13 @@ Provides a unified interface for sending emails through multiple providers
 with fallback mechanisms and comprehensive error handling.
 """
 
-import os
 import logging
+import os
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Union
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import Dict, List, Optional, Union
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class EmailProvider(ABC):
         text_content: Optional[str] = None,
         from_email: Optional[str] = None,
         reply_to: Optional[str] = None,
-        attachments: Optional[List[Dict]] = None
+        attachments: Optional[List[Dict]] = None,
     ) -> bool:
         """Send an email through this provider."""
         pass
@@ -46,7 +46,8 @@ class SendGridProvider(EmailProvider):
     def __init__(self, api_key: str, from_email: str = None):
         self.api_key = api_key
         self.from_email = from_email or os.getenv(
-            "FROM_EMAIL", "noreply@yoursecretissafe.com")
+            "FROM_EMAIL", "noreply@yoursecretissafe.com"
+        )
         self._client = None
 
     async def _get_client(self):
@@ -54,10 +55,12 @@ class SendGridProvider(EmailProvider):
         if self._client is None:
             try:
                 from sendgrid import SendGridAPIClient
+
                 self._client = SendGridAPIClient(api_key=self.api_key)
             except ImportError:
                 logger.error(
-                    "SendGrid package not installed. Install with: pip install sendgrid")
+                    "SendGrid package not installed. Install with: pip install sendgrid"
+                )
                 raise ImportError("SendGrid package not installed")
         return self._client
 
@@ -69,11 +72,13 @@ class SendGridProvider(EmailProvider):
         text_content: Optional[str] = None,
         from_email: Optional[str] = None,
         reply_to: Optional[str] = None,
-        attachments: Optional[List[Dict]] = None
+        attachments: Optional[List[Dict]] = None,
     ) -> bool:
         """Send email via SendGrid."""
         try:
-            from sendgrid.helpers.mail import Mail, Email, To, Content, Attachment, FileContent, FileName, FileType, Disposition
+            from sendgrid.helpers.mail import (Attachment, Content,
+                                               Disposition, Email, FileContent,
+                                               FileName, FileType, Mail, To)
 
             client = await self._get_client()
 
@@ -90,8 +95,7 @@ class SendGridProvider(EmailProvider):
                 content_objects.append(text_content_obj)
 
             # Create mail object
-            mail = Mail(from_email_obj, to_email_obj,
-                        subject, content_objects[0])
+            mail = Mail(from_email_obj, to_email_obj, subject, content_objects[0])
 
             # Add text content if provided
             if len(content_objects) > 1:
@@ -104,28 +108,30 @@ class SendGridProvider(EmailProvider):
             # Add attachments if provided
             if attachments:
                 for attachment in attachments:
-                    file_content = FileContent(attachment.get('content', ''))
-                    file_name = FileName(
-                        attachment.get('filename', 'attachment'))
-                    file_type = FileType(attachment.get(
-                        'type', 'application/octet-stream'))
+                    file_content = FileContent(attachment.get("content", ""))
+                    file_name = FileName(attachment.get("filename", "attachment"))
+                    file_type = FileType(
+                        attachment.get("type", "application/octet-stream")
+                    )
                     disposition = Disposition(
-                        attachment.get('disposition', 'attachment'))
+                        attachment.get("disposition", "attachment")
+                    )
 
                     attachment_obj = Attachment(
-                        file_content, file_name, file_type, disposition)
+                        file_content, file_name, file_type, disposition
+                    )
                     mail.add_attachment(attachment_obj)
 
             # Send email
             response = client.send(mail)
 
             if response.status_code in [200, 201, 202]:
-                logger.info(
-                    f"Email sent successfully via SendGrid to {to_email}")
+                logger.info(f"Email sent successfully via SendGrid to {to_email}")
                 return True
             else:
                 logger.error(
-                    f"SendGrid error: {response.status_code} - {response.body}")
+                    f"SendGrid error: {response.status_code} - {response.body}"
+                )
                 return False
 
         except Exception as e:
@@ -139,14 +145,13 @@ class SendGridProvider(EmailProvider):
             client = await self._get_client()
 
             # Test with a simple API call
-            from sendgrid.helpers.mail import Mail, Email, To, Content
+            from sendgrid.helpers.mail import Content, Email, Mail, To
 
             test_mail = Mail(
                 from_email=Email(self.from_email),
                 to_emails=To("test@example.com"),
                 subject="Connection Test",
-                html_content=Content(
-                    "text/html", "<p>This is a connection test.</p>")
+                html_content=Content("text/html", "<p>This is a connection test.</p>"),
             )
 
             # Don't actually send, just validate the mail object
@@ -161,12 +166,19 @@ class SendGridProvider(EmailProvider):
 class AWSSESProvider(EmailProvider):
     """AWS SES email provider implementation."""
 
-    def __init__(self, region: str, access_key_id: str, secret_access_key: str, from_email: str = None):
+    def __init__(
+        self,
+        region: str,
+        access_key_id: str,
+        secret_access_key: str,
+        from_email: str = None,
+    ):
         self.region = region
         self.access_key_id = access_key_id
         self.secret_access_key = secret_access_key
         self.from_email = from_email or os.getenv(
-            "FROM_EMAIL", "noreply@yoursecretissafe.com")
+            "FROM_EMAIL", "noreply@yoursecretissafe.com"
+        )
         self._client = None
 
     async def _get_client(self):
@@ -174,15 +186,17 @@ class AWSSESProvider(EmailProvider):
         if self._client is None:
             try:
                 import boto3
+
                 self._client = boto3.client(
-                    'ses',
+                    "ses",
                     region_name=self.region,
                     aws_access_key_id=self.access_key_id,
-                    aws_secret_access_key=self.secret_access_key
+                    aws_secret_access_key=self.secret_access_key,
                 )
             except ImportError:
                 logger.error(
-                    "boto3 package not installed. Install with: pip install boto3")
+                    "boto3 package not installed. Install with: pip install boto3"
+                )
                 raise ImportError("boto3 package not installed")
         return self._client
 
@@ -194,7 +208,7 @@ class AWSSESProvider(EmailProvider):
         text_content: Optional[str] = None,
         from_email: Optional[str] = None,
         reply_to: Optional[str] = None,
-        attachments: Optional[List[Dict]] = None
+        attachments: Optional[List[Dict]] = None,
     ) -> bool:
         """Send email via AWS SES."""
         try:
@@ -204,21 +218,21 @@ class AWSSESProvider(EmailProvider):
             client = await self._get_client()
 
             # Create message
-            message = MIMEMultipart('alternative')
-            message['Subject'] = subject
-            message['From'] = from_email or self.from_email
-            message['To'] = to_email
+            message = MIMEMultipart("alternative")
+            message["Subject"] = subject
+            message["From"] = from_email or self.from_email
+            message["To"] = to_email
 
             if reply_to:
-                message['Reply-To'] = reply_to
+                message["Reply-To"] = reply_to
 
             # Add text content
             if text_content:
-                text_part = MIMEText(text_content, 'plain')
+                text_part = MIMEText(text_content, "plain")
                 message.attach(text_part)
 
             # Add HTML content
-            html_part = MIMEText(html_content, 'html')
+            html_part = MIMEText(html_content, "html")
             message.attach(html_part)
 
             # Convert to string
@@ -228,16 +242,18 @@ class AWSSESProvider(EmailProvider):
             response = client.send_raw_email(
                 Source=from_email or self.from_email,
                 Destinations=[to_email],
-                RawMessage={'Data': message_body}
+                RawMessage={"Data": message_body},
             )
 
             logger.info(
-                f"Email sent successfully via AWS SES to {to_email}, MessageId: {response['MessageId']}")
+                f"Email sent successfully via AWS SES to {to_email}, MessageId: {response['MessageId']}"
+            )
             return True
 
         except ClientError as e:
             logger.error(
-                f"AWS SES error: {e.response['Error']['Code']} - {e.response['Error']['Message']}")
+                f"AWS SES error: {e.response['Error']['Code']} - {e.response['Error']['Message']}"
+            )
             return False
         except Exception as e:
             logger.error(f"AWS SES email sending failed: {str(e)}")
@@ -251,9 +267,10 @@ class AWSSESProvider(EmailProvider):
             # Test with a simple API call to get send quota
             response = client.get_send_quota()
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
                 logger.info(
-                    f"AWS SES connection test successful. Quota: {response['Max24HourSend']} emails/day")
+                    f"AWS SES connection test successful. Quota: {response['Max24HourSend']} emails/day"
+                )
                 return True
             else:
                 return False
@@ -288,13 +305,15 @@ class EmailService:
 
             if aws_access_key and aws_secret_key:
                 ses_provider = AWSSESProvider(
-                    aws_region, aws_access_key, aws_secret_key)
+                    aws_region, aws_access_key, aws_secret_key
+                )
                 self.providers.append(ses_provider)
                 logger.info("AWS SES provider configured")
 
             if not self.providers:
                 logger.warning(
-                    "No email providers configured. Email functionality will not work.")
+                    "No email providers configured. Email functionality will not work."
+                )
 
         except Exception as e:
             logger.error(f"Error setting up email providers: {str(e)}")
@@ -307,7 +326,7 @@ class EmailService:
         text_content: Optional[str] = None,
         from_email: Optional[str] = None,
         reply_to: Optional[str] = None,
-        attachments: Optional[List[Dict]] = None
+        attachments: Optional[List[Dict]] = None,
     ) -> bool:
         """Send email using available providers with fallback."""
         if not self.providers:
@@ -316,8 +335,9 @@ class EmailService:
 
         # Try current provider first
         for attempt in range(len(self.providers)):
-            provider_index = (self.current_provider_index +
-                              attempt) % len(self.providers)
+            provider_index = (self.current_provider_index + attempt) % len(
+                self.providers
+            )
             provider = self.providers[provider_index]
 
             try:
@@ -328,7 +348,7 @@ class EmailService:
                     text_content=text_content,
                     from_email=from_email,
                     reply_to=reply_to,
-                    attachments=attachments
+                    attachments=attachments,
                 )
 
                 if success:
@@ -337,11 +357,11 @@ class EmailService:
                     return True
                 else:
                     logger.warning(
-                        f"Provider {provider.__class__.__name__} failed, trying next...")
+                        f"Provider {provider.__class__.__name__} failed, trying next..."
+                    )
 
             except Exception as e:
-                logger.error(
-                    f"Provider {provider.__class__.__name__} error: {str(e)}")
+                logger.error(f"Provider {provider.__class__.__name__} error: {str(e)}")
                 continue
 
         logger.error("All email providers failed")
@@ -382,7 +402,7 @@ class EmailService:
         to_email: str,
         to_name: str,
         verification_type: str = "email",
-        additional_data: Optional[Dict] = None
+        additional_data: Optional[Dict] = None,
     ) -> bool:
         """Send verification success email notification."""
         try:
@@ -466,7 +486,7 @@ class EmailService:
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
-                text_content=text_content
+                text_content=text_content,
             )
 
         except Exception as e:
@@ -480,7 +500,7 @@ class EmailService:
         failure_reason: str,
         verification_type: str = "email",
         retry_available: bool = True,
-        additional_data: Optional[Dict] = None
+        additional_data: Optional[Dict] = None,
     ) -> bool:
         """Send verification failure email notification."""
         try:
@@ -559,7 +579,7 @@ class EmailService:
             - Try using a different browser or device
             - Clear your browser cache and cookies
             
-            {"You can retry the verification process: " + os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com') + "/auth/verify-email" if retry_available else "Please contact support for assistance."}
+            {f"You can retry the verification process: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email" if retry_available else "Please contact support for assistance."}
             
             If you continue to experience issues, please contact our support team and we'll be happy to help.
             
@@ -573,7 +593,7 @@ class EmailService:
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
-                text_content=text_content
+                text_content=text_content,
             )
 
         except Exception as e:
@@ -586,7 +606,7 @@ class EmailService:
         to_name: str,
         verification_type: str = "email",
         days_since_registration: int = 0,
-        additional_data: Optional[Dict] = None
+        additional_data: Optional[Dict] = None,
     ) -> bool:
         """Send verification reminder email notification."""
         try:
@@ -682,7 +702,7 @@ class EmailService:
                 to_email=to_email,
                 subject=subject,
                 html_content=html_content,
-                text_content=text_content
+                text_content=text_content,
             )
 
         except Exception as e:

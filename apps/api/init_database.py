@@ -4,21 +4,21 @@ Database initialization script for Secret Safe
 Creates all tables and seeds initial data
 """
 
-# Load environment variables from .env file FIRST - before any other imports
-from app.config.supabase import test_supabase_connection, get_supabase_info
-from app.models import (
-    get_user_model, get_message_model,
-    UserRole, SubscriptionTier, MessageStatus, MessageType, MessagePriority
-)
-from app.models.database import (
-    init_db, DatabaseUtils, DatabaseMigrations,
-    check_database_health
-)
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+
 import structlog
 from dotenv import load_dotenv
+
+# Load environment variables from .env file FIRST - before any other imports
+from app.config.supabase import get_supabase_info, test_supabase_connection
+from app.models import (MessagePriority, MessageStatus, MessageType,
+                        SubscriptionTier, UserRole, get_message_model,
+                        get_user_model)
+from app.models.database import (DatabaseMigrations, DatabaseUtils,
+                                 check_database_health, init_db)
+
 load_dotenv()
 
 
@@ -33,7 +33,7 @@ structlog.configure(
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer()
+        structlog.processors.JSONRenderer(),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
@@ -45,10 +45,10 @@ logger = structlog.get_logger()
 def print_status(message: str, status: str = "INFO"):
     """Print a formatted status message"""
     colors = {
-        "INFO": "\033[94m",    # Blue
+        "INFO": "\033[94m",  # Blue
         "SUCCESS": "\033[92m",  # Green
         "WARNING": "\033[93m",  # Yellow
-        "ERROR": "\033[91m",   # Red
+        "ERROR": "\033[91m",  # Red
     }
     reset = "\033[0m"
 
@@ -66,7 +66,7 @@ def check_environment():
         "DATABASE_URL",
         "SUPABASE_URL",
         "SUPABASE_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY"
+        "SUPABASE_SERVICE_ROLE_KEY",
     ]
 
     missing_vars = []
@@ -76,7 +76,8 @@ def check_environment():
 
     if missing_vars:
         print_status(
-            f"Missing environment variables: {', '.join(missing_vars)}", "ERROR")
+            f"Missing environment variables: {', '.join(missing_vars)}", "ERROR"
+        )
         print_status("Please check your .env file", "ERROR")
         return False
 
@@ -96,12 +97,14 @@ def test_supabase_connection_local():
 
         # Test connection - use the imported function, not recursive call
         connection_test = test_supabase_connection()
-        if connection_test['status'] == 'connected':
+        if connection_test["status"] == "connected":
             print_status("Supabase connection successful", "SUCCESS")
             return True
         else:
             print_status(
-                f"Supabase connection failed: {connection_test.get('error', 'Unknown error')}", "ERROR")
+                f"Supabase connection failed: {connection_test.get('error', 'Unknown error')}",
+                "ERROR",
+            )
             return False
 
     except Exception as e:
@@ -128,12 +131,12 @@ def seed_initial_data():
 
     try:
         from sqlmodel import Session
+
         from app.models.database import engine
 
         with Session(engine) as session:
             # Create schema version table and record initial migration
-            DatabaseMigrations.record_migration(
-                "1.0.0", "Initial database setup")
+            DatabaseMigrations.record_migration("1.0.0", "Initial database setup")
             print_status("Schema version tracking initialized", "SUCCESS")
 
             # Note: We'll add more seed data here as we implement the models
@@ -154,20 +157,24 @@ def verify_database_setup():
     try:
         # Check database health
         health = check_database_health()
-        if health['status'] == 'healthy':
+        if health["status"] == "healthy":
             print_status("Database health check passed", "SUCCESS")
             print_status(
-                f"PostgreSQL version: {health.get('postgres_version', 'unknown')}", "INFO")
+                f"PostgreSQL version: {health.get('postgres_version', 'unknown')}",
+                "INFO",
+            )
             print_status(f"Tables created: {len(health['tables'])}", "INFO")
 
             # Show table names
-            for table in health['tables']:
+            for table in health["tables"]:
                 print_status(f"  - {table}", "INFO")
 
             return True
         else:
             print_status(
-                f"Database health check failed: {health.get('error', 'Unknown error')}", "ERROR")
+                f"Database health check failed: {health.get('error', 'Unknown error')}",
+                "ERROR",
+            )
             return False
 
     except Exception as e:
@@ -183,7 +190,8 @@ def main():
     # Check if we're in the right directory
     if not Path("app").exists():
         print_status(
-            "Please run this script from the secret-safe/apps/api directory", "ERROR")
+            "Please run this script from the secret-safe/apps/api directory", "ERROR"
+        )
         sys.exit(1)
 
     # Step 1: Check environment

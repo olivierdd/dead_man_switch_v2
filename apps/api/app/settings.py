@@ -2,10 +2,11 @@
 Configuration settings for Secret Safe API
 """
 
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
-from typing import List, Optional
 import os
+from typing import List, Optional
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -31,15 +32,11 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:8000",
-        "https://yourdomain.vercel.app"
+        "https://yourdomain.vercel.app",
     ]
 
     # Trusted Hosts
-    ALLOWED_HOSTS: List[str] = [
-        "localhost",
-        "127.0.0.1",
-        "yourdomain.vercel.app"
-    ]
+    ALLOWED_HOSTS: List[str] = ["localhost", "127.0.0.1", "yourdomain.vercel.app"]
 
     # Database
     DATABASE_URL: str = "postgresql://user:password@localhost/dbname"
@@ -74,13 +71,13 @@ class Settings(BaseSettings):
     @property
     def allowed_file_types_list(self) -> List[str]:
         """Convert comma-separated string to list"""
-        return [x.strip() for x in self.ALLOWED_FILE_TYPES.split(',')]
+        return [x.strip() for x in self.ALLOWED_FILE_TYPES.split(",")]
 
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 
     # Authentication Rate Limiting (more restrictive for security)
-    AUTH_LOGIN_RATE_LIMIT_PER_MINUTE: int = 5      # 5 login attempts per minute
+    AUTH_LOGIN_RATE_LIMIT_PER_MINUTE: int = 5  # 5 login attempts per minute
     # 3 registration attempts per minute
     AUTH_REGISTER_RATE_LIMIT_PER_MINUTE: int = 3
     # 2 password reset attempts per minute
@@ -95,11 +92,11 @@ class Settings(BaseSettings):
     API_RATE_LIMIT_PER_HOUR: int = 1000
 
     # Rate Limiting Windows
-    RATE_LIMIT_WINDOW_MINUTES: int = 1             # 1 minute sliding window
-    RATE_LIMIT_WINDOW_HOURS: int = 1               # 1 hour sliding window
+    RATE_LIMIT_WINDOW_MINUTES: int = 1  # 1 minute sliding window
+    RATE_LIMIT_WINDOW_HOURS: int = 1  # 1 hour sliding window
 
     # Rate Limiting Storage
-    RATE_LIMIT_STORAGE_BACKEND: str = "memory"     # memory, redis, or database
+    RATE_LIMIT_STORAGE_BACKEND: str = "memory"  # memory, redis, or database
 
     class Config:
         env_file = ".env"
@@ -141,7 +138,10 @@ if settings.ENVIRONMENT == "development":
 # Production overrides
 if settings.ENVIRONMENT == "production":
     settings.DEBUG = False
-    if not settings.SECRET_KEY or settings.SECRET_KEY == "your-secret-key-change-in-production":
+    if (
+        not settings.SECRET_KEY
+        or settings.SECRET_KEY == "your-secret-key-change-in-production"
+    ):
         raise ValueError("SECRET_KEY must be set in production")
 
     if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:

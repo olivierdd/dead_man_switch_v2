@@ -16,11 +16,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 
 from ..models.database import get_db
-from ..models.notification import (
-    Notification, NotificationCreate, NotificationUpdate, NotificationResponse,
-    NotificationPreferences, NotificationPreferencesUpdate, NotificationStatistics,
-    NotificationType, NotificationStatus
-)
+from ..models.notification import (Notification, NotificationCreate,
+                                   NotificationPreferences,
+                                   NotificationPreferencesUpdate,
+                                   NotificationResponse,
+                                   NotificationStatistics, NotificationStatus,
+                                   NotificationType, NotificationUpdate)
 from ..models.user import User
 from ..routes.auth import get_current_user
 from ..services.notification_service import NotificationService
@@ -41,7 +42,7 @@ async def get_user_notifications(
     offset: int = Query(0, ge=0),
     notification_type: Optional[NotificationType] = None,
     status: Optional[NotificationStatus] = None,
-    unread_only: bool = Query(False)
+    unread_only: bool = Query(False),
 ):
     """
     Get notifications for the current user
@@ -65,7 +66,7 @@ async def get_user_notifications(
             limit=limit,
             offset=offset,
             notification_type=notification_type,
-            status=status
+            status=status,
         )
 
         return notifications
@@ -74,14 +75,13 @@ async def get_user_notifications(
         logger.error(f"Failed to get user notifications: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve notifications"
+            detail="Failed to retrieve notifications",
         )
 
 
 @router.get("/statistics", response_model=NotificationStatistics)
 async def get_notification_statistics(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Get notification statistics for the current user
@@ -91,13 +91,13 @@ async def get_notification_statistics(
     """
     try:
         # Get notification statistics
-        stats = notification_service.get_notification_statistics(
-            current_user.id)
+        stats = notification_service.get_notification_statistics(current_user.id)
 
         # Get user preferences
         preferences = db.exec(
-            select(NotificationPreferences)
-            .where(NotificationPreferences.user_id == current_user.id)
+            select(NotificationPreferences).where(
+                NotificationPreferences.user_id == current_user.id
+            )
         ).first()
 
         if not preferences:
@@ -116,7 +116,7 @@ async def get_notification_statistics(
             notifications_by_priority={},  # TODO: Implement priority statistics
             average_delivery_time=None,  # TODO: Implement delivery time tracking
             success_rate=None,  # TODO: Implement success rate calculation
-            user_preferences=preferences
+            user_preferences=preferences,
         )
 
         return response
@@ -125,14 +125,13 @@ async def get_notification_statistics(
         logger.error(f"Failed to get notification statistics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve notification statistics"
+            detail="Failed to retrieve notification statistics",
         )
 
 
 @router.post("/{notification_id}/read")
 async def mark_notification_read(
-    notification_id: UUID,
-    current_user: User = Depends(get_current_user)
+    notification_id: UUID, current_user: User = Depends(get_current_user)
 ):
     """
     Mark a notification as read
@@ -145,14 +144,13 @@ async def mark_notification_read(
     """
     try:
         success = notification_service.mark_notification_read(
-            notification_id=notification_id,
-            user_id=current_user.id
+            notification_id=notification_id, user_id=current_user.id
         )
 
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Notification not found or access denied"
+                detail="Notification not found or access denied",
             )
 
         return {"message": "Notification marked as read"}
@@ -163,14 +161,13 @@ async def mark_notification_read(
         logger.error(f"Failed to mark notification as read: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to mark notification as read"
+            detail="Failed to mark notification as read",
         )
 
 
 @router.post("/mark-all-read")
 async def mark_all_notifications_read(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Mark all notifications as read for the current user
@@ -182,13 +179,13 @@ async def mark_all_notifications_read(
         # Get all unread notifications
         unread_notifications = db.exec(
             select(Notification).where(
-                Notification.user_id == current_user.id,
-                Notification.read_at.is_(None)
+                Notification.user_id == current_user.id, Notification.read_at.is_(None)
             )
         ).all()
 
         # Mark all as read
         from datetime import datetime, timezone
+
         current_time = datetime.now(timezone.utc)
 
         for notification in unread_notifications:
@@ -196,22 +193,19 @@ async def mark_all_notifications_read(
 
         db.commit()
 
-        return {
-            "message": f"Marked {len(unread_notifications)} notifications as read"
-        }
+        return {"message": f"Marked {len(unread_notifications)} notifications as read"}
 
     except Exception as e:
         logger.error(f"Failed to mark all notifications as read: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to mark notifications as read"
+            detail="Failed to mark notifications as read",
         )
 
 
 @router.get("/preferences", response_model=NotificationPreferences)
 async def get_notification_preferences(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Get notification preferences for the current user
@@ -221,8 +215,9 @@ async def get_notification_preferences(
     """
     try:
         preferences = db.exec(
-            select(NotificationPreferences)
-            .where(NotificationPreferences.user_id == current_user.id)
+            select(NotificationPreferences).where(
+                NotificationPreferences.user_id == current_user.id
+            )
         ).first()
 
         if not preferences:
@@ -238,7 +233,7 @@ async def get_notification_preferences(
         logger.error(f"Failed to get notification preferences: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve notification preferences"
+            detail="Failed to retrieve notification preferences",
         )
 
 
@@ -246,7 +241,7 @@ async def get_notification_preferences(
 async def update_notification_preferences(
     preferences_update: NotificationPreferencesUpdate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Update notification preferences for the current user
@@ -259,8 +254,9 @@ async def update_notification_preferences(
     """
     try:
         preferences = db.exec(
-            select(NotificationPreferences)
-            .where(NotificationPreferences.user_id == current_user.id)
+            select(NotificationPreferences).where(
+                NotificationPreferences.user_id == current_user.id
+            )
         ).first()
 
         if not preferences:
@@ -276,6 +272,7 @@ async def update_notification_preferences(
 
         # Update timestamp
         from datetime import datetime, timezone
+
         preferences.updated_at = datetime.now(timezone.utc)
 
         db.commit()
@@ -287,7 +284,7 @@ async def update_notification_preferences(
         logger.error(f"Failed to update notification preferences: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update notification preferences"
+            detail="Failed to update notification preferences",
         )
 
 
@@ -295,7 +292,7 @@ async def update_notification_preferences(
 async def delete_notification(
     notification_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Delete a notification for the current user
@@ -310,14 +307,14 @@ async def delete_notification(
         notification = db.exec(
             select(Notification).where(
                 Notification.id == notification_id,
-                Notification.user_id == current_user.id
+                Notification.user_id == current_user.id,
             )
         ).first()
 
         if not notification:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Notification not found or access denied"
+                detail="Notification not found or access denied",
             )
 
         db.delete(notification)
@@ -331,7 +328,7 @@ async def delete_notification(
         logger.error(f"Failed to delete notification: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete notification"
+            detail="Failed to delete notification",
         )
 
 
@@ -340,7 +337,7 @@ async def track_notification_click(
     notification_id: UUID,
     action: Optional[str] = Query(None, description="Action taken by user"),
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Track when a user clicks/interacts with a notification
@@ -356,18 +353,19 @@ async def track_notification_click(
         notification = db.exec(
             select(Notification).where(
                 Notification.id == notification_id,
-                Notification.user_id == current_user.id
+                Notification.user_id == current_user.id,
             )
         ).first()
 
         if not notification:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Notification not found or access denied"
+                detail="Notification not found or access denied",
             )
 
         # Update click tracking
         from datetime import datetime, timezone
+
         notification.clicked_at = datetime.now(timezone.utc)
         if action:
             notification.action_taken = action
@@ -382,7 +380,7 @@ async def track_notification_click(
         logger.error(f"Failed to track notification click: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to track notification click"
+            detail="Failed to track notification click",
         )
 
 

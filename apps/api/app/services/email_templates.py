@@ -5,9 +5,10 @@ Professional email templates for verification, password reset, and other notific
 Uses Jinja2 templating for dynamic content and responsive design.
 """
 
-from jinja2 import Template
-from typing import Dict, Any, Optional
 import os
+from typing import Any, Dict, Optional
+
+from jinja2 import Template
 
 
 class EmailTemplateManager:
@@ -21,19 +22,19 @@ class EmailTemplateManager:
         return {
             "email_verification": {
                 "html": self._get_verification_html_template(),
-                "text": self._get_verification_text_template()
+                "text": self._get_verification_text_template(),
             },
             "password_reset": {
                 "html": self._get_password_reset_html_template(),
-                "text": self._get_password_reset_text_template()
+                "text": self._get_password_reset_text_template(),
             },
             "welcome": {
                 "html": self._get_welcome_html_template(),
-                "text": self._get_welcome_text_template()
+                "text": self._get_welcome_text_template(),
             },
             "email_change": {
                 "html": self._get_email_change_html_template(),
-                "text": self._get_email_change_text_template()
+                "text": self._get_email_change_text_template(),
             },
             # Cleanup notification templates
             "cleanup_notification": {
@@ -169,9 +170,8 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - Automated Cleanup Notification
                 Generated at {{ timestamp }}
-                """
+                """,
             },
-
             "daily_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -314,9 +314,8 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - Daily Cleanup Report
                 Generated at {{ timestamp }}
-                """
+                """,
             },
-
             "weekly_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -471,9 +470,8 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - Weekly Cleanup Report
                 Generated at {{ timestamp }}
-                """
+                """,
             },
-
             "manual_cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -625,9 +623,8 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - Manual Cleanup Report
                 Generated at {{ timestamp }}
-                """
+                """,
             },
-
             "system_alert": {
                 "html": """
                 <!DOCTYPE html>
@@ -783,9 +780,8 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - System Alert
                 Generated at {{ timestamp }}
-                """
+                """,
             },
-
             "cleanup_report": {
                 "html": """
                 <!DOCTYPE html>
@@ -856,15 +852,12 @@ class EmailTemplateManager:
                 ---
                 Secret Safe Platform - Cleanup Report
                 Generated at {{ timestamp }}
-                """
-            }
+                """,
+            },
         }
 
     def render_template(
-        self,
-        template_name: str,
-        template_type: str,
-        context: Dict[str, Any]
+        self, template_name: str, template_type: str, context: Dict[str, Any]
     ) -> str:
         """Render a template with the given context."""
         if template_name not in self.templates:
@@ -872,14 +865,16 @@ class EmailTemplateManager:
 
         if template_type not in self.templates[template_name]:
             raise ValueError(
-                f"Template type '{template_type}' not found for '{template_name}'")
+                f"Template type '{template_type}' not found for '{template_name}'"
+            )
 
         template = self.templates[template_name][template_type]
         return template.render(**context)
 
     def _get_verification_html_template(self) -> Template:
         """HTML template for email verification."""
-        return Template("""
+        return Template(
+            """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1036,11 +1031,13 @@ class EmailTemplateManager:
     </div>
 </body>
 </html>
-        """)
+        """
+        )
 
     def _get_verification_text_template(self) -> Template:
         """Plain text template for email verification."""
-        return Template("""
+        return Template(
+            """
 SECRET SAFE - EMAIL VERIFICATION
 
 Hello {{ user.first_name or user.email }},
@@ -1068,11 +1065,13 @@ The Secret Safe Team
 This email was sent to {{ user.email }}
 © 2025 Secret Safe. All rights reserved.
 {{ base_url }}/privacy | {{ base_url }}/terms | {{ base_url }}/support
-        """)
+        """
+        )
 
     def _get_password_reset_html_template(self) -> Template:
         """HTML template for password reset."""
-        return Template("""
+        return Template(
+            """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1189,11 +1188,13 @@ This email was sent to {{ user.email }}
     </div>
 </body>
 </html>
-        """)
+        """
+        )
 
     def _get_password_reset_text_template(self) -> Template:
         """Plain text template for password reset."""
-        return Template("""
+        return Template(
+            """
 SECRET SAFE - PASSWORD RESET
 
 Hello {{ user.first_name or user.email }},
@@ -1211,11 +1212,13 @@ The Secret Safe Security Team
 ---
 This email was sent to {{ user.email }}
 © 2025 Secret Safe. All rights reserved.
-        """)
+        """
+        )
 
     def _get_welcome_html_template(self) -> Template:
         """HTML template for welcome email after verification."""
-        return Template("""
+        return Template(
+            """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1350,11 +1353,13 @@ This email was sent to {{ user.email }}
     </div>
 </body>
 </html>
-        """)
+        """
+        )
 
     def _get_welcome_text_template(self) -> Template:
         """Plain text template for welcome email."""
-        return Template("""
+        return Template(
+            """
 WELCOME TO SECRET SAFE!
 
 Congratulations, {{ user.first_name or user.email }}!
@@ -1385,11 +1390,13 @@ The Secret Safe Team
 ---
 © 2025 Secret Safe. All rights reserved.
 {{ base_url }}/support | {{ base_url }}/docs | {{ base_url }}/community
-        """)
+        """
+        )
 
     def _get_email_change_html_template(self) -> Template:
         """HTML template for email change verification."""
-        return Template("""
+        return Template(
+            """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1514,11 +1521,13 @@ The Secret Safe Team
     </div>
 </body>
 </html>
-        """)
+        """
+        )
 
     def _get_email_change_text_template(self) -> Template:
         """Plain text template for email change verification."""
-        return Template("""
+        return Template(
+            """
 SECRET SAFE - EMAIL CHANGE VERIFICATION
 
 Hello {{ user.first_name or user.email }},
@@ -1544,7 +1553,8 @@ The Secret Safe Team
 ---
 This email was sent to {{ new_email }}
 © 2025 Secret Safe. All rights reserved.
-        """)
+        """
+        )
 
 
 # Global template manager instance

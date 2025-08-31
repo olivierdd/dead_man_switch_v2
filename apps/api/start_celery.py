@@ -5,12 +5,14 @@ Celery Startup Script for Secret Safe API
 This script starts Celery workers and the beat scheduler for background tasks.
 """
 
-from app.celery_app import celery_app
-from celery import Celery
+import argparse
 import os
 import sys
-import argparse
 from pathlib import Path
+
+from celery import Celery
+
+from app.celery_app import celery_app
 
 # Add the app directory to Python path
 app_dir = Path(__file__).parent / "app"
@@ -19,17 +21,18 @@ sys.path.insert(0, str(app_dir))
 
 def start_worker(concurrency=2, queue="default"):
     """Start a Celery worker."""
-    print(
-        f"Starting Celery worker with concurrency={concurrency}, queue={queue}")
+    print(f"Starting Celery worker with concurrency={concurrency}, queue={queue}")
 
     # Start worker
-    celery_app.worker_main([
-        "worker",
-        "--loglevel=info",
-        f"--concurrency={concurrency}",
-        f"--queues={queue}",
-        "--hostname=worker@%h"
-    ])
+    celery_app.worker_main(
+        [
+            "worker",
+            "--loglevel=info",
+            f"--concurrency={concurrency}",
+            f"--queues={queue}",
+            "--hostname=worker@%h",
+        ]
+    )
 
 
 def start_beat():
@@ -37,11 +40,9 @@ def start_beat():
     print("Starting Celery beat scheduler")
 
     # Start beat scheduler
-    celery_app.worker_main([
-        "beat",
-        "--loglevel=info",
-        "--scheduler=celery.beat.PersistentScheduler"
-    ])
+    celery_app.worker_main(
+        ["beat", "--loglevel=info", "--scheduler=celery.beat.PersistentScheduler"]
+    )
 
 
 def start_flower():
@@ -49,39 +50,38 @@ def start_flower():
     print("Starting Flower monitoring interface")
 
     # Start Flower
-    celery_app.worker_main([
-        "flower",
-        "--port=5555",
-        "--broker=redis://localhost:6379/0",
-        "--broker_api=redis://localhost:6379/0"
-    ])
+    celery_app.worker_main(
+        [
+            "flower",
+            "--port=5555",
+            "--broker=redis://localhost:6379/0",
+            "--broker_api=redis://localhost:6379/0",
+        ]
+    )
 
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Start Celery services for Secret Safe API")
+        description="Start Celery services for Secret Safe API"
+    )
     parser.add_argument(
-        "service",
-        choices=["worker", "beat", "flower", "all"],
-        help="Service to start"
+        "service", choices=["worker", "beat", "flower", "all"], help="Service to start"
     )
     parser.add_argument(
         "--concurrency",
         type=int,
         default=2,
-        help="Number of worker processes (default: 2)"
+        help="Number of worker processes (default: 2)",
     )
     parser.add_argument(
-        "--queue",
-        default="default",
-        help="Queue to process (default: default)"
+        "--queue", default="default", help="Queue to process (default: default)"
     )
     parser.add_argument(
         "--port",
         type=int,
         default=5555,
-        help="Port for Flower monitoring (default: 5555)"
+        help="Port for Flower monitoring (default: 5555)",
     )
 
     args = parser.parse_args()
@@ -98,7 +98,8 @@ def main():
             print("Note: You may want to run these in separate terminals:")
             print(f"  Terminal 1: {sys.argv[0]} beat")
             print(
-                f"  Terminal 2: {sys.argv[0]} worker --concurrency={args.concurrency}")
+                f"  Terminal 2: {sys.argv[0]} worker --concurrency={args.concurrency}"
+            )
             print(f"  Terminal 3: {sys.argv[0]} flower --port={args.port}")
 
             # Start beat in current process

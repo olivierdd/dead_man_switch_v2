@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Add the app directory to the Python path
@@ -25,7 +26,7 @@ def test_supabase_config():
         "DATABASE_URL",
         "SUPABASE_URL",
         "SUPABASE_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY"
+        "SUPABASE_SERVICE_ROLE_KEY",
     ]
 
     print("Environment Variables:")
@@ -34,8 +35,9 @@ def test_supabase_config():
         if value:
             # Mask sensitive values
             if "key" in var.lower() or "password" in var.lower():
-                masked_value = value[:8] + "..." + \
-                    value[-4:] if len(value) > 12 else "***"
+                masked_value = (
+                    value[:8] + "..." + value[-4:] if len(value) > 12 else "***"
+                )
                 print(f"  ✅ {var}: {masked_value}")
             else:
                 print(f"  ✅ {var}: {value}")
@@ -46,7 +48,8 @@ def test_supabase_config():
 
     # Test Supabase connection
     try:
-        from app.config.supabase import test_supabase_connection, get_supabase_info
+        from app.config.supabase import (get_supabase_info,
+                                         test_supabase_connection)
 
         print("Supabase Connection Test:")
         info = get_supabase_info()
@@ -59,12 +62,13 @@ def test_supabase_config():
         print("Testing connection...")
         connection_test = test_supabase_connection()
 
-        if connection_test['status'] == 'connected':
+        if connection_test["status"] == "connected":
             print("  ✅ Supabase connection successful!")
             print(f"  Features enabled: {connection_test['features']}")
         else:
             print(
-                f"  ❌ Supabase connection failed: {connection_test.get('error', 'Unknown error')}")
+                f"  ❌ Supabase connection failed: {connection_test.get('error', 'Unknown error')}"
+            )
 
     except ImportError as e:
         print(f"  ❌ Could not import Supabase config: {e}")

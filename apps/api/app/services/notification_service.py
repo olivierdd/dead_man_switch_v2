@@ -18,8 +18,9 @@ from uuid import UUID
 from sqlmodel import Session, select
 
 from ..models.database import get_db
+from ..models.notification import (Notification, NotificationStatus,
+                                   NotificationType)
 from ..models.user import User
-from ..models.notification import Notification, NotificationType, NotificationStatus
 from ..services.email_service import EmailService
 from ..settings import settings
 
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 class NotificationPriority(Enum):
     """Notification priority levels"""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -36,6 +38,7 @@ class NotificationPriority(Enum):
 
 class NotificationChannel(Enum):
     """Notification delivery channels"""
+
     EMAIL = "email"
     IN_APP = "in_app"
     BOTH = "both"
@@ -70,7 +73,7 @@ class NotificationService:
         self,
         user_id: UUID,
         verification_type: str = "email",
-        additional_data: Optional[Dict[str, Any]] = None
+        additional_data: Optional[Dict[str, Any]] = None,
     ) -> bool:
         """
         Send verification success notification to user
@@ -88,15 +91,14 @@ class NotificationService:
             with get_db() as db:
                 user = db.exec(select(User).where(User.id == user_id)).first()
                 if not user:
-                    logger.error(
-                        f"User {user_id} not found for success notification")
+                    logger.error(f"User {user_id} not found for success notification")
                     return False
 
                 # Prepare metadata
                 metadata = {
                     "verification_type": verification_type,
                     "verified_at": datetime.now(timezone.utc).isoformat(),
-                    **(additional_data or {})
+                    **(additional_data or {}),
                 }
 
                 # Create notification record
@@ -108,7 +110,7 @@ class NotificationService:
                     priority=NotificationPriority.NORMAL,
                     channel=NotificationChannel.BOTH,
                     status=NotificationStatus.PENDING,
-                    notification_data=self._serialize_metadata(metadata)
+                    notification_data=self._serialize_metadata(metadata),
                 )
 
                 db.add(notification)
@@ -116,7 +118,10 @@ class NotificationService:
                 db.refresh(notification)
 
                 # Send email notification
-                if notification.channel in [NotificationChannel.EMAIL, NotificationChannel.BOTH]:
+                if notification.channel in [
+                    NotificationChannel.EMAIL,
+                    NotificationChannel.BOTH,
+                ]:
                     await self._send_verification_success_email(user, notification)
 
                 # Mark notification as sent
@@ -124,13 +129,11 @@ class NotificationService:
                 notification.sent_at = datetime.now(timezone.utc)
                 db.commit()
 
-                logger.info(
-                    f"Verification success notification sent to user {user_id}")
+                logger.info(f"Verification success notification sent to user {user_id}")
                 return True
 
         except Exception as e:
-            logger.error(
-                f"Failed to send verification success notification: {e}")
+            logger.error(f"Failed to send verification success notification: {e}")
             return False
 
     async def send_verification_failure_notification(
@@ -139,7 +142,7 @@ class NotificationService:
         failure_reason: str,
         verification_type: str = "email",
         retry_available: bool = True,
-        additional_data: Optional[Dict[str, Any]] = None
+        additional_data: Optional[Dict[str, Any]] = None,
     ) -> bool:
         """
         Send verification failure notification to user
@@ -159,8 +162,7 @@ class NotificationService:
             with get_db() as db:
                 user = db.exec(select(User).where(User.id == user_id)).first()
                 if not user:
-                    logger.error(
-                        f"User {user_id} not found for failure notification")
+                    logger.error(f"User {user_id} not found for failure notification")
                     return False
 
                 # Prepare metadata
@@ -169,7 +171,7 @@ class NotificationService:
                     "failure_reason": failure_reason,
                     "retry_available": retry_available,
                     "failed_at": datetime.now(timezone.utc).isoformat(),
-                    **(additional_data or {})
+                    **(additional_data or {}),
                 }
 
                 # Create notification record
@@ -181,7 +183,7 @@ class NotificationService:
                     priority=NotificationPriority.HIGH,
                     channel=NotificationChannel.BOTH,
                     status=NotificationStatus.PENDING,
-                    notification_data=self._serialize_metadata(metadata)
+                    notification_data=self._serialize_metadata(metadata),
                 )
 
                 db.add(notification)
@@ -189,7 +191,10 @@ class NotificationService:
                 db.refresh(notification)
 
                 # Send email notification
-                if notification.channel in [NotificationChannel.EMAIL, NotificationChannel.BOTH]:
+                if notification.channel in [
+                    NotificationChannel.EMAIL,
+                    NotificationChannel.BOTH,
+                ]:
                     await self._send_verification_failure_email(user, notification)
 
                 # Mark notification as sent
@@ -197,13 +202,11 @@ class NotificationService:
                 notification.sent_at = datetime.now(timezone.utc)
                 db.commit()
 
-                logger.info(
-                    f"Verification failure notification sent to user {user_id}")
+                logger.info(f"Verification failure notification sent to user {user_id}")
                 return True
 
         except Exception as e:
-            logger.error(
-                f"Failed to send verification failure notification: {e}")
+            logger.error(f"Failed to send verification failure notification: {e}")
             return False
 
     async def send_verification_reminder_notification(
@@ -211,7 +214,7 @@ class NotificationService:
         user_id: UUID,
         verification_type: str = "email",
         days_since_registration: int = 0,
-        additional_data: Optional[Dict[str, Any]] = None
+        additional_data: Optional[Dict[str, Any]] = None,
     ) -> bool:
         """
         Send verification reminder notification to user
@@ -230,8 +233,7 @@ class NotificationService:
             with get_db() as db:
                 user = db.exec(select(User).where(User.id == user_id)).first()
                 if not user:
-                    logger.error(
-                        f"User {user_id} not found for reminder notification")
+                    logger.error(f"User {user_id} not found for reminder notification")
                     return False
 
                 # Prepare metadata
@@ -239,7 +241,7 @@ class NotificationService:
                     "verification_type": verification_type,
                     "days_since_registration": days_since_registration,
                     "reminder_sent_at": datetime.now(timezone.utc).isoformat(),
-                    **(additional_data or {})
+                    **(additional_data or {}),
                 }
 
                 # Create notification record
@@ -251,7 +253,7 @@ class NotificationService:
                     priority=NotificationPriority.NORMAL,
                     channel=NotificationChannel.BOTH,
                     status=NotificationStatus.PENDING,
-                    notification_data=self._serialize_metadata(metadata)
+                    notification_data=self._serialize_metadata(metadata),
                 )
 
                 db.add(notification)
@@ -259,7 +261,10 @@ class NotificationService:
                 db.refresh(notification)
 
                 # Send email notification
-                if notification.channel in [NotificationChannel.EMAIL, NotificationChannel.BOTH]:
+                if notification.channel in [
+                    NotificationChannel.EMAIL,
+                    NotificationChannel.BOTH,
+                ]:
                     await self._send_verification_reminder_email(user, notification)
 
                 # Mark notification as sent
@@ -268,34 +273,36 @@ class NotificationService:
                 db.commit()
 
                 logger.info(
-                    f"Verification reminder notification sent to user {user_id}")
+                    f"Verification reminder notification sent to user {user_id}"
+                )
                 return True
 
         except Exception as e:
-            logger.error(
-                f"Failed to send verification reminder notification: {e}")
+            logger.error(f"Failed to send verification reminder notification: {e}")
             return False
 
-    async def _send_verification_success_email(self, user: User, notification: Notification) -> bool:
+    async def _send_verification_success_email(
+        self, user: User, notification: Notification
+    ) -> bool:
         """Send verification success email"""
         try:
             # Deserialize metadata for email service
-            metadata = self._deserialize_metadata(
-                notification.notification_data)
+            metadata = self._deserialize_metadata(notification.notification_data)
 
             # Use the existing email service to send the notification
             success = await self.email_service.send_verification_success_email(
                 to_email=user.email,
                 to_name=user.display_name or user.username,
                 verification_type=metadata.get("verification_type", "email"),
-                additional_data=metadata
+                additional_data=metadata,
             )
 
             if success:
                 logger.info(f"Verification success email sent to {user.email}")
             else:
                 logger.warning(
-                    f"Failed to send verification success email to {user.email}")
+                    f"Failed to send verification success email to {user.email}"
+                )
 
             return success
 
@@ -303,12 +310,13 @@ class NotificationService:
             logger.error(f"Error sending verification success email: {e}")
             return False
 
-    async def _send_verification_failure_email(self, user: User, notification: Notification) -> bool:
+    async def _send_verification_failure_email(
+        self, user: User, notification: Notification
+    ) -> bool:
         """Send verification failure email"""
         try:
             # Deserialize metadata for email service
-            metadata = self._deserialize_metadata(
-                notification.notification_data)
+            metadata = self._deserialize_metadata(notification.notification_data)
 
             # Use the existing email service to send the notification
             success = await self.email_service.send_verification_failure_email(
@@ -317,14 +325,15 @@ class NotificationService:
                 failure_reason=metadata.get("failure_reason", "Unknown error"),
                 verification_type=metadata.get("verification_type", "email"),
                 retry_available=metadata.get("retry_available", True),
-                additional_data=metadata
+                additional_data=metadata,
             )
 
             if success:
                 logger.info(f"Verification failure email sent to {user.email}")
             else:
                 logger.warning(
-                    f"Failed to send verification failure email to {user.email}")
+                    f"Failed to send verification failure email to {user.email}"
+                )
 
             return success
 
@@ -332,29 +341,29 @@ class NotificationService:
             logger.error(f"Error sending verification failure email: {e}")
             return False
 
-    async def _send_verification_reminder_email(self, user: User, notification: Notification) -> bool:
+    async def _send_verification_reminder_email(
+        self, user: User, notification: Notification
+    ) -> bool:
         """Send verification reminder email"""
         try:
             # Deserialize metadata for email service
-            metadata = self._deserialize_metadata(
-                notification.notification_data)
+            metadata = self._deserialize_metadata(notification.notification_data)
 
             # Use the existing email service to send the notification
             success = await self.email_service.send_verification_reminder_email(
                 to_email=user.email,
                 to_name=user.display_name or user.username,
                 verification_type=metadata.get("verification_type", "email"),
-                days_since_registration=metadata.get(
-                    "days_since_registration", 0),
-                additional_data=metadata
+                days_since_registration=metadata.get("days_since_registration", 0),
+                additional_data=metadata,
             )
 
             if success:
-                logger.info(
-                    f"Verification reminder email sent to {user.email}")
+                logger.info(f"Verification reminder email sent to {user.email}")
             else:
                 logger.warning(
-                    f"Failed to send verification reminder email to {user.email}")
+                    f"Failed to send verification reminder email to {user.email}"
+                )
 
             return success
 
@@ -368,13 +377,12 @@ class NotificationService:
         limit: int = 50,
         offset: int = 0,
         notification_type: Optional[NotificationType] = None,
-        status: Optional[NotificationStatus] = None
+        status: Optional[NotificationStatus] = None,
     ) -> List[Notification]:
         """Get notifications for a specific user"""
         try:
             with get_db() as db:
-                query = select(Notification).where(
-                    Notification.user_id == user_id)
+                query = select(Notification).where(Notification.user_id == user_id)
 
                 if notification_type:
                     query = query.where(Notification.type == notification_type)
@@ -399,7 +407,7 @@ class NotificationService:
                 notification = db.exec(
                     select(Notification).where(
                         Notification.id == notification_id,
-                        Notification.user_id == user_id
+                        Notification.user_id == user_id,
                     )
                 ).first()
 
@@ -424,8 +432,7 @@ class NotificationService:
 
                 unread = db.exec(
                     select(Notification).where(
-                        Notification.user_id == user_id,
-                        Notification.read_at.is_(None)
+                        Notification.user_id == user_id, Notification.read_at.is_(None)
                     )
                 ).count()
 
@@ -445,7 +452,7 @@ class NotificationService:
                     "total": total,
                     "unread": unread,
                     "by_type": dict(by_type),
-                    "by_status": dict(by_status)
+                    "by_status": dict(by_status),
                 }
 
         except Exception as e:

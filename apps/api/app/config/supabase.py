@@ -4,9 +4,10 @@ Supabase configuration and client setup for Secret Safe API
 
 import os
 from typing import Optional
-from supabase import create_client, Client
-from postgrest import PostgrestClient
+
 import structlog
+from postgrest import PostgrestClient
+from supabase import Client, create_client
 
 logger = structlog.get_logger()
 
@@ -54,8 +55,7 @@ class SupabaseConfig:
     def service_client(self) -> Client:
         """Get Supabase service role client for admin operations"""
         if not self.url or not self.service_role_key:
-            raise ValueError(
-                "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set")
+            raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set")
 
         return create_client(self.url, self.service_role_key)
 
@@ -70,8 +70,8 @@ class SupabaseConfig:
                 base_url=f"{self.url}/rest/v1",
                 headers={
                     "apikey": self.anon_key,
-                    "Authorization": f"Bearer {self.anon_key}"
-                }
+                    "Authorization": f"Bearer {self.anon_key}",
+                },
             )
             logger.info("PostgREST client initialized")
 
@@ -93,8 +93,7 @@ class SupabaseConfig:
         """Test Supabase connection and return status"""
         try:
             # Test basic connection
-            response = self.client.table(
-                "_dummy_table_").select("*").limit(1).execute()
+            response = self.client.table("_dummy_table_").select("*").limit(1).execute()
 
             return {
                 "status": "connected",
@@ -103,16 +102,12 @@ class SupabaseConfig:
                     "auth": True,
                     "storage": True,
                     "realtime": True,
-                    "rls": True
-                }
+                    "rls": True,
+                },
             }
         except Exception as e:
             logger.error("Supabase connection test failed", error=str(e))
-            return {
-                "status": "failed",
-                "url": self.url,
-                "error": str(e)
-            }
+            return {"status": "failed", "url": self.url, "error": str(e)}
 
     def get_connection_info(self) -> dict:
         """Get connection information for debugging"""
@@ -121,12 +116,7 @@ class SupabaseConfig:
             "has_anon_key": bool(self.anon_key),
             "has_service_key": bool(self.service_role_key),
             "has_database_url": bool(self.database_url),
-            "features": {
-                "auth": True,
-                "storage": True,
-                "realtime": True,
-                "rls": True
-            }
+            "features": {"auth": True, "storage": True, "realtime": True, "rls": True},
         }
 
 

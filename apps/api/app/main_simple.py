@@ -3,11 +3,12 @@ Simplified Secret Safe API - Main Application Entry Point
 This is a minimal version to get the application running
 """
 
+from contextlib import asynccontextmanager
+
+import structlog
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-import structlog
-from contextlib import asynccontextmanager
 
 # Configure structured logging
 structlog.configure(
@@ -20,7 +21,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer()
+        structlog.processors.JSONRenderer(),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
@@ -40,18 +41,18 @@ async def lifespan(app: FastAPI):
     # Shutdown
     logger.info("Shutting down Secret Safe API")
 
+
 # Create FastAPI application
 app = FastAPI(
     title="Secret Safe API",
     description="Privacy-first digital dead man's switch service",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add middleware
 app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0"]
+    TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0"]
 )
 
 app.add_middleware(
@@ -70,6 +71,7 @@ async def global_exception_handler(request, exc):
     logger.error("Unhandled exception", exc_info=exc)
     return HTTPException(status_code=500, detail="Internal server error")
 
+
 # Health check endpoint
 
 
@@ -77,6 +79,7 @@ async def global_exception_handler(request, exc):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "Secret Safe API"}
+
 
 # Root endpoint
 
@@ -87,8 +90,9 @@ async def root():
     return {
         "message": "Welcome to Secret Safe API",
         "version": "1.0.0",
-        "status": "running"
+        "status": "running",
     }
+
 
 # API info endpoint
 
@@ -105,9 +109,10 @@ async def api_info():
             "Message management",
             "Role-based access control",
             "Blockchain backup",
-            "Company dissolution protection"
-        ]
+            "Company dissolution protection",
+        ],
     }
+
 
 # Test endpoint
 
@@ -118,10 +123,11 @@ async def test_endpoint():
     return {
         "message": "API is working!",
         "timestamp": "2024-01-01T00:00:00Z",
-        "environment": "development"
+        "environment": "development",
     }
+
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 
+    uvicorn.run(app, host="0.0.0.0", port=8000)

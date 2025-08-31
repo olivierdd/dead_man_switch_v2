@@ -7,8 +7,9 @@ This package contains business logic services including:
 - User service for user management operations
 """
 
-from .email_service import email_service, EmailService, EmailProvider, SendGridProvider, AWSSESProvider
-from .email_templates import email_template_manager, EmailTemplateManager
+from .email_service import (AWSSESProvider, EmailProvider, EmailService,
+                            SendGridProvider, email_service)
+from .email_templates import EmailTemplateManager, email_template_manager
 from .verification_service import VerificationService
 
 __all__ = [
@@ -19,5 +20,5 @@ __all__ = [
     "AWSSESProvider",
     "email_template_manager",
     "EmailTemplateManager",
-    "VerificationService"
+    "VerificationService",
 ]

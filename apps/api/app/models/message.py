@@ -3,12 +3,13 @@ Message models for Secret Safe API
 Dead man's switch functionality with role-based access
 """
 
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List, TYPE_CHECKING, Dict, Any
-from uuid import UUID, uuid4
 from datetime import datetime, timedelta
 from enum import Enum
-from pydantic import validator, EmailStr
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from uuid import UUID, uuid4
+
+from pydantic import EmailStr, validator
+from sqlmodel import Field, Relationship, SQLModel
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 class MessageStatus(str, Enum):
     """Message status enumeration"""
+
     DRAFT = "draft"
     ACTIVE = "active"
     DELIVERED = "delivered"
@@ -28,6 +30,7 @@ class MessageStatus(str, Enum):
 
 class DissolutionAction(str, Enum):
     """Company dissolution action types"""
+
     DESTROY = "destroy"
     RELEASE = "release"
     ALTERNATIVE = "alternative"
@@ -38,6 +41,7 @@ class DissolutionAction(str, Enum):
 
 class MessagePriority(str, Enum):
     """Message priority levels"""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -47,6 +51,7 @@ class MessagePriority(str, Enum):
 
 class MessageType(str, Enum):
     """Message types for different use cases"""
+
     PERSONAL = "personal"
     BUSINESS = "business"
     LEGAL = "legal"
@@ -73,16 +78,14 @@ class Message(SQLModel, table=True):
     title: Optional[str] = Field(default=None, max_length=200, index=True)
     description: Optional[str] = Field(default=None, max_length=500)
     message_type: MessageType = Field(default=MessageType.PERSONAL, index=True)
-    priority: MessagePriority = Field(
-        default=MessagePriority.NORMAL, index=True)
+    priority: MessagePriority = Field(default=MessagePriority.NORMAL, index=True)
     tags: str = Field(default="[]")  # JSON array of tags
 
     # Check-in configuration
     check_in_interval: int = Field(default=7, ge=1, le=365, index=True)  # days
     grace_period: int = Field(default=3, ge=1, le=30, index=True)  # days
     last_check_in: Optional[datetime] = Field(default=None, index=True)
-    next_check_in_deadline: Optional[datetime] = Field(
-        default=None, index=True)
+    next_check_in_deadline: Optional[datetime] = Field(default=None, index=True)
     auto_check_in_enabled: bool = Field(default=True)
 
     # Status and lifecycle
@@ -103,30 +106,30 @@ class Message(SQLModel, table=True):
 
     # Blockchain and IPFS (Ultimate tier)
     ipfs_hash: Optional[str] = Field(default=None, max_length=64, index=True)
-    arweave_hash: Optional[str] = Field(
-        default=None, max_length=64, index=True)
+    arweave_hash: Optional[str] = Field(default=None, max_length=64, index=True)
     blockchain_registry_id: Optional[str] = Field(default=None, max_length=100)
     has_decentralized_backup: bool = Field(default=False, index=True)
     blockchain_tx_hash: Optional[str] = Field(default=None, max_length=66)
 
     # Dissolution planning
     dissolution_action: DissolutionAction = Field(
-        default=DissolutionAction.RELEASE, index=True)
-    alternative_message_hash: Optional[str] = Field(
-        default=None, max_length=64)
+        default=DissolutionAction.RELEASE, index=True
+    )
+    alternative_message_hash: Optional[str] = Field(default=None, max_length=64)
     backup_owner_email: Optional[str] = Field(default=None, max_length=255)
     extended_grace_period: Optional[int] = Field(default=None, ge=1, le=365)
-    dissolution_conditions: str = Field(
-        default="{}")  # JSON object of conditions
+    dissolution_conditions: str = Field(default="{}")  # JSON object of conditions
 
     # Sharing and access control
     is_shared: bool = Field(default=False, index=True)
     shared_with_readers: List["MessageShare"] = Relationship(
-        back_populates="message", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="message", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     # Recipients
     recipients: List["Recipient"] = Relationship(
-        back_populates="message", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="message", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     # Attachments
     has_attachments: bool = Field(default=False, index=True)
@@ -140,42 +143,42 @@ class Message(SQLModel, table=True):
 
     # Relationships - using forward references to avoid circular imports
     user: "User" = Relationship(
-        back_populates="messages", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="messages", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     # Dissolution plans
     dissolution_plans: List["DissolutionPlan"] = Relationship(
         back_populates="message",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "DissolutionPlan.message_id"
-        })
+            "foreign_keys": "DissolutionPlan.message_id",
+        },
+    )
     alternative_dissolution_plans: List["DissolutionPlan"] = Relationship(
         back_populates="alternative_message",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "DissolutionPlan.alternative_message_id"
-        })
+            "foreign_keys": "DissolutionPlan.alternative_message_id",
+        },
+    )
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            UUID: lambda v: str(v)
-        }
+        json_encoders = {datetime: lambda v: v.isoformat(), UUID: lambda v: str(v)}
 
-    @validator('check_in_interval', 'grace_period')
+    @validator("check_in_interval", "grace_period")
     def validate_intervals(cls, v):
         if v < 1:
-            raise ValueError('Interval must be at least 1 day')
+            raise ValueError("Interval must be at least 1 day")
         return v
 
-    @validator('backup_owner_email')
+    @validator("backup_owner_email")
     def validate_backup_email(cls, v):
         if v is not None:
             try:
                 EmailStr.validate(v)
             except ValueError:
-                raise ValueError('Invalid backup owner email format')
+                raise ValueError("Invalid backup owner email format")
         return v
 
     def is_overdue_for_checkin(self) -> bool:
@@ -183,8 +186,9 @@ class Message(SQLModel, table=True):
         if not self.last_check_in or self.status != MessageStatus.ACTIVE:
             return False
 
-        deadline = self.last_check_in + \
-            timedelta(days=self.check_in_interval + self.grace_period)
+        deadline = self.last_check_in + timedelta(
+            days=self.check_in_interval + self.grace_period
+        )
         return datetime.utcnow() > deadline
 
     def get_next_checkin_deadline(self) -> datetime:
@@ -233,25 +237,30 @@ class MessageShare(SQLModel, table=True):
 
     # Relationships
     message: "Message" = Relationship(
-        back_populates="shared_with_readers", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="shared_with_readers",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
     shared_with_user: "User" = Relationship(
         back_populates="shared_messages",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.shared_with_user_id"
-        })
+            "foreign_keys": "MessageShare.shared_with_user_id",
+        },
+    )
     shared_by_user: "User" = Relationship(
         back_populates="shared_by_messages",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.shared_by_user_id"
-        })
+            "foreign_keys": "MessageShare.shared_by_user_id",
+        },
+    )
     approved_by_user: Optional["User"] = Relationship(
         back_populates="approved_message_shares",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "MessageShare.approved_by"
-        })
+            "foreign_keys": "MessageShare.approved_by",
+        },
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -276,8 +285,7 @@ class Recipient(SQLModel, table=True):
     max_retries: int = Field(default=3)
 
     # Delivery preferences
-    preferred_time: Optional[str] = Field(
-        default=None, max_length=10)  # HH:MM format
+    preferred_time: Optional[str] = Field(default=None, max_length=10)  # HH:MM format
     timezone: str = Field(default="UTC", max_length=50)
     language: str = Field(default="en", max_length=10)
 
@@ -293,17 +301,18 @@ class Recipient(SQLModel, table=True):
 
     # Relationships
     message: "Message" = Relationship(
-        back_populates="recipients", sa_relationship_kwargs={"lazy": "selectin"})
+        back_populates="recipients", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('email')
+    @validator("email")
     def validate_email(cls, v):
         try:
             EmailStr.validate(v)
         except ValueError:
-            raise ValueError('Invalid recipient email format')
+            raise ValueError("Invalid recipient email format")
         return v
 
 
@@ -316,7 +325,8 @@ class DissolutionPlan(SQLModel, table=True):
     dissolution_date: datetime = Field(index=True)
     action_type: DissolutionAction = Field(index=True)
     alternative_message_id: Optional[UUID] = Field(
-        default=None, foreign_key="message.id")
+        default=None, foreign_key="message.id"
+    )
     backup_owner_email: str = Field(max_length=255)
     # JSON string of contact info
     emergency_contacts: str = Field(default="[]")
@@ -326,8 +336,7 @@ class DissolutionPlan(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow, index=True)
 
     # Additional fields
-    company_registration_number: Optional[str] = Field(
-        default=None, max_length=100)
+    company_registration_number: Optional[str] = Field(default=None, max_length=100)
     legal_entity_type: Optional[str] = Field(default=None, max_length=100)
     jurisdiction: Optional[str] = Field(default=None, max_length=100)
     tax_id: Optional[str] = Field(default=None, max_length=100)
@@ -343,24 +352,26 @@ class DissolutionPlan(SQLModel, table=True):
         back_populates="dissolution_plans",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "DissolutionPlan.message_id"
-        })
+            "foreign_keys": "DissolutionPlan.message_id",
+        },
+    )
     alternative_message: Optional["Message"] = Relationship(
         back_populates="alternative_dissolution_plans",
         sa_relationship_kwargs={
             "lazy": "selectin",
-            "foreign_keys": "DissolutionPlan.alternative_message_id"
-        })
+            "foreign_keys": "DissolutionPlan.alternative_message_id",
+        },
+    )
 
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('backup_owner_email')
+    @validator("backup_owner_email")
     def validate_backup_email(cls, v):
         try:
             EmailStr.validate(v)
         except ValueError:
-            raise ValueError('Invalid backup owner email format')
+            raise ValueError("Invalid backup owner email format")
         return v
 
 
@@ -401,8 +412,7 @@ class MessageAuditLog(SQLModel, table=True):
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     message_id: UUID = Field(foreign_key="message.id", index=True)
-    user_id: Optional[UUID] = Field(
-        default=None, foreign_key="user.id", index=True)
+    user_id: Optional[UUID] = Field(default=None, foreign_key="user.id", index=True)
     # view, edit, share, deliver, etc.
     action: str = Field(max_length=100, index=True)
     details: Optional[str] = Field(default=None, max_length=1000)
@@ -434,8 +444,7 @@ class MessageCreate(SQLModel):
     grace_period: int = Field(default=3, ge=1, le=30)
     requires_password: bool = Field(default=False)
     password: Optional[str] = Field(default=None, min_length=8, max_length=128)
-    dissolution_action: DissolutionAction = Field(
-        default=DissolutionAction.RELEASE)
+    dissolution_action: DissolutionAction = Field(default=DissolutionAction.RELEASE)
     recipients: List[str] = Field(default=[])  # List of email addresses
     scheduled_for: Optional[datetime] = Field(default=None)
     expires_at: Optional[datetime] = Field(default=None)
@@ -443,13 +452,13 @@ class MessageCreate(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('recipients')
+    @validator("recipients")
     def validate_recipient_emails(cls, v):
         for email in v:
             try:
                 EmailStr.validate(email)
             except ValueError:
-                raise ValueError(f'Invalid recipient email format: {email}')
+                raise ValueError(f"Invalid recipient email format: {email}")
         return v
 
 
@@ -486,13 +495,13 @@ class MessageShareCreate(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('shared_with_emails')
+    @validator("shared_with_emails")
     def validate_shared_emails(cls, v):
         for email in v:
             try:
                 EmailStr.validate(email)
             except ValueError:
-                raise ValueError(f'Invalid shared email format: {email}')
+                raise ValueError(f"Invalid shared email format: {email}")
         return v
 
 
@@ -511,12 +520,12 @@ class RecipientCreate(SQLModel):
     class Config:
         arbitrary_types_allowed = True
 
-    @validator('email')
+    @validator("email")
     def validate_email(cls, v):
         try:
             EmailStr.validate(v)
         except ValueError:
-            raise ValueError('Invalid recipient email format')
+            raise ValueError("Invalid recipient email format")
         return v
 
 

@@ -31,7 +31,8 @@ async def test_email_service():
         if not provider_status:
             print("❌ No email providers configured!")
             print(
-                "Please set up SENDGRID_API_KEY or AWS credentials in your environment.")
+                "Please set up SENDGRID_API_KEY or AWS credentials in your environment."
+            )
             return False
 
         print("✅ Email providers found:")
@@ -53,14 +54,18 @@ async def test_email_service():
         try:
             # Test verification email template
             test_context = {
-                "user": type('User', (), {
-                    'email': 'test@example.com',
-                    'first_name': 'Test',
-                    'last_name': 'User'
-                })(),
+                "user": type(
+                    "User",
+                    (),
+                    {
+                        "email": "test@example.com",
+                        "first_name": "Test",
+                        "last_name": "User",
+                    },
+                )(),
                 "verification_url": "https://example.com/verify?token=test123",
                 "base_url": "https://example.com",
-                "expiry_hours": 24
+                "expiry_hours": 24,
             }
 
             html_content = email_template_manager.render_template(
@@ -96,7 +101,9 @@ async def test_email_service():
                         <p>Sent at: {timestamp}</p>
                     </body>
                     </html>
-                    """.format(timestamp=asyncio.get_event_loop().time()),
+                    """.format(
+                        timestamp=asyncio.get_event_loop().time()
+                    ),
                     text_content=f"""
                     Secret Safe Email Service Test
                     
@@ -105,7 +112,7 @@ async def test_email_service():
                     If you received this email, the service is configured and functioning properly!
                     
                     Sent at: {asyncio.get_event_loop().time()}
-                    """
+                    """,
                 )
 
                 if success:
@@ -120,13 +127,15 @@ async def test_email_service():
                 return False
         else:
             print("\n4. Skipping email sending test (TEST_EMAIL not set)")
-            print("   Set TEST_EMAIL environment variable to test actual email delivery")
+            print(
+                "   Set TEST_EMAIL environment variable to test actual email delivery"
+            )
 
         # Test 5: Test verification service
         print("\n5. Testing verification service...")
         try:
-            from app.services.verification_service import VerificationService
             from app.models.verification import TokenType
+            from app.services.verification_service import VerificationService
 
             print("   ✅ Verification service imported successfully")
             print("   ✅ Token types available:")

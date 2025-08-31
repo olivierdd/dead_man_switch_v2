@@ -3,17 +3,18 @@ User routes for Secret Safe API
 User profile management and account settings
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
 from datetime import datetime
 
-from ..models import UserUpdate, UserPasswordUpdate, UserCheckIn
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from ..models import UserCheckIn, UserPasswordUpdate, UserUpdate
 from ..routes.auth import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/profile", response_model=dict)
-async def get_user_profile(current_user = Depends(get_current_user)):
+async def get_user_profile(current_user=Depends(get_current_user)):
     """Get current user's profile"""
     # TODO: Implement profile retrieval
     # - Get user details from database
@@ -29,14 +30,13 @@ async def get_user_profile(current_user = Depends(get_current_user)):
         "check_in_interval": current_user.check_in_interval,
         "grace_period": current_user.grace_period,
         "last_check_in": current_user.last_check_in,
-        "created_at": current_user.created_at
+        "created_at": current_user.created_at,
     }
 
 
 @router.put("/profile")
 async def update_user_profile(
-    profile_update: UserUpdate,
-    current_user = Depends(get_current_user)
+    profile_update: UserUpdate, current_user=Depends(get_current_user)
 ):
     """Update current user's profile"""
     # TODO: Implement profile update
@@ -44,16 +44,12 @@ async def update_user_profile(
     # - Update user profile
     # - Log changes
 
-    return {
-        "message": "Profile updated successfully",
-        "updated_at": datetime.utcnow()
-    }
+    return {"message": "Profile updated successfully", "updated_at": datetime.utcnow()}
 
 
 @router.put("/password")
 async def change_password(
-    password_update: UserPasswordUpdate,
-    current_user = Depends(get_current_user)
+    password_update: UserPasswordUpdate, current_user=Depends(get_current_user)
 ):
     """Change current user's password"""
     # TODO: Implement password change
@@ -62,16 +58,12 @@ async def change_password(
     # - Update password hash
     # - Log password change
 
-    return {
-        "message": "Password changed successfully",
-        "changed_at": datetime.utcnow()
-    }
+    return {"message": "Password changed successfully", "changed_at": datetime.utcnow()}
 
 
 @router.post("/check-in")
 async def perform_check_in(
-    check_in_data: UserCheckIn,
-    current_user = Depends(get_current_user)
+    check_in_data: UserCheckIn, current_user=Depends(get_current_user)
 ):
     """Perform user check-in"""
     # TODO: Implement user check-in
@@ -83,15 +75,13 @@ async def perform_check_in(
         "message": "Check-in successful",
         "user_id": current_user.id,
         "checked_in_at": datetime.utcnow(),
-        "method": check_in_data.check_in_type
+        "method": check_in_data.check_in_type,
     }
 
 
 @router.get("/check-in/history")
 async def get_check_in_history(
-    current_user = Depends(get_current_user),
-    limit: int = 50,
-    offset: int = 0
+    current_user=Depends(get_current_user), limit: int = 50, offset: int = 0
 ):
     """Get user's check-in history"""
     # TODO: Implement check-in history
@@ -99,16 +89,11 @@ async def get_check_in_history(
     # - Apply pagination
     # - Return formatted history
 
-    return {
-        "check_ins": [],
-        "total": 0,
-        "limit": limit,
-        "offset": offset
-    }
+    return {"check_ins": [], "total": 0, "limit": limit, "offset": offset}
 
 
 @router.get("/subscription")
-async def get_subscription_info(current_user = Depends(get_current_user)):
+async def get_subscription_info(current_user=Depends(get_current_user)):
     """Get user's subscription information"""
     # TODO: Implement subscription info
     # - Get subscription details
@@ -118,6 +103,6 @@ async def get_subscription_info(current_user = Depends(get_current_user)):
     return {
         "tier": current_user.subscription_tier,
         "expires_at": current_user.subscription_expires_at,
-        "is_active": current_user.subscription_expires_at is None or current_user.subscription_expires_at > datetime.utcnow()
+        "is_active": current_user.subscription_expires_at is None
+        or current_user.subscription_expires_at > datetime.utcnow(),
     }
-

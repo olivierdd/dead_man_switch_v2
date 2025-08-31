@@ -3,14 +3,13 @@ Message routes for Secret Safe API
 Message creation, management, and sharing functionality
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import List
 from datetime import datetime
+from typing import List
 
-from ..models import (
-    MessageCreate, MessageUpdate, MessageResponse,
-    MessageShareCreate, MessageCheckIn, get_user_model
-)
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from ..models import (MessageCheckIn, MessageCreate, MessageResponse,
+                      MessageShareCreate, MessageUpdate, get_user_model)
 from ..routes.auth import get_current_user
 
 router = APIRouter()
@@ -23,15 +22,14 @@ def require_writer_or_admin(current_user=Depends(get_current_user)):
     if current_user.role not in ["writer", "admin"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Writer or Admin access required"
+            detail="Writer or Admin access required",
         )
     return current_user
 
 
 @router.post("/", response_model=MessageResponse)
 async def create_message(
-    message_data: MessageCreate,
-    current_user=Depends(require_writer_or_admin)
+    message_data: MessageCreate, current_user=Depends(require_writer_or_admin)
 ):
     """Create a new message (Writer/Admin only)"""
     # TODO: Implement message creation
@@ -53,7 +51,7 @@ async def create_message(
         activated_at=None,
         expires_at=None,
         is_shared=False,
-        recipient_count=len(message_data.recipients)
+        recipient_count=len(message_data.recipients),
     )
 
 
@@ -62,7 +60,7 @@ async def list_user_messages(
     current_user=Depends(require_writer_or_admin),
     status_filter: str = None,
     limit: int = 50,
-    offset: int = 0
+    offset: int = 0,
 ):
     """List user's messages (Writer/Admin only)"""
     # TODO: Implement message listing
@@ -74,10 +72,7 @@ async def list_user_messages(
 
 
 @router.get("/{message_id}", response_model=MessageResponse)
-async def get_message(
-    message_id: str,
-    current_user=Depends(require_writer_or_admin)
-):
+async def get_message(message_id: str, current_user=Depends(require_writer_or_admin)):
     """Get message details (Writer/Admin only)"""
     # TODO: Implement message retrieval
     # - Verify user owns message or is admin
@@ -96,7 +91,7 @@ async def get_message(
         activated_at=datetime.utcnow(),
         expires_at=None,
         is_shared=False,
-        recipient_count=0
+        recipient_count=0,
     )
 
 
@@ -104,7 +99,7 @@ async def get_message(
 async def update_message(
     message_id: str,
     message_update: MessageUpdate,
-    current_user=Depends(require_writer_or_admin)
+    current_user=Depends(require_writer_or_admin),
 ):
     """Update message (Writer/Admin only)"""
     # TODO: Implement message update
@@ -125,14 +120,13 @@ async def update_message(
         activated_at=datetime.utcnow(),
         expires_at=None,
         is_shared=False,
-        recipient_count=2
+        recipient_count=2,
     )
 
 
 @router.delete("/{message_id}")
 async def delete_message(
-    message_id: str,
-    current_user=Depends(require_writer_or_admin)
+    message_id: str, current_user=Depends(require_writer_or_admin)
 ):
     """Delete message (Writer/Admin only)"""
     # TODO: Implement message deletion
@@ -147,7 +141,7 @@ async def delete_message(
 async def share_message(
     message_id: str,
     share_data: MessageShareCreate,
-    current_user=Depends(require_writer_or_admin)
+    current_user=Depends(require_writer_or_admin),
 ):
     """Share message with Reader user (Writer/Admin only)"""
     # TODO: Implement message sharing
@@ -159,7 +153,7 @@ async def share_message(
         "message": "Message shared successfully",
         "message_id": message_id,
         "shared_with": share_data.reader_email,
-        "access_level": share_data.access_level
+        "access_level": share_data.access_level,
     }
 
 
@@ -167,7 +161,7 @@ async def share_message(
 async def check_in_message(
     message_id: str,
     check_in_data: MessageCheckIn,
-    current_user=Depends(require_writer_or_admin)
+    current_user=Depends(require_writer_or_admin),
 ):
     """Perform message check-in (Writer/Admin only)"""
     # TODO: Implement message check-in
@@ -180,14 +174,13 @@ async def check_in_message(
         "message": "Check-in successful",
         "message_id": message_id,
         "checked_in_at": datetime.utcnow(),
-        "next_deadline": datetime.utcnow()
+        "next_deadline": datetime.utcnow(),
     }
 
 
 @router.post("/{message_id}/activate")
 async def activate_message(
-    message_id: str,
-    current_user=Depends(require_writer_or_admin)
+    message_id: str, current_user=Depends(require_writer_or_admin)
 ):
     """Activate message (Writer/Admin only)"""
     # TODO: Implement message activation
@@ -199,5 +192,5 @@ async def activate_message(
     return {
         "message": "Message activated successfully",
         "message_id": message_id,
-        "activated_at": datetime.utcnow()
+        "activated_at": datetime.utcnow(),
     }

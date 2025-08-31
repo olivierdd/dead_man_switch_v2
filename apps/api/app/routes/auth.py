@@ -2,24 +2,26 @@
 Authentication routes for Secret Safe API
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlmodel import Session, select
-from typing import Optional
-from datetime import datetime, timedelta
-import structlog
-from passlib.context import CryptContext
-from jose import jwt, JWTError
 import hashlib
+from datetime import datetime, timedelta
+from typing import Optional
 
-from ..settings import settings
+import structlog
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from sqlmodel import Session, select
+
+from ..middleware.rate_limiting import (rate_limit_api_endpoint,
+                                        rate_limit_auth_endpoint)
 from ..models.database import get_db
-from ..models.user import User, UserCreate, UserLogin, UserRole, UserProfile, TokenBlacklist, PasswordReset
-from ..middleware.rate_limiting import rate_limit_auth_endpoint, rate_limit_api_endpoint
+from ..models.user import (PasswordReset, TokenBlacklist, User, UserCreate,
+                           UserLogin, UserProfile, UserRole)
+from ..settings import settings
 
 router = APIRouter()
-pwd_context = CryptContext(
-    schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 logger = structlog.get_logger(__name__)
 
@@ -31,24 +33,29 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
 
     # Add standard JWT claims
-    to_encode.update({
-        "type": "access",
-        "iat": datetime.utcnow(),  # Issued at
-        "iss": "secret-safe-api",  # Issuer
-        "aud": "secret-safe-users"  # Audience
-    })
+    to_encode.update(
+        {
+            "type": "access",
+            "iat": datetime.utcnow(),  # Issued at
+            "iss": "secret-safe-api",  # Issuer
+            "aud": "secret-safe-users",  # Audience
+        }
+    )
 
     # Set expiration
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
 
     to_encode.update({"exp": expire})
 
     # Encode JWT token
     encoded_jwt = jwt.encode(
-        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt
 
 
@@ -57,12 +64,14 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
 
     # Add standard JWT claims for refresh token
-    to_encode.update({
-        "type": "refresh",
-        "iat": datetime.utcnow(),  # Issued at
-        "iss": "secret-safe-api",  # Issuer
-        "aud": "secret-safe-users"  # Audience
-    })
+    to_encode.update(
+        {
+            "type": "refresh",
+            "iat": datetime.utcnow(),  # Issued at
+            "iss": "secret-safe-api",  # Issuer
+            "aud": "secret-safe-users",  # Audience
+        }
+    )
 
     # Set expiration (longer than access token)
     if expires_delta:
@@ -74,20 +83,21 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None):
 
     # Encode JWT refresh token
     encoded_jwt = jwt.encode(
-        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt
 
 
 def create_user_token_payload(user: User) -> dict:
     """Create standardized token payload for user"""
     return {
-        "sub": str(user.id),           # Subject (user ID)
-        "email": user.email,           # User email
-        "role": user.role,             # User role (admin, writer, reader)
+        "sub": str(user.id),  # Subject (user ID)
+        "email": user.email,  # User email
+        "role": user.role,  # User role (admin, writer, reader)
         "is_verified": user.is_verified,  # Email verification status
-        "is_active": user.is_active,   # Account active status
+        "is_active": user.is_active,  # Account active status
         "display_name": user.display_name,  # User display name
-        "subscription_tier": user.subscription_tier  # User subscription level
+        "subscription_tier": user.subscription_tier,  # User subscription level
     }
 
 
@@ -118,12 +128,15 @@ def is_token_blacklisted(token: str, db: Session) -> bool:
     return blacklisted is not None
 
 
-def add_token_to_blacklist(token: str, user_id: str, db: Session, reason: str = "logout"):
+def add_token_to_blacklist(
+    token: str, user_id: str, db: Session, reason: str = "logout"
+):
     """Add a token to the blacklist"""
     try:
         # Decode token to get expiration
-        payload = jwt.decode(token, settings.SECRET_KEY,
-                             algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         expires_at = datetime.fromtimestamp(payload.get("exp", 0))
 
         # Create blacklist entry
@@ -131,7 +144,7 @@ def add_token_to_blacklist(token: str, user_id: str, db: Session, reason: str = 
             token_hash=hash_token(token),
             user_id=user_id,
             expires_at=expires_at,
-            reason=reason
+            reason=reason,
         )
 
         db.add(blacklist_entry)
@@ -141,7 +154,7 @@ def add_token_to_blacklist(token: str, user_id: str, db: Session, reason: str = 
             "Token added to blacklist",
             user_id=user_id,
             reason=reason,
-            expires_at=expires_at
+            expires_at=expires_at,
         )
 
     except Exception as e:
@@ -153,8 +166,7 @@ def cleanup_expired_blacklist_entries(db: Session):
     """Remove expired entries from token blacklist"""
     try:
         expired_entries = db.exec(
-            select(TokenBlacklist).where(
-                TokenBlacklist.expires_at < datetime.utcnow())
+            select(TokenBlacklist).where(TokenBlacklist.expires_at < datetime.utcnow())
         ).all()
 
         for entry in expired_entries:
@@ -162,18 +174,19 @@ def cleanup_expired_blacklist_entries(db: Session):
 
         if expired_entries:
             db.commit()
-            logger.info(
-                f"Cleaned up {len(expired_entries)} expired blacklist entries")
+            logger.info(f"Cleaned up {len(expired_entries)} expired blacklist entries")
 
     except Exception as e:
-        logger.error(
-            "Failed to cleanup expired blacklist entries", error=str(e))
+        logger.error("Failed to cleanup expired blacklist entries", error=str(e))
         db.rollback()
+
 
 # Dependency to get current user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     """Get current user from JWT token with comprehensive validation"""
 
     credentials_exception = HTTPException(
@@ -192,8 +205,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             )
 
         # Decode and validate JWT token
-        payload = jwt.decode(token, settings.SECRET_KEY,
-                             algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
 
         # Extract user ID from token
         user_id: str = payload.get("sub")
@@ -210,9 +224,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             )
 
         # Get user from database
-        user = db.exec(
-            select(User).where(User.id == user_id)
-        ).first()
+        user = db.exec(select(User).where(User.id == user_id)).first()
 
         if user is None:
             raise credentials_exception
@@ -242,7 +254,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             "Token validated successfully",
             user_id=str(user.id),
             email=user.email,
-            role=user.role
+            role=user.role,
         )
 
         return user
@@ -260,7 +272,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     if not current_user.is_verified:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email not verified. Please verify your account to access this resource."
+            detail="Email not verified. Please verify your account to access this resource.",
         )
     return current_user
 
@@ -271,54 +283,60 @@ async def get_current_verified_user(current_user: User = Depends(get_current_use
     if not current_user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is deactivated. Please contact support for assistance."
+            detail="Account is deactivated. Please contact support for assistance.",
         )
 
     # Check if user account is suspended
     if current_user.is_suspended:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is suspended. Please contact support for assistance."
+            detail="Account is suspended. Please contact support for assistance.",
         )
 
     # Check if user email is verified
     if not current_user.is_verified:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email verification required. Please check your email and verify your account to access this resource."
+            detail="Email verification required. Please check your email and verify your account to access this resource.",
         )
 
     # Check if user has completed profile setup (optional)
     if not current_user.display_name:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Profile setup required. Please complete your profile to access this resource."
+            detail="Profile setup required. Please complete your profile to access this resource.",
         )
 
     return current_user
 
 
-async def get_current_verified_writer_user(current_user: User = Depends(get_current_verified_user)):
+async def get_current_verified_writer_user(
+    current_user: User = Depends(get_current_verified_user),
+):
     """Get current verified writer or admin user with verification checks"""
     if current_user.role not in [UserRole.WRITER, UserRole.ADMIN]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Writer or admin access required. Please contact support to upgrade your account."
+            detail="Writer or admin access required. Please contact support to upgrade your account.",
         )
     return current_user
 
 
-async def get_current_verified_admin_user(current_user: User = Depends(get_current_verified_user)):
+async def get_current_verified_admin_user(
+    current_user: User = Depends(get_current_verified_user),
+):
     """Get current verified admin user with verification checks"""
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required. Please contact support for administrator privileges."
+            detail="Admin access required. Please contact support for administrator privileges.",
         )
     return current_user
 
 
-async def get_current_user_with_verification_optional(current_user: User = Depends(get_current_user)):
+async def get_current_user_with_verification_optional(
+    current_user: User = Depends(get_current_user),
+):
     """Get current user with optional verification status (for endpoints that work with both verified and unverified users)"""
     # This dependency allows both verified and unverified users to access the endpoint
     # but provides verification status information for conditional logic
@@ -327,6 +345,7 @@ async def get_current_user_with_verification_optional(current_user: User = Depen
 
 def require_verification_status(verification_required: bool = True):
     """Decorator to conditionally require email verification based on configuration"""
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             # If verification is not required, skip the check
@@ -334,15 +353,17 @@ def require_verification_status(verification_required: bool = True):
                 return await func(*args, **kwargs)
 
             # Extract current_user from kwargs
-            current_user = kwargs.get('current_user')
+            current_user = kwargs.get("current_user")
             if current_user and not current_user.is_verified:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Email verification required for this feature. Please verify your account."
+                    detail="Email verification required for this feature. Please verify your account.",
                 )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -352,14 +373,11 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """Register a new user"""
 
     # Check if email already exists
-    existing_user = db.exec(
-        select(User).where(User.email == user_data.email)
-    ).first()
+    existing_user = db.exec(select(User).where(User.email == user_data.email)).first()
 
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
 
     # Hash password with bcrypt (cost factor 12)
@@ -371,15 +389,15 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         password_hash=hashed_password,
         first_name=user_data.first_name,
         last_name=user_data.last_name,
-        display_name=user_data.display_name or f"{user_data.first_name or ''} {user_data.last_name or ''}".strip(
-        ),
+        display_name=user_data.display_name
+        or f"{user_data.first_name or ''} {user_data.last_name or ''}".strip(),
         role=user_data.role,
         timezone=user_data.timezone,
         language=user_data.language,
         is_verified=False,  # User needs to verify email
         is_active=True,
         created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        updated_at=datetime.utcnow(),
     )
 
     try:
@@ -390,8 +408,8 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
         # Send verification email automatically
         try:
-            from ..services.verification_service import VerificationService
             from ..models.verification import TokenType
+            from ..services.verification_service import VerificationService
             from ..settings import get_settings
 
             verification_service = VerificationService(db)
@@ -404,18 +422,17 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
                 token=await verification_service.create_verification_token(
                     user_id=new_user.id,
                     token_type=TokenType.EMAIL_VERIFICATION,
-                    expiry_hours=24
+                    expiry_hours=24,
                 ),
                 base_url=base_url,
-                expiry_hours=24
+                expiry_hours=24,
             )
 
             logger.info(f"Verification email sent to {new_user.email}")
 
         except Exception as e:
             # Log error but don't fail registration
-            logger.error(
-                f"Failed to send verification email to {new_user.email}: {e}")
+            logger.error(f"Failed to send verification email to {new_user.email}: {e}")
             # Continue with registration - user can request verification email later
 
         # Return user profile (without sensitive data)
@@ -429,26 +446,26 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
             last_check_in=new_user.last_check_in,
             subscription_tier=new_user.subscription_tier,
             avatar_url=new_user.avatar_url,
-            bio=new_user.bio
+            bio=new_user.bio,
         )
 
     except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create user account"
+            detail="Failed to create user account",
         )
 
 
 @router.post("/login")
 @rate_limit_auth_endpoint("login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
     """Login user and return access token"""
 
     # Find user by email
-    user = db.exec(
-        select(User).where(User.email == form_data.username)
-    ).first()
+    user = db.exec(select(User).where(User.email == form_data.username)).first()
 
     # Verify user exists and credentials are correct
     if not user or not verify_password(form_data.password, user.password_hash):
@@ -489,8 +506,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     db.commit()
 
     # Generate JWT token with user information using the new payload function
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     user_payload = create_user_token_payload(user)
     access_token = create_access_token(
@@ -502,7 +518,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         "User logged in successfully",
         user_id=str(user.id),
         email=user.email,
-        role=user.role
+        role=user.role,
     )
 
     return {
@@ -514,8 +530,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             "email": user.email,
             "display_name": user.display_name,
             "role": user.role,
-            "is_verified": user.is_verified
-        }
+            "is_verified": user.is_verified,
+        },
     }
 
 
@@ -524,7 +540,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 async def logout(
     token: str = Depends(oauth2_scheme),
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Logout user and invalidate token"""
 
@@ -544,20 +560,19 @@ async def logout(
         logger.info(
             "User logged out successfully",
             user_id=str(current_user.id),
-            email=current_user.email
+            email=current_user.email,
         )
 
         return {
             "message": "Successfully logged out",
-            "logout_time": datetime.utcnow().isoformat()
+            "logout_time": datetime.utcnow().isoformat(),
         }
 
     except Exception as e:
-        logger.error("Logout failed", error=str(e),
-                     user_id=str(current_user.id))
+        logger.error("Logout failed", error=str(e), user_id=str(current_user.id))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Logout failed. Please try again."
+            detail="Logout failed. Please try again.",
         )
 
 
@@ -575,7 +590,7 @@ async def get_current_user_profile(current_user: User = Depends(get_current_user
         last_check_in=current_user.last_check_in,
         subscription_tier=current_user.subscription_tier,
         avatar_url=current_user.avatar_url,
-        bio=current_user.bio
+        bio=current_user.bio,
     )
 
 
@@ -587,8 +602,7 @@ async def refresh_token(current_user: User = Depends(get_current_user)):
     # - Validate current token
     # - Generate new token
 
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(current_user.id)}, expires_delta=access_token_expires
     )
@@ -596,7 +610,7 @@ async def refresh_token(current_user: User = Depends(get_current_user)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     }
 
 

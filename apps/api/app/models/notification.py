@@ -17,6 +17,7 @@ from sqlmodel import Field, SQLModel
 
 class NotificationType(str, Enum):
     """Types of notifications"""
+
     VERIFICATION_SUCCESS = "verification_success"
     VERIFICATION_FAILURE = "verification_failure"
     VERIFICATION_REMINDER = "verification_reminder"
@@ -31,6 +32,7 @@ class NotificationType(str, Enum):
 
 class NotificationStatus(str, Enum):
     """Status of notifications"""
+
     PENDING = "pending"
     SENT = "sent"
     DELIVERED = "delivered"
@@ -41,6 +43,7 @@ class NotificationStatus(str, Enum):
 
 class NotificationPriority(str, Enum):
     """Priority levels for notifications"""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -49,6 +52,7 @@ class NotificationPriority(str, Enum):
 
 class NotificationChannel(str, Enum):
     """Delivery channels for notifications"""
+
     EMAIL = "email"
     IN_APP = "in_app"
     BOTH = "both"
@@ -98,6 +102,7 @@ class Notification(SQLModel, table=True):
 
     class Config:
         """Pydantic configuration"""
+
         use_enum_values = True
         arbitrary_types_allowed = True
 
@@ -189,6 +194,7 @@ class NotificationPreferences(SQLModel, table=True):
 
     class Config:
         """Pydantic configuration"""
+
         use_enum_values = True
 
 
