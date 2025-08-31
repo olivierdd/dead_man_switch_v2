@@ -19,9 +19,9 @@ from ..models.verification import (
 )
 from ..models.user import User
 from ..services.verification_service import VerificationService
-from ..database import get_db
-from ..middleware.auth import get_current_user
-from ..settings import get_settings
+from ..models.database import get_db
+from ..routes.auth import get_current_user
+from ..settings import settings
 
 router = APIRouter(prefix="/verification", tags=["verification"])
 
@@ -36,7 +36,6 @@ async def send_verification_email(
     """Send verification email to a user."""
     try:
         # Get settings for default base URL
-        settings = get_settings()
         if not base_url:
             base_url = settings.BASE_URL or "http://localhost:3000"
 
@@ -159,7 +158,6 @@ async def verify_email(
 
         if user:
             # Send welcome email (async, don't wait for result)
-            settings = get_settings()
             base_url = settings.BASE_URL or "http://localhost:3000"
 
             # Note: In production, this should be sent via background task
@@ -198,7 +196,6 @@ async def send_password_reset_email(
     """Send password reset email to user."""
     try:
         # Get settings for default base URL
-        settings = get_settings()
         if not base_url:
             base_url = settings.BASE_URL or "http://localhost:3000"
 
@@ -305,7 +302,6 @@ async def resend_verification_email(
             )
 
         # Get settings for default base URL
-        settings = get_settings()
         if not base_url:
             base_url = settings.BASE_URL or "http://localhost:3000"
 
