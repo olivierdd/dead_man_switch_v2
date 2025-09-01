@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { ParticleBackground } from '@/components/three/ParticleBackground'
 
 export default function HomePage() {
-    // Trigger deployment - updated navigation and footer links
+    // Test deployment with updated Vercel secrets
     return (
         <div className="relative min-h-screen">
             {/* Particle Background */}
