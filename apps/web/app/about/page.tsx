@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Heart, Shield, Globe, Users, Target, Award } from 'lucide-react'
+import { Heart, Shield, Globe, Users, Target, Award, Mail, Lock, Rocket } from 'lucide-react'
 
 export default function AboutPage() {
     const values = [
@@ -30,7 +30,7 @@ export default function AboutPage() {
         {
             name: "Olivier De Decker",
             role: "Founder & Lead Developer",
-            bio: "Passionate about privacy, security, and building technology that serves people. Leading the development of Secret Safe with a focus on user experience and security.",
+            bio: "Passionate about privacy, security, and building technology that serves people. Leading the development of Forevr with a focus on user experience and security.",
             expertise: ["Full-Stack Development", "Security Architecture", "User Experience Design", "Blockchain Technology"]
         }
     ];
@@ -39,7 +39,7 @@ export default function AboutPage() {
         {
             year: "2025",
             title: "Project Inception",
-            description: "Secret Safe concept developed with focus on privacy-first digital legacy planning"
+            description: "Forevr concept developed with focus on privacy-first digital legacy planning"
         },
         {
             year: "2025",
@@ -59,14 +59,17 @@ export default function AboutPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
@@ -100,13 +103,13 @@ export default function AboutPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">
                         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
                             About
-                            <span className="block text-gradient">Secret Safe</span>
+                            <span className="block text-gradient">Forevr</span>
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                             We're building the most trusted platform for digital legacy planning,
@@ -138,7 +141,7 @@ export default function AboutPage() {
                             <div>
                                 <h3 className="text-xl font-semibold text-white mb-4">Our Solution</h3>
                                 <p className="text-gray-400 leading-relaxed">
-                                    Secret Safe provides a simple, secure way to ensure your important messages reach the right people.
+                                    Forevr provides a simple, secure way to ensure your important messages reach the right people.
                                     Using zero-knowledge encryption and blockchain backup technology, we've created a platform that's
                                     both incredibly secure and remarkably easy to use.
                                 </p>
@@ -154,7 +157,7 @@ export default function AboutPage() {
                                 <div key={index} className="glass-card p-6">
                                     <div className="flex items-start space-x-4">
                                         <div className="flex-shrink-0">
-                                            <value.icon className="w-8 h-8 text-blue-400" />
+                                            <value.icon className="w-8 h-8" style={{ color: '#60a5fa' }} />
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-semibold text-white mb-2">{value.title}</h3>
@@ -178,7 +181,7 @@ export default function AboutPage() {
                                         </span>
                                     </div>
                                     <h3 className="text-2xl font-semibold text-white mb-2">{member.name}</h3>
-                                    <p className="text-blue-400 mb-4">{member.role}</p>
+                                    <p className="text-primary-blue-light mb-4">{member.role}</p>
                                     <p className="text-gray-400 mb-6 max-w-2xl mx-auto">{member.bio}</p>
 
                                     <div className="flex flex-wrap justify-center gap-2">
@@ -201,7 +204,9 @@ export default function AboutPage() {
                         <h2 className="text-3xl font-bold text-white mb-8 text-center">Our Development Philosophy</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="text-center">
-                                <div className="text-4xl mb-4">🎯</div>
+                                <div className="mb-4 flex justify-center">
+                                    <Target className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-xl font-semibold text-white mb-3">User-First Design</h3>
                                 <p className="text-gray-400 text-sm">
                                     Every feature is designed with the end user in mind. We prioritize simplicity
@@ -210,7 +215,9 @@ export default function AboutPage() {
                             </div>
 
                             <div className="text-center">
-                                <div className="text-4xl mb-4">🔒</div>
+                                <div className="mb-4 flex justify-center">
+                                    <Lock className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-xl font-semibold text-white mb-3">Security by Default</h3>
                                 <p className="text-gray-400 text-sm">
                                     Security isn't an afterthought - it's built into every layer of our platform
@@ -219,7 +226,9 @@ export default function AboutPage() {
                             </div>
 
                             <div className="text-center">
-                                <div className="text-4xl mb-4">🚀</div>
+                                <div className="mb-4 flex justify-center">
+                                    <Rocket className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-xl font-semibold text-white mb-3">Continuous Improvement</h3>
                                 <p className="text-gray-400 text-sm">
                                     We're constantly learning, iterating, and improving based on user feedback
@@ -235,7 +244,7 @@ export default function AboutPage() {
                         <div className="space-y-6">
                             {milestones.map((milestone, index) => (
                                 <div key={index} className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                    <div className="flex-shrink-0 w-16 h-16 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold text-lg">
                                         {milestone.year}
                                     </div>
                                     <div>

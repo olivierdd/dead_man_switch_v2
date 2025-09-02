@@ -1,29 +1,46 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import {
+    Mail,
+    Edit3,
+    Clock,
+    Send,
+    Users,
+    Shield,
+    Lock,
+    Globe,
+    Briefcase,
+    Heart,
+    Key,
+    FileText
+} from 'lucide-react'
 
 export default function HowItWorksPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/how-it-works" className="text-blue-400 font-medium">
+                            <Link href="/how-it-works" className="text-primary-blue-light font-medium">
                                 How It Works
                             </Link>
-                            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
                                 Pricing
                             </Link>
-                            <Link href="/security" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/security" className="text-gray-400 hover:text-white transition-colors">
                                 Security
                             </Link>
-                            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
                                 About
                             </Link>
                         </div>
@@ -44,15 +61,15 @@ export default function HowItWorksPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">
                         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-                            How Secret Safe
+                            How Forevr
                             <span className="block text-gradient">Works</span>
                         </h1>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                             A simple, secure way to ensure your important messages reach the right people,
                             even when you can't deliver them yourself.
                         </p>
@@ -61,7 +78,9 @@ export default function HowItWorksPage() {
                     {/* Step-by-Step Process */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                         <div className="glass-card p-8 text-center">
-                            <div className="text-4xl mb-4">✍️</div>
+                            <div className="mb-4 flex justify-center">
+                                <Edit3 className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                            </div>
                             <h3 className="text-2xl font-semibold text-white mb-4">1. Create Your Message</h3>
                             <p className="text-gray-400 leading-relaxed">
                                 Write your message using our secure editor. Add recipients, set check-in schedules,
@@ -70,7 +89,9 @@ export default function HowItWorksPage() {
                         </div>
 
                         <div className="glass-card p-8 text-center">
-                            <div className="text-4xl mb-4">⏰</div>
+                            <div className="mb-4 flex justify-center">
+                                <Clock className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                            </div>
                             <h3 className="text-2xl font-semibold text-white mb-4">2. Set Up Check-ins</h3>
                             <p className="text-gray-400 leading-relaxed">
                                 Choose how often you want to check in - daily, weekly, or monthly.
@@ -79,7 +100,9 @@ export default function HowItWorksPage() {
                         </div>
 
                         <div className="glass-card p-8 text-center">
-                            <div className="text-4xl mb-4">🚀</div>
+                            <div className="mb-4 flex justify-center">
+                                <Send className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                            </div>
                             <h3 className="text-2xl font-semibold text-white mb-4">3. Automatic Delivery</h3>
                             <p className="text-gray-400 leading-relaxed">
                                 If you miss your check-ins, your message is automatically delivered to recipients.
@@ -94,7 +117,7 @@ export default function HowItWorksPage() {
                             <h2 className="text-3xl font-bold text-white mb-6">The Complete Process</h2>
                             <div className="space-y-6">
                                 <div className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                    <div className="flex-shrink-0 w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold">1</div>
                                     <div>
                                         <h3 className="text-xl font-semibold text-white mb-2">Message Creation</h3>
                                         <p className="text-gray-400">
@@ -106,7 +129,7 @@ export default function HowItWorksPage() {
                                 </div>
 
                                 <div className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                    <div className="flex-shrink-0 w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold">2</div>
                                     <div>
                                         <h3 className="text-xl font-semibold text-white mb-2">Recipient Management</h3>
                                         <p className="text-gray-400">
@@ -118,7 +141,7 @@ export default function HowItWorksPage() {
                                 </div>
 
                                 <div className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                    <div className="flex-shrink-0 w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold">3</div>
                                     <div>
                                         <h3 className="text-xl font-semibold text-white mb-2">Check-in Schedule</h3>
                                         <p className="text-gray-400">
@@ -130,7 +153,7 @@ export default function HowItWorksPage() {
                                 </div>
 
                                 <div className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
+                                    <div className="flex-shrink-0 w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold">4</div>
                                     <div>
                                         <h3 className="text-xl font-semibold text-white mb-2">Grace Period</h3>
                                         <p className="text-gray-400">
@@ -142,7 +165,7 @@ export default function HowItWorksPage() {
                                 </div>
 
                                 <div className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">5</div>
+                                    <div className="flex-shrink-0 w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center text-white font-bold">5</div>
                                     <div>
                                         <h3 className="text-xl font-semibold text-white mb-2">Message Delivery</h3>
                                         <p className="text-gray-400">
@@ -161,7 +184,10 @@ export default function HowItWorksPage() {
                         <h2 className="text-3xl font-bold text-white mb-8 text-center">Common Use Cases</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-6 bg-white/5 rounded-lg">
-                                <h3 className="text-xl font-semibold text-white mb-3">💼 Business Continuity</h3>
+                                <div className="flex items-center mb-3">
+                                    <Briefcase className="h-6 w-6 mr-2" style={{ color: '#60a5fa' }} />
+                                    <h3 className="text-xl font-semibold text-white">Business Continuity</h3>
+                                </div>
                                 <p className="text-gray-400">
                                     Share critical business information, passwords, and procedures with partners
                                     or successors. Ensure business operations continue even in unexpected circumstances.
@@ -169,7 +195,10 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="p-6 bg-white/5 rounded-lg">
-                                <h3 className="text-xl font-semibold text-white mb-3">👨‍👩‍👧‍👦 Family Legacy</h3>
+                                <div className="flex items-center mb-3">
+                                    <Heart className="h-6 w-6 mr-2" style={{ color: '#60a5fa' }} />
+                                    <h3 className="text-xl font-semibold text-white">Family Legacy</h3>
+                                </div>
                                 <p className="text-gray-400">
                                     Leave personal messages, family history, or important documents for loved ones.
                                     Share your thoughts and wishes in a secure, organized way.
@@ -177,7 +206,10 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="p-6 bg-white/5 rounded-lg">
-                                <h3 className="text-xl font-semibold text-white mb-3">🔑 Digital Assets</h3>
+                                <div className="flex items-center mb-3">
+                                    <Key className="h-6 w-6 mr-2" style={{ color: '#60a5fa' }} />
+                                    <h3 className="text-xl font-semibold text-white">Digital Assets</h3>
+                                </div>
                                 <p className="text-gray-400">
                                     Safely share access to cryptocurrency wallets, password managers,
                                     and digital accounts with trusted family members or advisors.
@@ -185,7 +217,10 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="p-6 bg-white/5 rounded-lg">
-                                <h3 className="text-xl font-semibold text-white mb-3">📋 Legal Documents</h3>
+                                <div className="flex items-center mb-3">
+                                    <FileText className="h-6 w-6 mr-2" style={{ color: '#60a5fa' }} />
+                                    <h3 className="text-xl font-semibold text-white">Legal Documents</h3>
+                                </div>
                                 <p className="text-gray-400">
                                     Store important legal information, medical directives, or final wishes.
                                     Ensure your intentions are clearly communicated when needed.
@@ -199,7 +234,9 @@ export default function HowItWorksPage() {
                         <h2 className="text-3xl font-bold text-white mb-6 text-center">Security & Privacy</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="text-center">
-                                <div className="text-3xl mb-3">🔐</div>
+                                <div className="mb-3 flex justify-center">
+                                    <Shield className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-lg font-semibold text-white mb-2">Zero-Knowledge</h3>
                                 <p className="text-gray-400 text-sm">
                                     We cannot read your messages. All content is encrypted before it reaches our servers.
@@ -207,7 +244,9 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="text-center">
-                                <div className="text-3xl mb-3">🛡️</div>
+                                <div className="mb-3 flex justify-center">
+                                    <Lock className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-lg font-semibold text-white mb-2">Military-Grade Encryption</h3>
                                 <p className="text-gray-400 text-sm">
                                     AES-256 encryption ensures your messages are protected with the highest security standards.
@@ -215,7 +254,9 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="text-center">
-                                <div className="text-3xl mb-3">🌐</div>
+                                <div className="mb-3 flex justify-center">
+                                    <Globe className="h-12 w-12" style={{ color: '#60a5fa' }} />
+                                </div>
                                 <h3 className="text-lg font-semibold text-white mb-2">Blockchain Backup</h3>
                                 <p className="text-gray-400 text-sm">
                                     Ultimate tier messages are backed up on decentralized networks for maximum durability.
@@ -227,7 +268,7 @@ export default function HowItWorksPage() {
                     {/* CTA Section */}
                     <div className="text-center">
                         <h2 className="text-3xl font-bold text-white mb-6">Ready to Get Started?</h2>
-                        <p className="text-xl text-gray-300 mb-8">
+                        <p className="text-xl text-gray-400 mb-8">
                             Create your first secure message in minutes. No technical knowledge required.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">

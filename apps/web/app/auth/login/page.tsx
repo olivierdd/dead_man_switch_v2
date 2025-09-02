@@ -18,16 +18,6 @@ export default function LoginPage() {
             {/* Main Content */}
             <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                 <div className="w-full max-w-md">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">
-                            Welcome Back
-                        </h1>
-                        <p className="text-gray-400">
-                            Sign in to access your secure messages
-                        </p>
-                    </div>
-
                     {/* Login Form */}
                     <LoginFormSimple
                         variant="elevated"

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Shield, Lock, Eye, Globe, Server, Key } from 'lucide-react'
+import { Shield, Lock, Eye, Globe, Server, Key, Mail } from 'lucide-react'
 
 export default function SecurityPage() {
     const securityFeatures = [
@@ -91,27 +91,30 @@ export default function SecurityPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
                                 How It Works
                             </Link>
-                            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
                                 Pricing
                             </Link>
-                            <Link href="/security" className="text-blue-400 font-medium">
+                            <Link href="/security" className="text-primary-blue-light font-medium">
                                 Security
                             </Link>
-                            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
                                 About
                             </Link>
                         </div>
@@ -132,7 +135,7 @@ export default function SecurityPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">
@@ -141,7 +144,7 @@ export default function SecurityPage() {
                             <span className="block text-gradient">First</span>
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                            Your privacy and security are our top priorities. We've built Secret Safe with
+                            Your privacy and security are our top priorities. We've built Forevr with
                             enterprise-grade security measures and zero-knowledge architecture to protect your most sensitive information.
                         </p>
                     </div>
@@ -316,7 +319,7 @@ export default function SecurityPage() {
                     <div className="text-center">
                         <h2 className="text-3xl font-bold text-white mb-6">Ready to Experience Enterprise Security?</h2>
                         <p className="text-xl text-gray-300 mb-8">
-                            Join thousands of users who trust Secret Safe with their most sensitive information.
+                            Join thousands of users who trust Forevr with their most sensitive information.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link href="/auth/register">

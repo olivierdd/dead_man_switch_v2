@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Shield, Eye, Cookie, Globe, Lock } from 'lucide-react'
+import { Shield, Eye, Cookie, Globe, Lock, Mail } from 'lucide-react'
 
 export default function TermsPage() {
     const legalSections = [
@@ -11,11 +11,11 @@ export default function TermsPage() {
             content: [
                 {
                     subtitle: "Acceptance of Terms",
-                    text: "By accessing and using Secret Safe, you accept and agree to be bound by the terms and provision of this agreement."
+                    text: "By accessing and using Forevr, you accept and agree to be bound by the terms and provision of this agreement."
                 },
                 {
                     subtitle: "Service Description",
-                    text: "Secret Safe is a digital legacy protection service that enables users to securely store and conditionally release messages to designated recipients."
+                    text: "Forevr is a digital legacy protection service that enables users to securely store and conditionally release messages to designated recipients."
                 },
                 {
                     subtitle: "User Responsibilities",
@@ -42,7 +42,7 @@ export default function TermsPage() {
                 },
                 {
                     subtitle: "How We Use Information",
-                    text: "Your information is used solely to provide the Secret Safe service, including account management, message delivery, and customer support."
+                    text: "Your information is used solely to provide the Forevr service, including account management, message delivery, and customer support."
                 },
                 {
                     subtitle: "Information Sharing",
@@ -88,7 +88,7 @@ export default function TermsPage() {
             content: [
                 {
                     subtitle: "Data Controller",
-                    text: "Secret Safe acts as the data controller for personal information collected through our service."
+                    text: "Forevr acts as the data controller for personal information collected through our service."
                 },
                 {
                     subtitle: "Legal Basis",
@@ -138,14 +138,17 @@ export default function TermsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
@@ -179,7 +182,7 @@ export default function TermsPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">

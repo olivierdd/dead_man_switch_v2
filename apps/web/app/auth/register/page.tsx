@@ -5,27 +5,13 @@
 
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { ParticleBackground } from '@/components/three/ParticleBackground'
-import {
-    GlassmorphicForm,
-    GlassmorphicFormSection,
-    GlassmorphicFormField,
-    GlassmorphicFormActions,
-    GlassmorphicFormFooter
-} from '@/components/ui/glassmorphic-form'
-import {
-    GlassmorphicInput,
-    GlassmorphicPasswordInput
-} from '@/components/ui/glassmorphic-input'
-import {
-    GlassmorphicPrimaryButton,
-    GlassmorphicSecondaryButton
-} from '@/components/ui/glassmorphic-button'
-import { PasswordStrengthIndicator, PasswordRequirements } from '@/components/auth'
+import { PasswordStrengthIndicator } from '@/components/auth'
 import { useFormValidation, useFormSubmission } from '@/lib/hooks/use-form-validation'
 import { z } from 'zod'
 import Link from 'next/link'
+import { Mail, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 
 // Registration form schema
 const registrationSchema = z.object({
@@ -43,6 +29,10 @@ const registrationSchema = z.object({
 type RegistrationFormData = z.infer<typeof registrationSchema>
 
 export default function RegisterPage() {
+    // Password visibility states
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
     // Form validation setup
     const validation = useFormValidation({
         schema: registrationSchema,
@@ -84,168 +74,212 @@ export default function RegisterPage() {
             {/* Main Content */}
             <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                 <div className="w-full max-w-md">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">
-                            Create Your Account
-                        </h1>
-                        <p className="text-gray-400">
-                            Start securing your secrets today
-                        </p>
-                    </div>
-
                     {/* Registration Form */}
-                    <GlassmorphicForm variant="elevated" size="lg">
-                        <GlassmorphicFormSection
-                            title="Account Information"
-                            description="Enter your details to create your account"
-                        >
-                            <form onSubmit={submit} className="space-y-4">
-                                {/* Email Field */}
-                                <GlassmorphicFormField
-                                    label="Email Address"
-                                    error={getFieldErrorMessage('email')}
-                                    required
-                                >
-                                    <GlassmorphicInput
+                    <div className="glass-card p-8">
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl font-bold text-white mb-2">
+                                Create Your Account
+                            </h1>
+                            <p className="text-gray-400">
+                                Enter your details to create your account
+                            </p>
+                        </div>
+                        <form onSubmit={submit} className="space-y-6">
+                            {/* Email Field */}
+                            <div>
+                                <label htmlFor="email" className="block text-white font-medium mb-2">
+                                    Email Address *
+                                </label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
                                         {...register('email')}
                                         type="email"
-                                        variant="elevated"
-                                        size="md"
-                                        error={!!errors.email}
-                                        success={!errors.email && watchedValues.email.length > 0}
+                                        id="email"
+                                        className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Enter your email address"
                                     />
-                                </GlassmorphicFormField>
+                                </div>
+                                {errors.email && (
+                                    <p className="text-error text-sm mt-1">{errors.email.message}</p>
+                                )}
+                            </div>
 
-                                {/* Username Field */}
-                                <GlassmorphicFormField
-                                    label="Username"
-                                    error={getFieldErrorMessage('username')}
-                                    required
-                                >
-                                    <GlassmorphicInput
+                            {/* Username Field */}
+                            <div>
+                                <label htmlFor="username" className="block text-white font-medium mb-2">
+                                    Username *
+                                </label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
                                         {...register('username')}
-                                        variant="elevated"
-                                        size="md"
-                                        error={!!errors.username}
-                                        success={!errors.username && watchedValues.username.length > 0}
+                                        type="text"
+                                        id="username"
+                                        className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Choose a username"
                                     />
-                                </GlassmorphicFormField>
+                                </div>
+                                {errors.username && (
+                                    <p className="text-error text-sm mt-1">{errors.username.message}</p>
+                                )}
+                            </div>
 
-                                {/* Password Field */}
-                                <GlassmorphicFormField
-                                    label="Password"
-                                    error={getFieldErrorMessage('password')}
-                                    required
-                                >
-                                    <GlassmorphicPasswordInput
+                            {/* Password Field */}
+                            <div>
+                                <label htmlFor="password" className="block text-white font-medium mb-2">
+                                    Password *
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
                                         {...register('password')}
-                                        variant="elevated"
-                                        size="md"
-                                        error={!!errors.password}
-                                        success={!errors.password && watchedValues.password.length > 0}
+                                        type={showPassword ? "text" : "password"}
+                                        id="password"
+                                        className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Create a strong password"
                                     />
-                                </GlassmorphicFormField>
-
-                                {/* Password Strength Indicator */}
-                                {watchedPassword && (
-                                    <div className="mt-2">
-                                        <PasswordStrengthIndicator
-                                            password={watchedPassword}
-                                            variant="detailed"
-                                            showSuggestions={true}
-                                            showScore={true}
-                                        />
-                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <Eye className="w-5 h-5" />
+                                        )}
+                                    </button>
+                                </div>
+                                {errors.password && (
+                                    <p className="text-error text-sm mt-1">{errors.password.message}</p>
                                 )}
+                            </div>
 
-                                {/* Confirm Password Field */}
-                                <GlassmorphicFormField
-                                    label="Confirm Password"
-                                    error={getFieldErrorMessage('confirmPassword')}
-                                    required
-                                >
-                                    <GlassmorphicPasswordInput
+                            {/* Password Strength Indicator */}
+                            {watchedPassword && (
+                                <div className="mt-2">
+                                    <PasswordStrengthIndicator
+                                        password={watchedPassword}
+                                        variant="detailed"
+                                        showSuggestions={true}
+                                        showScore={true}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Confirm Password Field */}
+                            <div>
+                                <label htmlFor="confirmPassword" className="block text-white font-medium mb-2">
+                                    Confirm Password *
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
                                         {...register('confirmPassword')}
-                                        variant="elevated"
-                                        size="md"
-                                        error={!!errors.confirmPassword}
-                                        success={!errors.confirmPassword && watchedValues.confirmPassword.length > 0}
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        id="confirmPassword"
+                                        className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Confirm your password"
                                     />
-                                </GlassmorphicFormField>
-
-                                {/* Password Requirements */}
-                                <div className="mt-4">
-                                    <PasswordRequirements showIcons={true} />
-                                </div>
-
-                                {/* Terms and Privacy */}
-                                <div className="space-y-3">
-                                    <label className="flex items-start space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            {...register('acceptTerms')}
-                                            className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm text-gray-300">
-                                            I accept the{' '}
-                                            <Link href="/terms" className="text-blue-400 hover:text-blue-300 underline">
-                                                Terms and Conditions
-                                            </Link>
-                                        </span>
-                                    </label>
-                                    {errors.acceptTerms && (
-                                        <p className="text-red-400 text-sm">{errors.acceptTerms.message}</p>
-                                    )}
-
-                                    <label className="flex items-start space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            {...register('acceptPrivacy')}
-                                            className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm text-gray-300">
-                                            I accept the{' '}
-                                            <Link href="/privacy" className="text-blue-400 hover:text-blue-300 underline">
-                                                Privacy Policy
-                                            </Link>
-                                        </span>
-                                    </label>
-                                    {errors.acceptPrivacy && (
-                                        <p className="text-red-400 text-sm">{errors.acceptPrivacy.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Form Actions */}
-                                <GlassmorphicFormActions>
-                                    <GlassmorphicPrimaryButton
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        loading={isSubmitting}
-                                        fullWidth
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
                                     >
-                                        {isSubmitting ? 'Creating Account...' : 'Create Account'}
-                                    </GlassmorphicPrimaryButton>
-                                </GlassmorphicFormActions>
-                            </form>
-                        </GlassmorphicFormSection>
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <Eye className="w-5 h-5" />
+                                        )}
+                                    </button>
+                                </div>
+                                {errors.confirmPassword && (
+                                    <p className="text-error text-sm mt-1">{errors.confirmPassword.message}</p>
+                                )}
+                            </div>
+
+                            {/* Password Requirements Link */}
+                            <div className="mt-2">
+                                <Link
+                                    href="/help#password-requirements"
+                                    className="text-xs text-primary-blue-light hover:text-primary-blue underline"
+                                >
+                                    View password requirements
+                                </Link>
+                            </div>
+
+                            {/* Terms and Privacy */}
+                            <div className="space-y-4">
+                                <label className="flex items-start space-x-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        {...register('acceptTerms')}
+                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
+                                    />
+                                    <span className="text-sm text-gray-400">
+                                        I accept the{' '}
+                                        <Link href="/terms" className="text-primary-blue-light hover:text-primary-blue underline">
+                                            Terms and Conditions
+                                        </Link>
+                                    </span>
+                                </label>
+                                {errors.acceptTerms && (
+                                    <p className="text-error text-sm">{errors.acceptTerms.message}</p>
+                                )}
+
+                                <label className="flex items-start space-x-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        {...register('acceptPrivacy')}
+                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
+                                    />
+                                    <span className="text-sm text-gray-400">
+                                        I accept the{' '}
+                                        <Link href="/privacy" className="text-primary-blue-light hover:text-primary-blue underline">
+                                            Privacy Policy
+                                        </Link>
+                                    </span>
+                                </label>
+                                {errors.acceptPrivacy && (
+                                    <p className="text-error text-sm">{errors.acceptPrivacy.message}</p>
+                                )}
+                            </div>
+
+                            {/* Form Actions */}
+                            <div className="pt-4">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-gradient-to-r from-primary-blue to-primary-purple text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-primary-blue/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Creating Account...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Create Account
+                                            <ArrowRight className="w-4 h-4 ml-2" />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
 
                         {/* Form Footer */}
-                        <GlassmorphicFormFooter variant="subtle">
+                        <div className="mt-8 pt-6 border-t border-white/10">
                             <div className="text-center">
                                 <p className="text-gray-400">
                                     Already have an account?{' '}
-                                    <Link href="/auth/login" className="text-blue-400 hover:text-blue-300 underline">
+                                    <Link href="/auth/login" className="text-primary-blue-light hover:text-primary-blue underline">
                                         Sign in here
                                     </Link>
                                 </p>
                             </div>
-                        </GlassmorphicFormFooter>
-                    </GlassmorphicForm>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -16,6 +16,9 @@ module.exports = {
             },
         },
         extend: {
+            fontFamily: {
+                'archivo-black': ['var(--font-archivo-black)', 'sans-serif'],
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
@@ -50,16 +53,66 @@ module.exports = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
-                // Custom Secret Safe colors
+                // Core Colors - Primary Blues
+                'primary-blue': '#3B82F6',
+                'primary-blue-light': '#60A5FA',
+                'primary-blue-dark': '#2563EB',
+                'primary-blue-darker': '#1D4ED8',
+
+                // Primary Purples
+                'primary-purple': '#8B5CF6',
+                'primary-purple-light': '#A78BFA',
+                'primary-purple-dark': '#7C3AED',
+                'primary-purple-darker': '#6D28D9',
+
+                // Extended Palette - Neutrals
+                'black': '#0A0E27',
+                'gray-900': '#151A3A',
+                'gray-800': '#1E293B',
+                'gray-700': '#334155',
+                'gray-600': '#475569',
+                'gray-500': '#64748B',
+                'gray-400': '#94A3B8',
+                'gray-300': '#CBD5E1',
+                'gray-200': '#E2E8F0',
+                'gray-100': '#F1F5F9',
+                'white': '#FFFFFF',
+
+                // Accent Colors
+                'cyan': '#06B6D4',
+                'cyan-light': '#22D3EE',
+                'cyan-dark': '#0891B2',
+                'teal': '#14B8A6',
+                'indigo': '#6366F1',
+
+                // Semantic Colors
+                'success': '#10B981',
+                'success-light': '#34D399',
+                'warning': '#F59E0B',
+                'warning-light': '#FBBF24',
+                'error': '#EF4444',
+                'error-light': '#F87171',
+                'info': '#3B82F6',
+
+                // Background Variations
+                'surface-1': '#0F172A',
+                'surface-2': '#1E293B',
+                'surface-3': '#334155',
+
+                // Glass Effects
+                'glass-white': 'rgba(255, 255, 255, 0.1)',
+                'glass-border': 'rgba(255, 255, 255, 0.1)',
+                'glass-border-hover': 'rgba(255, 255, 255, 0.2)',
+
+                // Gradients
+                'gradient-start': '#3B82F6',
+                'gradient-end': '#8B5CF6',
+
+                // Legacy colors for backward compatibility
                 'primary-dark': '#0A0E27',
                 'secondary-dark': '#151A3A',
                 'accent-blue': '#3B82F6',
                 'accent-cyan': '#06B6D4',
-                'gradient-start': '#3B82F6',
-                'gradient-end': '#8B5CF6',
-                'glass-white': 'rgba(255, 255, 255, 0.1)',
-                'glass-border': 'rgba(255, 255, 255, 0.1)',
-                'glass-border-hover': 'rgba(255, 255, 255, 0.2)',
             },
             borderRadius: {
                 lg: "var(--radius)",

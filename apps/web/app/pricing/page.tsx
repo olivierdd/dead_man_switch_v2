@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Check } from 'lucide-react'
+import { Check, Mail } from 'lucide-react'
 
 export default function PricingPage() {
     const pricingTiers = [
@@ -94,27 +94,30 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
                                 How It Works
                             </Link>
-                            <Link href="/pricing" className="text-blue-400 font-medium">
+                            <Link href="/pricing" className="text-primary-blue-light font-medium">
                                 Pricing
                             </Link>
-                            <Link href="/security" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/security" className="text-gray-400 hover:text-white transition-colors">
                                 Security
                             </Link>
-                            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
                                 About
                             </Link>
                         </div>
@@ -135,7 +138,7 @@ export default function PricingPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">
@@ -143,7 +146,7 @@ export default function PricingPage() {
                             Simple, Transparent
                             <span className="block text-gradient">Pricing</span>
                         </h1>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                             Choose the plan that fits your needs. All plans include our core security features
                             and zero-knowledge encryption. No hidden fees, no surprises.
                         </p>
@@ -154,12 +157,12 @@ export default function PricingPage() {
                         {pricingTiers.map((tier, index) => (
                             <div
                                 key={index}
-                                className={`glass-card p-6 relative ${tier.popular ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+                                className={`glass-card p-6 relative ${tier.popular ? 'ring-2 ring-primary-blue ring-opacity-50' : ''
                                     }`}
                             >
                                 {tier.popular && (
                                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                                        <span className="bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                                        <span className="bg-primary-blue text-white text-xs font-medium px-3 py-1 rounded-full">
                                             Most Popular
                                         </span>
                                     </div>
@@ -179,8 +182,8 @@ export default function PricingPage() {
                                 <ul className="space-y-3 mb-6">
                                     {tier.features.map((feature, featureIndex) => (
                                         <li key={featureIndex} className="flex items-start space-x-3">
-                                            <Check className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                                            <span className="text-gray-300 text-sm">{feature}</span>
+                                            <Check className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-400 text-sm">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -188,8 +191,8 @@ export default function PricingPage() {
                                 <Link href={tier.href} className="w-full">
                                     <Button
                                         className={`w-full ${tier.popular
-                                                ? 'btn-gradient'
-                                                : 'bg-white/10 hover:bg-white/20 text-white'
+                                            ? 'btn-gradient'
+                                            : 'bg-white/10 hover:bg-white/20 text-white'
                                             }`}
                                     >
                                         {tier.cta}
@@ -292,7 +295,7 @@ export default function PricingPage() {
                     <div className="text-center">
                         <h2 className="text-3xl font-bold text-white mb-6">Ready to Get Started?</h2>
                         <p className="text-xl text-gray-300 mb-8">
-                            Join thousands of users who trust Secret Safe with their most important messages.
+                            Join thousands of users who trust Forevr with their most important messages.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link href="/auth/register">

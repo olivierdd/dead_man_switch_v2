@@ -4,14 +4,17 @@ import { Mail, MessageCircle, Phone, MapPin, Clock, Send } from 'lucide-react'
 
 export default function ContactPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
-            <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-gray-600">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
@@ -45,7 +48,7 @@ export default function ContactPage() {
             </nav>
 
             {/* Main Content */}
-            <main className="pt-16 pb-16">
+            <main className="pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Hero Section */}
                     <div className="text-center mb-16">
@@ -54,7 +57,7 @@ export default function ContactPage() {
                             <span className="block text-gradient">Touch</span>
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                            Have questions about Secret Safe? Need help with your account?
+                            Have questions about Forevr? Need help with your account?
                             Want to discuss enterprise solutions? We're here to help.
                         </p>
                     </div>
@@ -192,9 +195,9 @@ export default function ContactPage() {
                         <h2 className="text-3xl font-bold text-white mb-8 text-center">Company Information</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <h3 className="text-xl font-semibold text-white mb-4">About Secret Safe</h3>
+                                <h3 className="text-xl font-semibold text-white mb-4">About Forevr</h3>
                                 <p className="text-gray-400 leading-relaxed mb-6">
-                                    Secret Safe is a privacy-first digital dead man's switch service that enables users
+                                    Forevr is a privacy-first digital dead man's switch service that enables users
                                     to securely store and conditionally release messages to designated recipients.
                                     We're committed to protecting your digital legacy with zero-knowledge encryption
                                     and blockchain backup technology.

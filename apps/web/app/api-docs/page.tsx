@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Code, BookOpen, Zap, Shield, Database, Globe } from 'lucide-react'
+import { Code, BookOpen, Zap, Shield, Database, Globe, Mail } from 'lucide-react'
 
 export default function ApiDocsPage() {
     const apiEndpoints = [
@@ -134,14 +134,17 @@ messages = messages_response.json()`
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
             <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
@@ -184,7 +187,7 @@ messages = messages_response.json()`
                             <span className="block text-gradient">Documentation</span>
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                            Integrate Secret Safe into your applications with our comprehensive REST API.
+                            Integrate Forevr into your applications with our comprehensive REST API.
                             Build secure, automated systems for digital legacy management.
                         </p>
                     </div>
@@ -227,9 +230,9 @@ messages = messages_response.json()`
                                 <div key={index} className="glass-card p-6">
                                     <div className="flex items-center space-x-4 mb-4">
                                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${endpoint.method === 'GET' ? 'bg-green-500/20 text-green-400' :
-                                                endpoint.method === 'POST' ? 'bg-blue-500/20 text-blue-400' :
-                                                    endpoint.method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        'bg-red-500/20 text-red-400'
+                                            endpoint.method === 'POST' ? 'bg-blue-500/20 text-blue-400' :
+                                                endpoint.method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                    'bg-red-500/20 text-red-400'
                                             }`}>
                                             {endpoint.method}
                                         </span>

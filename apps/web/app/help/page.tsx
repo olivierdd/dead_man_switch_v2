@@ -6,7 +6,7 @@ export default function HelpCenterPage() {
     const helpCategories = [
         {
             title: "Getting Started",
-            description: "Learn the basics of Secret Safe",
+            description: "Learn the basics of Forevr",
             articles: [
                 "How to create your first message",
                 "Setting up check-in schedules",
@@ -68,8 +68,8 @@ export default function HelpCenterPage() {
 
     const faqs = [
         {
-            question: "How does Secret Safe ensure my messages are secure?",
-            answer: "Secret Safe uses client-side AES-256 encryption, meaning your messages are encrypted on your device before they ever reach our servers. We cannot read, access, or decrypt your content - only you and your intended recipients have access."
+            question: "How does Forevr ensure my messages are secure?",
+            answer: "Forevr uses client-side AES-256 encryption, meaning your messages are encrypted on your device before they ever reach our servers. We cannot read, access, or decrypt your content - only you and your intended recipients have access."
         },
         {
             question: "What happens if I forget to check in?",
@@ -94,14 +94,17 @@ export default function HelpCenterPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950">
             {/* Navigation */}
             <nav className="bg-black/20 backdrop-blur-xl border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
-                            <Link href="/" className="text-2xl font-bold text-white">
-                                🔐 Secret Safe
+                            <Link href="/" className="flex items-center space-x-2">
+                                <Mail className="h-8 w-8" style={{ color: '#60a5fa' }} />
+                                <span className="text-2xl font-black text-white font-archivo-black">
+                                    For<span style={{ color: '#60a5fa' }}>e</span>vr
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
@@ -144,7 +147,7 @@ export default function HelpCenterPage() {
                             <span className="block text-gradient">Center</span>
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                            Find answers to your questions, learn how to use Secret Safe,
+                            Find answers to your questions, learn how to use Forevr,
                             and get the support you need to secure your digital legacy.
                         </p>
                     </div>
@@ -207,7 +210,7 @@ export default function HelpCenterPage() {
                     <div className="glass-card p-8 mb-16">
                         <h2 className="text-3xl font-bold text-white mb-8 text-center">Still Need Help?</h2>
                         <p className="text-xl text-gray-300 text-center mb-8 max-w-3xl mx-auto">
-                            Our support team is here to help you get the most out of Secret Safe.
+                            Our support team is here to help you get the most out of Forevr.
                             Don't hesitate to reach out if you need assistance.
                         </p>
 
