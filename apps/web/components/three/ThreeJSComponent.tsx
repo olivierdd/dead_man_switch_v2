@@ -12,9 +12,9 @@ interface ThreeJSComponentProps {
 }
 
 export default function ThreeJSComponent({
-    particleCount = 500, // Increased for more visible effect
-    particleSize = 6, // Larger size to ensure visibility
-    particleColor = '#60A5FA', // Brighter blue for better visibility
+    particleCount = 200, // Reduced for better performance
+    particleSize = 12, // Much larger size for visibility
+    particleColor = '#FFFFFF', // White for maximum visibility
     animationSpeed = 0.002, // Faster, more fluid movement
     enableMouseInteraction = true
 }: ThreeJSComponentProps) {
@@ -39,15 +39,15 @@ export default function ThreeJSComponent({
             sceneRef.current = scene
             console.log('ParticleBackground: Scene created')
 
-            // Camera setup - positioned like the example
+            // Camera setup - positioned to see particles
             const camera = new THREE.PerspectiveCamera(
                 75,
                 window.innerWidth / window.innerHeight,
                 0.1,
                 1000
             )
-            camera.position.z = 5 // Match example camera position
-            console.log('ParticleBackground: Camera created')
+            camera.position.z = 1 // Closer to see particles better
+            console.log('ParticleBackground: Camera created at z:', camera.position.z)
 
             // Renderer setup
             const renderer = new THREE.WebGLRenderer({
@@ -60,32 +60,34 @@ export default function ThreeJSComponent({
             console.log('ParticleBackground: Renderer created')
 
             // Create multiple particle systems with different sizes for visible contrast
-            const smallParticles = new Float32Array((particleCount * 0.6) * 3)  // 60% small particles
+            const smallParticles = new Float32Array((particleCount * 0.5) * 3)  // 50% small particles
             const mediumParticles = new Float32Array((particleCount * 0.3) * 3) // 30% medium particles  
-            const largeParticles = new Float32Array((particleCount * 0.1) * 3)  // 10% large particles
+            const largeParticles = new Float32Array((particleCount * 0.2) * 3)  // 20% large particles
 
             const color = new THREE.Color(particleColor)
 
-            // Small particles (60% of total)
+            // Small particles (50% of total)
             for (let i = 0; i < smallParticles.length / 3; i++) {
-                smallParticles[i * 3] = (Math.random() - 0.5) * 10
-                smallParticles[i * 3 + 1] = (Math.random() - 0.5) * 10
-                smallParticles[i * 3 + 2] = (Math.random() - 0.5) * 10
+                smallParticles[i * 3] = (Math.random() - 0.5) * 4 // Smaller range
+                smallParticles[i * 3 + 1] = (Math.random() - 0.5) * 4 // Smaller range
+                smallParticles[i * 3 + 2] = (Math.random() - 0.5) * 4 // Smaller range
             }
 
             // Medium particles (30% of total)
             for (let i = 0; i < mediumParticles.length / 3; i++) {
-                mediumParticles[i * 3] = (Math.random() - 0.5) * 10
-                mediumParticles[i * 3 + 1] = (Math.random() - 0.5) * 10
-                mediumParticles[i * 3 + 2] = (Math.random() - 0.5) * 10
+                mediumParticles[i * 3] = (Math.random() - 0.5) * 4 // Smaller range
+                mediumParticles[i * 3 + 1] = (Math.random() - 0.5) * 4 // Smaller range
+                mediumParticles[i * 3 + 2] = (Math.random() - 0.5) * 4 // Smaller range
             }
 
-            // Large particles (10% of total)
+            // Large particles (20% of total)
             for (let i = 0; i < largeParticles.length / 3; i++) {
-                largeParticles[i * 3] = (Math.random() - 0.5) * 10
-                largeParticles[i * 3 + 1] = (Math.random() - 0.5) * 10
-                largeParticles[i * 3 + 2] = (Math.random() - 0.5) * 10
+                largeParticles[i * 3] = (Math.random() - 0.5) * 4 // Smaller range
+                largeParticles[i * 3 + 1] = (Math.random() - 0.5) * 4 // Smaller range
+                largeParticles[i * 3 + 2] = (Math.random() - 0.5) * 4 // Smaller range
             }
+            
+            console.log('ParticleBackground: Created', smallParticles.length / 3, 'small,', mediumParticles.length / 3, 'medium,', largeParticles.length / 3, 'large particles')
 
             // Create geometries and materials for each size
             const smallGeometry = new THREE.BufferGeometry()
@@ -97,35 +99,35 @@ export default function ThreeJSComponent({
             const largeGeometry = new THREE.BufferGeometry()
             largeGeometry.setAttribute('position', new THREE.BufferAttribute(largeParticles, 3))
 
-            // Materials with different sizes - more visible variation
+            // Materials with different sizes - highly visible
             const smallMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 0.8, // Small particles
-                transparent: true,
-                opacity: 0.8, // Increased opacity
+                size: particleSize * 0.6, // Small particles
+                transparent: false, // No transparency for maximum visibility
+                opacity: 1.0,
                 sizeAttenuation: false,
-                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
-                depthWrite: false
+                blending: THREE.NormalBlending, // Back to normal blending
+                depthWrite: true
             })
 
             const mediumMaterial = new THREE.PointsMaterial({
                 color: particleColor,
                 size: particleSize, // Medium particles (base size)
-                transparent: true,
-                opacity: 1.0, // Full opacity
+                transparent: false, // No transparency for maximum visibility
+                opacity: 1.0,
                 sizeAttenuation: false,
-                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
-                depthWrite: false
+                blending: THREE.NormalBlending, // Back to normal blending
+                depthWrite: true
             })
 
             const largeMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 1.8, // Large particles
-                transparent: true,
-                opacity: 1.0, // Full opacity
+                size: particleSize * 1.5, // Large particles
+                transparent: false, // No transparency for maximum visibility
+                opacity: 1.0,
                 sizeAttenuation: false,
-                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
-                depthWrite: false
+                blending: THREE.NormalBlending, // Back to normal blending
+                depthWrite: true
             })
 
             // Create and add all particle systems
