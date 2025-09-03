@@ -12,10 +12,10 @@ interface ThreeJSComponentProps {
 }
 
 export default function ThreeJSComponent({
-    particleCount = 300, // Increased for denser, more elegant effect
-    particleSize = 4, // Larger size to ensure visibility
-    particleColor = '#E0E7FF', // Soft, elegant blue
-    animationSpeed = 0.001, // Faster, more fluid movement
+    particleCount = 500, // Increased for more visible effect
+    particleSize = 6, // Larger size to ensure visibility
+    particleColor = '#60A5FA', // Brighter blue for better visibility
+    animationSpeed = 0.002, // Faster, more fluid movement
     enableMouseInteraction = true
 }: ThreeJSComponentProps) {
     const mountRef = useRef<HTMLDivElement>(null)
@@ -33,6 +33,7 @@ export default function ThreeJSComponent({
         console.log('ParticleBackground: Initializing Three.js component')
 
         try {
+            console.log('ParticleBackground: Starting initialization...')
             // Scene setup
             const scene = new THREE.Scene()
             sceneRef.current = scene
@@ -96,35 +97,35 @@ export default function ThreeJSComponent({
             const largeGeometry = new THREE.BufferGeometry()
             largeGeometry.setAttribute('position', new THREE.BufferAttribute(largeParticles, 3))
 
-            // Materials with different sizes - more subtle variation
+            // Materials with different sizes - more visible variation
             const smallMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 0.7, // Small particles (was 0.5)
+                size: particleSize * 0.8, // Small particles
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.8, // Increased opacity
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending,
-                depthWrite: true
+                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
+                depthWrite: false
             })
 
             const mediumMaterial = new THREE.PointsMaterial({
                 color: particleColor,
                 size: particleSize, // Medium particles (base size)
                 transparent: true,
-                opacity: 0.8,
+                opacity: 1.0, // Full opacity
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending,
-                depthWrite: true
+                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
+                depthWrite: false
             })
 
             const largeMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 1.5, // Large particles (was 2.0)
+                size: particleSize * 1.8, // Large particles
                 transparent: true,
-                opacity: 1.0,
+                opacity: 1.0, // Full opacity
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending,
-                depthWrite: true
+                blending: THREE.AdditiveBlending, // Changed to additive for better visibility
+                depthWrite: false
             })
 
             // Create and add all particle systems
@@ -186,7 +187,8 @@ export default function ThreeJSComponent({
 
             // Mount with better positioning
             mountRef.current.appendChild(renderer.domElement)
-            console.log('ParticleBackground: Canvas mounted to DOM')
+            console.log('ParticleBackground: Canvas mounted to DOM successfully!')
+            console.log('ParticleBackground: Canvas size:', renderer.domElement.width, 'x', renderer.domElement.height)
 
             // Cleanup
             return () => {
@@ -213,8 +215,8 @@ export default function ThreeJSComponent({
             ref={mountRef}
             className="fixed inset-0 pointer-events-none"
             style={{
-                zIndex: 0, // Changed from -1 to 0 to ensure visibility
-                position: 'absolute',
+                zIndex: -1, // Back to -1 to be behind content
+                position: 'fixed',
                 top: 0,
                 left: 0,
                 width: '100%',

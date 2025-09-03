@@ -15,7 +15,7 @@ import {
 export default function HomePage() {
     // Test deployment with updated Vercel secrets
     return (
-        <div className="relative min-h-screen">
+        <div className="relative min-h-screen bg-gradient-to-br from-primary-dark via-secondary-dark to-primary-dark">
             {/* Particle Background */}
             <ParticleBackground />
 
