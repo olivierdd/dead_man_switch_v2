@@ -12,10 +12,10 @@ interface ThreeJSComponentProps {
 }
 
 export default function ThreeJSComponent({
-    particleCount = 200, // Reduced for better performance
-    particleSize = 12, // Much larger size for visibility
-    particleColor = '#FFFFFF', // White for maximum visibility
-    animationSpeed = 0.002, // Faster, more fluid movement
+    particleCount = 300, // Good balance of performance and effect
+    particleSize = 3, // Appropriate size for elegant effect
+    particleColor = '#60A5FA', // Nice blue color for the theme
+    animationSpeed = 0.001, // Smooth, elegant movement
     enableMouseInteraction = true
 }: ThreeJSComponentProps) {
     const mountRef = useRef<HTMLDivElement>(null)
@@ -56,11 +56,8 @@ export default function ThreeJSComponent({
             })
             renderer.setSize(window.innerWidth, window.innerHeight)
             renderer.setClearColor(0x000000, 0) // Completely transparent
-            rendererRef.current = renderer
+                        rendererRef.current = renderer
             console.log('ParticleBackground: Renderer created')
-            
-            // Add a visible background temporarily for debugging
-            renderer.domElement.style.background = 'rgba(255, 0, 0, 0.1)' // Very light red background
 
             // Create multiple particle systems with different sizes for visible contrast
             const smallParticles = new Float32Array((particleCount * 0.5) * 3)  // 50% small particles
@@ -102,35 +99,35 @@ export default function ThreeJSComponent({
             const largeGeometry = new THREE.BufferGeometry()
             largeGeometry.setAttribute('position', new THREE.BufferAttribute(largeParticles, 3))
 
-            // Materials with different sizes - highly visible
+            // Materials with different sizes - elegant and subtle
             const smallMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 0.6, // Small particles
-                transparent: false, // No transparency for maximum visibility
-                opacity: 1.0,
+                size: particleSize * 0.7, // Small particles
+                transparent: true,
+                opacity: 0.6, // Subtle transparency
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending, // Back to normal blending
-                depthWrite: true
+                blending: THREE.NormalBlending,
+                depthWrite: false
             })
 
             const mediumMaterial = new THREE.PointsMaterial({
                 color: particleColor,
                 size: particleSize, // Medium particles (base size)
-                transparent: false, // No transparency for maximum visibility
-                opacity: 1.0,
+                transparent: true,
+                opacity: 0.8, // Slightly more visible
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending, // Back to normal blending
-                depthWrite: true
+                blending: THREE.NormalBlending,
+                depthWrite: false
             })
 
             const largeMaterial = new THREE.PointsMaterial({
                 color: particleColor,
-                size: particleSize * 1.5, // Large particles
-                transparent: false, // No transparency for maximum visibility
-                opacity: 1.0,
+                size: particleSize * 1.3, // Large particles
+                transparent: true,
+                opacity: 1.0, // Most visible
                 sizeAttenuation: false,
-                blending: THREE.NormalBlending, // Back to normal blending
-                depthWrite: true
+                blending: THREE.NormalBlending,
+                depthWrite: false
             })
 
             // Create and add all particle systems
@@ -160,8 +157,7 @@ export default function ThreeJSComponent({
                 window.addEventListener('mousemove', handleMouseMove)
             }
 
-            // Animation - Simple rotation like example
-            let frameCount = 0
+                        // Animation - Simple rotation like example
             const animate = () => {
                 if (!particlesRef.current) return
 
@@ -176,13 +172,6 @@ export default function ThreeJSComponent({
                 particlesRef.current.large.rotation.y += animationSpeed
 
                 renderer.render(scene, camera)
-                
-                // Debug logging every 60 frames (about once per second)
-                frameCount++
-                if (frameCount % 60 === 0) {
-                    console.log('ParticleBackground: Animation frame', frameCount, 'particles visible:', particlesRef.current.small.visible)
-                }
-                
                 animationIdRef.current = requestAnimationFrame(animate)
             }
 
