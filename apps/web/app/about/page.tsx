@@ -73,16 +73,16 @@ export default function AboutPage() {
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
                                 How It Works
                             </Link>
-                            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
                                 Pricing
                             </Link>
-                            <Link href="/security" className="text-gray-300 hover:text-white transition-colors">
+                            <Link href="/security" className="text-gray-400 hover:text-white transition-colors">
                                 Security
                             </Link>
-                            <Link href="/about" className="text-blue-400 font-medium">
+                            <Link href="/about" className="text-primary-blue-light font-medium">
                                 About
                             </Link>
                         </div>
