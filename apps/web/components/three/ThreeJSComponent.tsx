@@ -58,6 +58,9 @@ export default function ThreeJSComponent({
             renderer.setClearColor(0x000000, 0) // Completely transparent
             rendererRef.current = renderer
             console.log('ParticleBackground: Renderer created')
+            
+            // Add a visible background temporarily for debugging
+            renderer.domElement.style.background = 'rgba(255, 0, 0, 0.1)' // Very light red background
 
             // Create multiple particle systems with different sizes for visible contrast
             const smallParticles = new Float32Array((particleCount * 0.5) * 3)  // 50% small particles
@@ -86,7 +89,7 @@ export default function ThreeJSComponent({
                 largeParticles[i * 3 + 1] = (Math.random() - 0.5) * 4 // Smaller range
                 largeParticles[i * 3 + 2] = (Math.random() - 0.5) * 4 // Smaller range
             }
-            
+
             console.log('ParticleBackground: Created', smallParticles.length / 3, 'small,', mediumParticles.length / 3, 'medium,', largeParticles.length / 3, 'large particles')
 
             // Create geometries and materials for each size
@@ -158,6 +161,7 @@ export default function ThreeJSComponent({
             }
 
             // Animation - Simple rotation like example
+            let frameCount = 0
             const animate = () => {
                 if (!particlesRef.current) return
 
@@ -172,6 +176,13 @@ export default function ThreeJSComponent({
                 particlesRef.current.large.rotation.y += animationSpeed
 
                 renderer.render(scene, camera)
+                
+                // Debug logging every 60 frames (about once per second)
+                frameCount++
+                if (frameCount % 60 === 0) {
+                    console.log('ParticleBackground: Animation frame', frameCount, 'particles visible:', particlesRef.current.small.visible)
+                }
+                
                 animationIdRef.current = requestAnimationFrame(animate)
             }
 
@@ -217,12 +228,13 @@ export default function ThreeJSComponent({
             ref={mountRef}
             className="fixed inset-0 pointer-events-none"
             style={{
-                zIndex: -1, // Back to -1 to be behind content
+                zIndex: 1, // Above background but below content
                 position: 'fixed',
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: '100%'
+                height: '100%',
+                background: 'transparent'
             }}
         />
     )
