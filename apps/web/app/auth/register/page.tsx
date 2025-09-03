@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import { ParticleBackground } from '@/components/three/ParticleBackground'
 import { PasswordStrengthIndicator } from '@/components/auth'
 import { useFormValidation, useFormSubmission } from '@/lib/hooks/use-form-validation'
+import { useAuthActions } from '@/lib/auth/auth-hooks'
 import { z } from 'zod'
 import Link from 'next/link'
 import { Mail, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
@@ -16,9 +17,11 @@ import { Mail, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 // Registration form schema
 const registrationSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
-    username: z.string().min(1, 'Username is required').min(3, 'Username must be at least 3 characters'),
-    password: z.string().min(1, 'Password is required'),
+    password: z.string().min(12, 'Password must be at least 12 characters'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
+    first_name: z.string().min(1, 'First name is required'),
+    last_name: z.string().min(1, 'Last name is required'),
+    display_name: z.string().min(2, 'Display name must be at least 2 characters'),
     acceptTerms: z.boolean().refine((val) => val === true, 'You must accept the terms and conditions'),
     acceptPrivacy: z.boolean().refine((val) => val === true, 'You must accept the privacy policy')
 }).refine((data) => data.password === data.confirmPassword, {
@@ -32,6 +35,10 @@ export default function RegisterPage() {
     // Password visibility states
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [registrationSuccess, setRegistrationSuccess] = useState(false)
+
+    // Auth actions
+    const { register: registerUser } = useAuthActions()
 
     // Form validation setup
     const validation = useFormValidation({
@@ -39,9 +46,11 @@ export default function RegisterPage() {
         mode: 'onBlur',
         defaultValues: {
             email: '',
-            username: '',
             password: '',
             confirmPassword: '',
+            first_name: '',
+            last_name: '',
+            display_name: '',
             acceptTerms: false,
             acceptPrivacy: false
         }
@@ -57,12 +66,33 @@ export default function RegisterPage() {
     const { submit, isSubmitting } = useFormSubmission(
         form,
         async (data: RegistrationFormData) => {
-            console.log('Registration data:', data)
-            // TODO: Implement registration logic
-            alert('Registration form submitted! Check console for data.')
+            try {
+                console.log('Registration data:', data)
+                
+                // Call the backend API
+                const response = await registerUser({
+                    email: data.email,
+                    password: data.password,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    display_name: data.display_name,
+                    role: 'writer' // Default role
+                })
+                
+                console.log('Registration successful:', response)
+                setRegistrationSuccess(true)
+                
+                // Clear form
+                clearAllErrors()
+                
+            } catch (error: any) {
+                console.error('Registration error:', error)
+                throw error // Re-throw to trigger error handling
+            }
         },
         (error) => {
             console.error('Registration error:', error)
+            // Error will be displayed by the form validation system
         }
     )
 
@@ -78,13 +108,17 @@ export default function RegisterPage() {
                     <div className="glass-card p-8">
                         <div className="text-center mb-8">
                             <h1 className="text-3xl font-bold text-white mb-2">
-                                Create Your Account
+                                {registrationSuccess ? 'Account Created!' : 'Create Your Account'}
                             </h1>
                             <p className="text-gray-400">
-                                Enter your details to create your account
+                                {registrationSuccess 
+                                    ? 'Your account has been created successfully. Please check your email for verification instructions.'
+                                    : 'Enter your details to create your account'
+                                }
                             </p>
                         </div>
-                        <form onSubmit={submit} className="space-y-6">
+                        {!registrationSuccess ? (
+                            <form onSubmit={submit} className="space-y-6">
                             {/* Email Field */}
                             <div>
                                 <label htmlFor="email" className="block text-white font-medium mb-2">
@@ -105,24 +139,58 @@ export default function RegisterPage() {
                                 )}
                             </div>
 
-                            {/* Username Field */}
+                            {/* Display Name Field */}
                             <div>
-                                <label htmlFor="username" className="block text-white font-medium mb-2">
-                                    Username *
+                                <label htmlFor="display_name" className="block text-white font-medium mb-2">
+                                    Display Name *
                                 </label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
-                                        {...register('username')}
+                                        {...register('display_name')}
                                         type="text"
-                                        id="username"
+                                        id="display_name"
                                         className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Choose a username"
+                                        placeholder="Choose a display name"
                                     />
                                 </div>
-                                {errors.username && (
-                                    <p className="text-error text-sm mt-1">{errors.username.message}</p>
+                                {errors.display_name && (
+                                    <p className="text-error text-sm mt-1">{errors.display_name.message}</p>
                                 )}
+                            </div>
+
+                            {/* First and Last Name Fields */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="first_name" className="block text-white font-medium mb-2">
+                                        First Name *
+                                    </label>
+                                    <input
+                                        {...register('first_name')}
+                                        type="text"
+                                        id="first_name"
+                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                        placeholder="First name"
+                                    />
+                                    {errors.first_name && (
+                                        <p className="text-error text-sm mt-1">{errors.first_name.message}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label htmlFor="last_name" className="block text-white font-medium mb-2">
+                                        Last Name *
+                                    </label>
+                                    <input
+                                        {...register('last_name')}
+                                        type="text"
+                                        id="last_name"
+                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                        placeholder="Last name"
+                                    />
+                                    {errors.last_name && (
+                                        <p className="text-error text-sm mt-1">{errors.last_name.message}</p>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Password Field */}
@@ -267,18 +335,46 @@ export default function RegisterPage() {
                                 </button>
                             </div>
                         </form>
+                        ) : (
+                            <div className="text-center space-y-6">
+                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
+                                    <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div className="space-y-4">
+                                    <p className="text-gray-300">
+                                        Your account has been created successfully!
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                        Please check your email for verification instructions before signing in.
+                                    </p>
+                                </div>
+                                <div className="pt-4">
+                                    <Link 
+                                        href="/auth/login" 
+                                        className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-blue to-primary-purple text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary-blue/25 transition-all duration-300"
+                                    >
+                                        Go to Sign In
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Form Footer */}
-                        <div className="mt-8 pt-6 border-t border-white/10">
-                            <div className="text-center">
-                                <p className="text-gray-400">
-                                    Already have an account?{' '}
-                                    <Link href="/auth/login" className="text-primary-blue-light hover:text-primary-blue underline">
-                                        Sign in here
-                                    </Link>
-                                </p>
+                        {!registrationSuccess && (
+                            <div className="mt-8 pt-6 border-t border-white/10">
+                                <div className="text-center">
+                                    <p className="text-gray-400">
+                                        Already have an account?{' '}
+                                        <Link href="/auth/login" className="text-primary-blue-light hover:text-primary-blue underline">
+                                            Sign in here
+                                        </Link>
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -56,7 +56,7 @@ export default function ThreeJSComponent({
             })
             renderer.setSize(window.innerWidth, window.innerHeight)
             renderer.setClearColor(0x000000, 0) // Completely transparent
-                        rendererRef.current = renderer
+            rendererRef.current = renderer
             console.log('ParticleBackground: Renderer created')
 
             // Create multiple particle systems with different sizes for visible contrast
@@ -157,7 +157,7 @@ export default function ThreeJSComponent({
                 window.addEventListener('mousemove', handleMouseMove)
             }
 
-                        // Animation - Simple rotation like example
+            // Animation - Simple rotation like example
             const animate = () => {
                 if (!particlesRef.current) return
 
