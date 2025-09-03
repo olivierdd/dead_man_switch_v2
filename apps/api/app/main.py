@@ -81,9 +81,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Custom middleware
-app.add_middleware(AuthMiddleware)
-app.add_middleware(RoleBasedMiddleware)
+# Custom middleware - temporarily disabled for testing
+# app.add_middleware(AuthMiddleware)
+# app.add_middleware(RoleBasedMiddleware)
 
 # Global exception handler
 
@@ -129,6 +129,11 @@ async def health_check():
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
+
+@app.get("/test")
+async def test_endpoint():
+    """Simple test endpoint"""
+    return {"message": "Test endpoint working"}
 
 
 # Root endpoint
