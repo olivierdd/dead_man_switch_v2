@@ -369,7 +369,7 @@ def require_verification_status(verification_required: bool = True):
 
 @router.post("/register", response_model=UserProfile)
 @rate_limit_auth_endpoint("register")
-async def register(user_data: UserCreate, db: Session = Depends(get_db)):
+async def register(user_data: UserCreate, request: Request, db: Session = Depends(get_db)):
     """Register a new user"""
 
     # Check if email already exists
@@ -460,7 +460,7 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 @rate_limit_auth_endpoint("login")
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), request: Request, db: Session = Depends(get_db)
 ):
     """Login user and return access token"""
 
@@ -616,7 +616,7 @@ async def refresh_token(current_user: User = Depends(get_current_user)):
 
 @router.post("/forgot-password")
 @rate_limit_auth_endpoint("password_reset")
-async def forgot_password(email: str):
+async def forgot_password(email: str, request: Request):
     """Send password reset email"""
     # TODO: Implement password reset
     # - Check if email exists
@@ -628,7 +628,7 @@ async def forgot_password(email: str):
 
 @router.post("/reset-password")
 @rate_limit_auth_endpoint("password_reset")
-async def reset_password(password_data: PasswordReset, db: Session = Depends(get_db)):
+async def reset_password(password_data: PasswordReset, request: Request, db: Session = Depends(get_db)):
     """Reset password with token and password strength validation"""
     # TODO: Implement password reset
     # - Validate reset token
