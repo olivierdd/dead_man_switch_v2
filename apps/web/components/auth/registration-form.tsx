@@ -129,7 +129,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
         if (score <= 2) return { score, label: 'Weak', color: 'text-red-500' }
         if (score <= 4) return { score, label: 'Fair', color: 'text-yellow-500' }
-        if (score <= 6) return { score, label: 'Good', color: 'text-blue-500' }
+        if (score <= 6) return { score, label: 'Good', color: 'text-primary-blue' }
         return { score, label: 'Strong', color: 'text-green-500' }
     }
 
@@ -185,7 +185,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('email')}
                             type="email"
                             id="email"
-                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="Enter your email"
                         />
                     </div>
@@ -208,7 +208,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('password')}
                             type={showPassword ? 'text' : 'password'}
                             id="password"
-                            className="w-full pl-10 pr-12 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full pl-10 pr-12 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="Create a strong password"
                         />
                         <button
@@ -231,7 +231,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                                 <div
                                     className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.score <= 2 ? 'bg-red-500' :
                                             passwordStrength.score <= 4 ? 'bg-yellow-500' :
-                                                passwordStrength.score <= 6 ? 'bg-blue-500' : 'bg-green-500'
+                                                passwordStrength.score <= 6 ? 'bg-primary-blue' : 'bg-green-500'
                                         }`}
                                     style={{ width: `${(passwordStrength.score / 7) * 100}%` }}
                                 />
@@ -258,7 +258,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('confirmPassword')}
                             type={showConfirmPassword ? 'text' : 'password'}
                             id="confirmPassword"
-                            className="w-full pl-10 pr-12 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full pl-10 pr-12 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="Confirm your password"
                         />
                         <button
@@ -288,7 +288,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('displayName')}
                             type="text"
                             id="displayName"
-                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="Choose a display name"
                         />
                     </div>
@@ -310,7 +310,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('firstName')}
                             type="text"
                             id="firstName"
-                            className="w-full px-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="First name"
                         />
                         {errors.firstName && (
@@ -329,7 +329,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('lastName')}
                             type="text"
                             id="lastName"
-                            className="w-full px-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200"
                             placeholder="Last name"
                         />
                         {errors.lastName && (
@@ -351,7 +351,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                         <select
                             {...register('role')}
                             id="role"
-                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
+                            className="w-full pl-10 pr-4 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                         >
                             <option value="writer" className="bg-gray-800 text-white">Writer - Create and manage messages</option>
                             <option value="reader" className="bg-gray-800 text-white">Reader - Access shared messages only</option>
@@ -372,7 +372,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('acceptTerms')}
                             type="checkbox"
                             id="acceptTerms"
-                            className="mt-1 w-4 h-4 text-blue-600 bg-white/5 border-white/10 rounded focus:ring-blue-500 focus:ring-2"
+                            className="mt-1 w-4 h-4 text-primary-blue bg-white/5 border-white/10 rounded focus:ring-primary-blue focus:ring-2"
                         />
                         <label htmlFor="acceptTerms" className="text-sm text-gray-300">
                             I accept the{' '}
@@ -393,7 +393,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             {...register('acceptPrivacy')}
                             type="checkbox"
                             id="acceptPrivacy"
-                            className="mt-1 w-4 h-4 text-blue-600 bg-white/5 border-white/10 rounded focus:ring-blue-500 focus:ring-2"
+                            className="mt-1 w-4 h-4 text-primary-blue bg-white/5 border-white/10 rounded focus:ring-primary-blue focus:ring-2"
                         />
                         <label htmlFor="acceptPrivacy" className="text-sm text-gray-300">
                             I accept the{' '}

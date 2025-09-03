@@ -174,7 +174,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
                             strength.score <= 2 ? 'bg-red-500' :
                                 strength.score <= 3 ? 'bg-orange-500' :
                                     strength.score <= 4 ? 'bg-yellow-500' :
-                                        strength.score <= 5 ? 'bg-blue-500' :
+                                        strength.score <= 5 ? 'bg-primary-blue' :
                                             'bg-green-500'
                         )}
                         style={{ width: `${(strength.score / 7) * 100}%` }}
@@ -250,7 +250,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
                         strength.score <= 2 ? 'bg-red-500' :
                             strength.score <= 3 ? 'bg-orange-500' :
                                 strength.score <= 4 ? 'bg-yellow-500' :
-                                    strength.score <= 5 ? 'bg-blue-500' :
+                                    strength.score <= 5 ? 'bg-primary-blue' :
                                         'bg-green-500'
                     )}
                     style={{ width: `${(strength.score / 7) * 100}%` }}

@@ -230,7 +230,7 @@ messages = messages_response.json()`
                                 <div key={index} className="glass-card p-6">
                                     <div className="flex items-center space-x-4 mb-4">
                                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${endpoint.method === 'GET' ? 'bg-green-500/20 text-green-400' :
-                                            endpoint.method === 'POST' ? 'bg-blue-500/20 text-blue-400' :
+                                            endpoint.method === 'POST' ? 'bg-primary-blue/20 text-primary-blue-light' :
                                                 endpoint.method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400' :
                                                     'bg-red-500/20 text-red-400'
                                             }`}>

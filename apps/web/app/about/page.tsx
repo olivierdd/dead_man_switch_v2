@@ -175,7 +175,7 @@ export default function AboutPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
                             {team.map((member, index) => (
                                 <div key={index} className="text-center">
-                                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                                    <div className="w-24 h-24 bg-gradient-to-br from-primary-blue to-primary-purple rounded-full mx-auto mb-6 flex items-center justify-center">
                                         <span className="text-3xl text-white font-bold">
                                             {member.name.split(' ').map(n => n[0]).join('')}
                                         </span>

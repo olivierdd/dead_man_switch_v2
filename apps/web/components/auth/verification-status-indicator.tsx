@@ -139,7 +139,7 @@ export function VerificationStatusIndicator({
     if (isLoading) {
         return (
             <div className={`flex items-center space-x-3 ${className}`}>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-blue"></div>
                 <span className="text-sm text-gray-500">Checking verification status...</span>
             </div>
         );
@@ -153,7 +153,7 @@ export function VerificationStatusIndicator({
                     {statusConfig.text}
                 </span>
                 {enablePolling && isPolling && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-primary-blue rounded-full animate-pulse"></div>
                 )}
             </div>
         );
@@ -180,8 +180,8 @@ export function VerificationStatusIndicator({
 
                     {enablePolling && isPolling && (
                         <div className="flex items-center space-x-2 mt-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                            <span className="text-xs text-blue-500">
+                            <div className="w-2 h-2 bg-primary-blue rounded-full animate-pulse"></div>
+                            <span className="text-xs text-primary-blue">
                                 Auto-checking every 30s ({attemptCount}/20 attempts)
                             </span>
                         </div>

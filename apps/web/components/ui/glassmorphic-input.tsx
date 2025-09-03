@@ -155,7 +155,7 @@ export const GlassmorphicInput = forwardRef<HTMLInputElement, GlassmorphicInputP
 
                 {/* Focus Ring Effect */}
                 {isFocused && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-xl blur opacity-75 -z-10" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-blue/20 via-primary-purple/20 to-pink-500/20 rounded-xl blur opacity-75 -z-10" />
                 )}
 
                 {/* Success/Error Indicator */}
@@ -359,7 +359,7 @@ export const GlassmorphicTextarea = forwardRef<HTMLTextAreaElement, Glassmorphic
 
                 {/* Focus Ring Effect */}
                 {isFocused && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-xl blur opacity-75 -z-10" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-blue/20 via-primary-purple/20 to-pink-500/20 rounded-xl blur opacity-75 -z-10" />
                 )}
 
                 {/* Success/Error Indicator */}

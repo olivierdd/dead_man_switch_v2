@@ -182,28 +182,28 @@ export default function SecurityPage() {
                                 <h3 className="text-xl font-semibold text-white mb-4">Client-Side Encryption Process</h3>
                                 <div className="space-y-4">
                                     <div className="flex items-start space-x-3">
-                                        <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+                                        <div className="flex-shrink-0 w-6 h-6 bg-primary-blue rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
                                         <div>
                                             <h4 className="text-white font-medium">Key Generation</h4>
                                             <p className="text-gray-400 text-sm">A unique encryption key is generated in your browser for each message.</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start space-x-3">
-                                        <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+                                        <div className="flex-shrink-0 w-6 h-6 bg-cyan rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
                                         <div>
                                             <h4 className="text-white font-medium">Content Encryption</h4>
                                             <p className="text-gray-400 text-sm">Your message is encrypted using AES-256-GCM before leaving your device.</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start space-x-3">
-                                        <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
+                                        <div className="flex-shrink-0 w-6 h-6 bg-primary-blue rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
                                         <div>
                                             <h4 className="text-white font-medium">Secure Transmission</h4>
                                             <p className="text-gray-400 text-sm">Only encrypted data is transmitted to our servers over HTTPS/TLS.</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start space-x-3">
-                                        <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
+                                        <div className="flex-shrink-0 w-6 h-6 bg-cyan rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
                                         <div>
                                             <h4 className="text-white font-medium">Storage & Delivery</h4>
                                             <p className="text-gray-400 text-sm">Encrypted content is stored and delivered to recipients with access keys.</p>

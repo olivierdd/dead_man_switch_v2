@@ -185,7 +185,7 @@ export function VerificationReminderNotification({
     const getIconColor = (variant: string) => {
         switch (variant) {
             case 'info':
-                return 'text-blue-500';
+                return 'text-primary-blue';
             case 'warning':
                 return 'text-yellow-500';
             case 'error':
@@ -292,7 +292,7 @@ export function VerificationReminderNotification({
 
                         {isPolling && (
                             <div className="flex items-center space-x-2 mt-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                <div className="w-2 h-2 bg-primary-blue rounded-full animate-pulse"></div>
                                 <span className="text-xs text-blue-600">
                                     Checking verification status... ({attemptCount}/30)
                                 </span>

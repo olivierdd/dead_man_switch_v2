@@ -19,8 +19,8 @@ const buttonVariants = cva(
                 link: "text-primary underline-offset-4 hover:underline",
                 // Custom variants for Secret Safe
                 glass: "bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 hover:border-white/20",
-                gradient: "bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg hover:shadow-blue-500/25",
-                "gradient-border": "relative bg-transparent text-white before:absolute before:inset-0 before:p-[1px] before:rounded-md before:bg-gradient-to-r before:from-blue-500 before:to-purple-500 before:-z-10 hover:before:opacity-80",
+                gradient: "bg-gradient-to-r from-primary-blue to-primary-purple text-white hover:shadow-lg hover:shadow-primary-blue/25",
+                "gradient-border": "relative bg-transparent text-white before:absolute before:inset-0 before:p-[1px] before:rounded-md before:bg-gradient-to-r before:from-primary-blue before:to-primary-purple before:-z-10 hover:before:opacity-80",
             },
             size: {
                 default: "h-10 px-4 py-2",

@@ -75,10 +75,10 @@ export const GlassmorphicButton = forwardRef<HTMLButtonElement, GlassmorphicButt
                 ${glassEffect ? 'backdrop-blur-sm shadow-2xl shadow-black/40' : ''}
             `,
             gradient: `
-                bg-gradient-to-r from-blue-500 to-purple-500 text-white border border-transparent
-                hover:from-blue-600 hover:to-purple-600
-                focus:ring-blue-500/30
-                shadow-lg shadow-blue-500/25
+                bg-gradient-to-r from-primary-blue to-primary-purple text-white border border-transparent
+                hover:from-primary-blue-dark hover:to-primary-purple-dark
+                focus:ring-primary-blue/30
+                shadow-lg shadow-primary-blue/25
             `,
             outline: `
                 bg-transparent text-white border border-white/30
@@ -160,7 +160,7 @@ export const GlassmorphicButton = forwardRef<HTMLButtonElement, GlassmorphicButt
 
                 {/* Ambient Light Effect */}
                 {glassEffect && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-xl blur-xl opacity-20 -z-10" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-blue/20 via-primary-purple/20 to-pink-500/20 rounded-xl blur-xl opacity-20 -z-10" />
                 )}
             </button>
         )

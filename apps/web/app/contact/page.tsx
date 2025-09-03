@@ -111,7 +111,7 @@ export default function ContactPage() {
                                         type="text"
                                         id="firstName"
                                         name="firstName"
-                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Your first name"
                                         required
                                     />
@@ -125,7 +125,7 @@ export default function ContactPage() {
                                         type="text"
                                         id="lastName"
                                         name="lastName"
-                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                         placeholder="Your last name"
                                         required
                                     />
@@ -140,7 +140,7 @@ export default function ContactPage() {
                                     type="email"
                                     id="email"
                                     name="email"
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                     placeholder="your.email@example.com"
                                     required
                                 />
@@ -153,7 +153,7 @@ export default function ContactPage() {
                                 <select
                                     id="subject"
                                     name="subject"
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                                     required
                                 >
                                     <option value="">Select a subject</option>
@@ -175,7 +175,7 @@ export default function ContactPage() {
                                     id="message"
                                     name="message"
                                     rows={6}
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent resize-vertical"
                                     placeholder="Tell us how we can help you..."
                                     required
                                 ></textarea>

@@ -89,7 +89,7 @@ export const GlassmorphicForm: React.FC<GlassmorphicFormProps> = ({
             </div>
 
             {/* Ambient Light Effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-20 -z-10" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary-blue/20 via-primary-purple/20 to-pink-500/20 rounded-2xl blur-xl opacity-20 -z-10" />
         </div>
     )
 }

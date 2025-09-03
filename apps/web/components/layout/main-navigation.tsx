@@ -209,7 +209,7 @@ export const MainNavigation: React.FC = () => {
                                 className={`
                                     group relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
                                     ${isActiveRoute(item.href)
-                                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                        ? 'bg-primary-blue/20 text-primary-blue-light border border-primary-blue/30'
                                         : 'text-gray-300 hover:text-white hover:bg-white/5'
                                     }
                                 `}
@@ -279,7 +279,7 @@ export const MainNavigation: React.FC = () => {
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                     className="flex items-center space-x-2 text-gray-300 hover:text-white hover:bg-white/5"
                                 >
-                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-primary-blue to-primary-purple rounded-full flex items-center justify-center">
                                         <ForevrLogo variant="icon" className="w-5 h-5" />
                                     </div>
                                     <span className="hidden sm:block">{user.display_name || user.email}</span>
@@ -367,7 +367,7 @@ export const MainNavigation: React.FC = () => {
                                     className={`
                                         group flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors
                                         ${isActiveRoute(item.href)
-                                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                            ? 'bg-primary-blue/20 text-primary-blue-light border border-primary-blue/30'
                                             : 'text-gray-300 hover:text-white hover:bg-white/5'
                                         }
                                     `}

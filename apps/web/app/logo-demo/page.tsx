@@ -42,22 +42,22 @@ export default function LogoDemoPage() {
                         <h2 className="text-2xl font-semibold text-white mb-4">Brand Colors Used</h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mx-auto mb-2"></div>
+                                <div className="w-16 h-16 bg-gradient-to-r from-primary-blue to-primary-purple rounded-lg mx-auto mb-2"></div>
                                 <p className="text-white text-sm">Primary Gradient</p>
                                 <p className="text-gray-400 text-xs">Blue to Purple</p>
                             </div>
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg mx-auto mb-2"></div>
+                                <div className="w-16 h-16 bg-gradient-to-r from-cyan to-primary-blue rounded-lg mx-auto mb-2"></div>
                                 <p className="text-white text-sm">Accent Gradient</p>
                                 <p className="text-gray-400 text-xs">Cyan to Blue</p>
                             </div>
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-blue-500 rounded-lg mx-auto mb-2"></div>
+                                <div className="w-16 h-16 bg-primary-blue rounded-lg mx-auto mb-2"></div>
                                 <p className="text-white text-sm">Blue</p>
                                 <p className="text-gray-400 text-xs">#3B82F6</p>
                             </div>
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-purple-500 rounded-lg mx-auto mb-2"></div>
+                                <div className="w-16 h-16 bg-primary-purple rounded-lg mx-auto mb-2"></div>
                                 <p className="text-white text-sm">Purple</p>
                                 <p className="text-gray-400 text-xs">#8B5CF6</p>
                             </div>

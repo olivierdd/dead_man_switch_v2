@@ -159,7 +159,7 @@ export default function HelpCenterPage() {
                             <input
                                 type="text"
                                 placeholder="Search for help articles, FAQs, or topics..."
-                                className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
                             />
                         </div>
                     </div>
