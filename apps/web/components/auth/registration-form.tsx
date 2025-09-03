@@ -230,8 +230,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             <div className="w-full bg-gray-700 rounded-full h-2">
                                 <div
                                     className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.score <= 2 ? 'bg-red-500' :
-                                            passwordStrength.score <= 4 ? 'bg-yellow-500' :
-                                                passwordStrength.score <= 6 ? 'bg-primary-blue' : 'bg-green-500'
+                                        passwordStrength.score <= 4 ? 'bg-yellow-500' :
+                                            passwordStrength.score <= 6 ? 'bg-primary-blue' : 'bg-green-500'
                                         }`}
                                     style={{ width: `${(passwordStrength.score / 7) * 100}%` }}
                                 />
