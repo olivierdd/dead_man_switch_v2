@@ -36,7 +36,7 @@ export class TokenManager {
         try {
             // Decode access token to get expiration and issued times
             const accessPayload = this.decodeToken(accessToken)
-            
+
             if (!accessPayload) {
                 throw new Error('Invalid access token format')
             }
@@ -208,6 +208,9 @@ export class TokenManager {
             sessionStorage.removeItem(this.TOKEN_EXPIRY_KEY)
             sessionStorage.removeItem(this.TOKEN_ISSUED_KEY)
 
+            // Clear cookies
+            this.clearCookies()
+
             // Clear any scheduled cleanup
             this.clearScheduledCleanup()
 
@@ -283,20 +286,65 @@ export class TokenManager {
     }
 
     /**
-     * Store item securely (localStorage with fallback to sessionStorage)
+     * Store item securely (localStorage with fallback to sessionStorage and cookies)
      */
     private static setSecureItem(key: string, value: string): void {
         try {
             // Try localStorage first
             localStorage.setItem(key, value)
+            
+            // Also store in cookies for middleware access
+            this.setCookie(key, value)
         } catch (error) {
             try {
                 // Fallback to sessionStorage
                 sessionStorage.setItem(key, value)
+                
+                // Still try to set cookie
+                this.setCookie(key, value)
             } catch (fallbackError) {
                 console.error('Failed to store item in both storage types:', fallbackError)
                 throw fallbackError
             }
+        }
+    }
+
+    /**
+     * Set cookie for middleware access
+     */
+    private static setCookie(key: string, value: string): void {
+        try {
+            // Map internal keys to cookie names
+            const cookieName = key === this.ACCESS_TOKEN_KEY ? 'secret_safe_access_token' :
+                              key === this.REFRESH_TOKEN_KEY ? 'secret_safe_refresh_token' :
+                              key === this.TOKEN_EXPIRY_KEY ? 'secret_safe_token_expiry' :
+                              key === this.TOKEN_ISSUED_KEY ? 'secret_safe_token_issued' :
+                              key
+
+            // Set cookie with appropriate settings
+            document.cookie = `${cookieName}=${value}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
+        } catch (error) {
+            console.warn('Failed to set cookie:', error)
+        }
+    }
+
+    /**
+     * Clear all cookies
+     */
+    private static clearCookies(): void {
+        try {
+            const cookieNames = [
+                'secret_safe_access_token',
+                'secret_safe_refresh_token', 
+                'secret_safe_token_expiry',
+                'secret_safe_token_issued'
+            ]
+
+            cookieNames.forEach(name => {
+                document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`
+            })
+        } catch (error) {
+            console.warn('Failed to clear cookies:', error)
         }
     }
 
