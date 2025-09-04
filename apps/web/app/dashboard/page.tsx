@@ -6,13 +6,14 @@
 'use client'
 
 import React from 'react'
-import { useAuth } from '@/lib/auth/auth-hooks'
+import { useAuth, useAuthActions } from '@/lib/auth/auth-hooks'
 import { ParticleBackground } from '@/components/three/ParticleBackground'
 import { useRouter } from 'next/navigation'
 import { LogOut, User, Settings, Shield } from 'lucide-react'
 
 export default function DashboardPage() {
-    const { user, logout, isLoading } = useAuth()
+    const { user, isLoading } = useAuth()
+    const { logout } = useAuthActions()
     const router = useRouter()
 
     const handleLogout = async () => {
