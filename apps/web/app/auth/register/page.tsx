@@ -313,15 +313,6 @@ export default function RegisterPage() {
                                     )}
                                 </div>
 
-                                {/* Password Requirements Link */}
-                                <div className="mt-2">
-                                    <Link
-                                        href="/help#password-requirements"
-                                        className="text-xs text-primary-blue-light hover:text-primary-blue underline"
-                                    >
-                                        View password requirements
-                                    </Link>
-                                </div>
 
                                 {/* Terms and Privacy */}
                                 <div className="space-y-4">
