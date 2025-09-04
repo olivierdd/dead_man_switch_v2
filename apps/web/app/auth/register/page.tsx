@@ -87,7 +87,47 @@ export default function RegisterPage() {
 
             } catch (error: any) {
                 console.error('Registration error:', error)
-                throw error // Re-throw to trigger error handling
+                
+                // Handle specific backend errors
+                if (error.response?.data?.detail) {
+                    const errorDetail = error.response.data.detail
+                    
+                    // Handle duplicate email error
+                    if (errorDetail === 'Email already registered') {
+                        form.setError('email', {
+                            type: 'manual',
+                            message: 'This email address is already registered. Please use a different email or try signing in.'
+                        })
+                        return
+                    }
+                    
+                    // Handle other validation errors
+                    if (Array.isArray(errorDetail)) {
+                        errorDetail.forEach((err: any) => {
+                            if (err.loc && err.loc.length > 1) {
+                                const field = err.loc[1] // Get the field name
+                                form.setError(field as any, {
+                                    type: 'manual',
+                                    message: err.msg || 'Validation error'
+                                })
+                            }
+                        })
+                        return
+                    }
+                    
+                    // Handle general error messages
+                    form.setError('root', {
+                        type: 'manual',
+                        message: errorDetail
+                    })
+                    return
+                }
+                
+                // Handle network or other errors
+                form.setError('root', {
+                    type: 'manual',
+                    message: 'Registration failed. Please check your connection and try again.'
+                })
             }
         },
         (error) => {
@@ -334,6 +374,13 @@ export default function RegisterPage() {
                                         )}
                                     </button>
                                 </div>
+                                
+                                {/* Root Error Display */}
+                                {errors.root && (
+                                    <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                        <p className="text-red-400 text-sm">{errors.root.message}</p>
+                                    </div>
+                                )}
                             </form>
                         ) : (
                             <div className="text-center space-y-6">
