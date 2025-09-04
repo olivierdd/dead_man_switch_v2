@@ -275,3 +275,6 @@ export const useIsWriter = () => {
 export const useIsReader = () => {
     return useHasRole(['reader', 'writer', 'admin'])
 }
+
+// Re-export useAuth and other hooks from auth-store for convenience
+export { useAuth, useUser, useIsAuthenticated, useAuthLoading, useAuthError } from './auth-store'

@@ -321,10 +321,10 @@ export class TokenManager {
 
             // Map internal keys to cookie names
             const cookieName = key === this.ACCESS_TOKEN_KEY ? 'secret_safe_access_token' :
-                              key === this.REFRESH_TOKEN_KEY ? 'secret_safe_refresh_token' :
-                              key === this.TOKEN_EXPIRY_KEY ? 'secret_safe_token_expiry' :
-                              key === this.TOKEN_ISSUED_KEY ? 'secret_safe_token_issued' :
-                              key
+                key === this.REFRESH_TOKEN_KEY ? 'secret_safe_refresh_token' :
+                    key === this.TOKEN_EXPIRY_KEY ? 'secret_safe_token_expiry' :
+                        key === this.TOKEN_ISSUED_KEY ? 'secret_safe_token_issued' :
+                            key
 
             // Set cookie with appropriate settings
             document.cookie = `${cookieName}=${value}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
@@ -345,7 +345,7 @@ export class TokenManager {
 
             const cookieNames = [
                 'secret_safe_access_token',
-                'secret_safe_refresh_token', 
+                'secret_safe_refresh_token',
                 'secret_safe_token_expiry',
                 'secret_safe_token_issued'
             ]
