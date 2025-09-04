@@ -67,7 +67,13 @@ export default function RegisterPage() {
         form,
         async (data: RegistrationFormData) => {
             try {
-                console.log('Registration data:', data)
+                console.log('Registration data:', {
+                    email: data.email,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    display_name: data.display_name,
+                    // Password intentionally omitted for security
+                })
 
                 // Call the backend API
                 const response = await registerUser({
@@ -87,11 +93,11 @@ export default function RegisterPage() {
 
             } catch (error: any) {
                 console.error('Registration error:', error)
-                
+
                 // Handle specific backend errors
                 if (error.response?.data?.detail) {
                     const errorDetail = error.response.data.detail
-                    
+
                     // Handle duplicate email error
                     if (errorDetail === 'Email already registered') {
                         form.setError('email', {
@@ -100,7 +106,7 @@ export default function RegisterPage() {
                         })
                         return
                     }
-                    
+
                     // Handle other validation errors
                     if (Array.isArray(errorDetail)) {
                         errorDetail.forEach((err: any) => {
@@ -114,7 +120,7 @@ export default function RegisterPage() {
                         })
                         return
                     }
-                    
+
                     // Handle general error messages
                     form.setError('root', {
                         type: 'manual',
@@ -122,7 +128,7 @@ export default function RegisterPage() {
                     })
                     return
                 }
-                
+
                 // Handle network or other errors
                 form.setError('root', {
                     type: 'manual',
@@ -374,7 +380,7 @@ export default function RegisterPage() {
                                         )}
                                     </button>
                                 </div>
-                                
+
                                 {/* Root Error Display */}
                                 {errors.root && (
                                     <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">

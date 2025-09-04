@@ -51,7 +51,10 @@ export default function ForgotPasswordPage() {
     const { submit, isSubmitting } = useFormSubmission(
         form,
         async (data: PasswordResetRequestData) => {
-            console.log('Password reset request:', data)
+            console.log('Password reset request:', {
+                email: data.email,
+                // No sensitive data to log here
+            })
             // TODO: Implement password reset request logic
             alert('Password reset email sent! Check console for data.')
         },

@@ -60,7 +60,10 @@ export default function ResetPasswordPage() {
     const { submit, isSubmitting } = useFormSubmission(
         form,
         async (data: PasswordResetData) => {
-            console.log('Password reset data:', data)
+            console.log('Password reset data:', {
+                token: data.token,
+                // Password intentionally omitted for security
+            })
             // TODO: Implement password reset logic
             alert('Password reset successful! Check console for data.')
         },
