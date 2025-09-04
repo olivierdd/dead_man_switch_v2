@@ -142,7 +142,7 @@ class AuthAPI {
         formData.append('username', credentials.username)
         formData.append('password', credentials.password)
 
-        const response: AxiosResponse<LoginResponse> = await this.api.post('/auth/login', formData, {
+        const response: AxiosResponse<LoginResponse> = await this.api.post('/api/auth/login', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -157,13 +157,13 @@ class AuthAPI {
     }
 
     async register(userData: RegisterRequest): Promise<RegisterResponse> {
-        const response: AxiosResponse<RegisterResponse> = await this.api.post('/auth/register', userData)
+        const response: AxiosResponse<RegisterResponse> = await this.api.post('/api/auth/register', userData)
         return response.data
     }
 
     async logout(): Promise<void> {
         try {
-            await this.api.post('/auth/logout')
+            await this.api.post('/api/auth/logout')
         } catch (error) {
             console.error('Logout error:', error)
         } finally {
@@ -172,7 +172,7 @@ class AuthAPI {
     }
 
     async getCurrentUser(): Promise<UserProfile> {
-        const response: AxiosResponse<UserProfile> = await this.api.get('/auth/me')
+        const response: AxiosResponse<UserProfile> = await this.api.get('/api/auth/me')
         return response.data
     }
 
@@ -182,7 +182,7 @@ class AuthAPI {
             throw new Error('No refresh token available')
         }
 
-        const response: AxiosResponse<{ access_token: string }> = await this.api.post('/auth/refresh', {
+        const response: AxiosResponse<{ access_token: string }> = await this.api.post('/api/auth/refresh', {
             refresh_token: refreshToken
         })
 
@@ -200,12 +200,12 @@ class AuthAPI {
 
 
     async forgotPassword(email: string): Promise<{ message: string }> {
-        const response: AxiosResponse<{ message: string }> = await this.api.post('/auth/forgot-password', { email })
+        const response: AxiosResponse<{ message: string }> = await this.api.post('/api/auth/forgot-password', { email })
         return response.data
     }
 
     async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-        const response: AxiosResponse<{ message: string }> = await this.api.post('/auth/reset-password', {
+        const response: AxiosResponse<{ message: string }> = await this.api.post('/api/auth/reset-password', {
             token,
             new_password: newPassword,
         })

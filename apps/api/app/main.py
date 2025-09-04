@@ -101,7 +101,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error", "error_id": "internal_error"},
+        content={"detail": "Internal server error",
+                 "error_id": "internal_error"},
     )
 
 
@@ -129,6 +130,7 @@ async def health_check():
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
+
 
 @app.get("/test")
 async def test_endpoint():

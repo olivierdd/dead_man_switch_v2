@@ -68,7 +68,7 @@ export default function RegisterPage() {
         async (data: RegistrationFormData) => {
             try {
                 console.log('Registration data:', data)
-                
+
                 // Call the backend API
                 const response = await registerUser({
                     email: data.email,
@@ -78,13 +78,13 @@ export default function RegisterPage() {
                     display_name: data.display_name,
                     role: 'writer' // Default role
                 })
-                
+
                 console.log('Registration successful:', response)
                 setRegistrationSuccess(true)
-                
+
                 // Clear form
                 clearAllErrors()
-                
+
             } catch (error: any) {
                 console.error('Registration error:', error)
                 throw error // Re-throw to trigger error handling
@@ -111,7 +111,7 @@ export default function RegisterPage() {
                                 {registrationSuccess ? 'Account Created!' : 'Create Your Account'}
                             </h1>
                             <p className="text-gray-400">
-                                {registrationSuccess 
+                                {registrationSuccess
                                     ? 'Your account has been created successfully. Please check your email for verification instructions.'
                                     : 'Enter your details to create your account'
                                 }
@@ -119,222 +119,222 @@ export default function RegisterPage() {
                         </div>
                         {!registrationSuccess ? (
                             <form onSubmit={submit} className="space-y-6">
-                            {/* Email Field */}
-                            <div>
-                                <label htmlFor="email" className="block text-white font-medium mb-2">
-                                    Email Address *
-                                </label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        {...register('email')}
-                                        type="email"
-                                        id="email"
-                                        className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Enter your email address"
-                                    />
-                                </div>
-                                {errors.email && (
-                                    <p className="text-error text-sm mt-1">{errors.email.message}</p>
-                                )}
-                            </div>
-
-                            {/* Display Name Field */}
-                            <div>
-                                <label htmlFor="display_name" className="block text-white font-medium mb-2">
-                                    Display Name *
-                                </label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        {...register('display_name')}
-                                        type="text"
-                                        id="display_name"
-                                        className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Choose a display name"
-                                    />
-                                </div>
-                                {errors.display_name && (
-                                    <p className="text-error text-sm mt-1">{errors.display_name.message}</p>
-                                )}
-                            </div>
-
-                            {/* First and Last Name Fields */}
-                            <div className="grid grid-cols-2 gap-4">
+                                {/* Email Field */}
                                 <div>
-                                    <label htmlFor="first_name" className="block text-white font-medium mb-2">
-                                        First Name *
+                                    <label htmlFor="email" className="block text-white font-medium mb-2">
+                                        Email Address *
                                     </label>
-                                    <input
-                                        {...register('first_name')}
-                                        type="text"
-                                        id="first_name"
-                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="First name"
-                                    />
-                                    {errors.first_name && (
-                                        <p className="text-error text-sm mt-1">{errors.first_name.message}</p>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            {...register('email')}
+                                            type="email"
+                                            id="email"
+                                            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="Enter your email address"
+                                        />
+                                    </div>
+                                    {errors.email && (
+                                        <p className="text-error text-sm mt-1">{errors.email.message}</p>
                                     )}
                                 </div>
+
+                                {/* Display Name Field */}
                                 <div>
-                                    <label htmlFor="last_name" className="block text-white font-medium mb-2">
-                                        Last Name *
+                                    <label htmlFor="display_name" className="block text-white font-medium mb-2">
+                                        Display Name *
                                     </label>
-                                    <input
-                                        {...register('last_name')}
-                                        type="text"
-                                        id="last_name"
-                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Last name"
-                                    />
-                                    {errors.last_name && (
-                                        <p className="text-error text-sm mt-1">{errors.last_name.message}</p>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            {...register('display_name')}
+                                            type="text"
+                                            id="display_name"
+                                            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="Choose a display name"
+                                        />
+                                    </div>
+                                    {errors.display_name && (
+                                        <p className="text-error text-sm mt-1">{errors.display_name.message}</p>
                                     )}
                                 </div>
-                            </div>
 
-                            {/* Password Field */}
-                            <div>
-                                <label htmlFor="password" className="block text-white font-medium mb-2">
-                                    Password *
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        {...register('password')}
-                                        type={showPassword ? "text" : "password"}
-                                        id="password"
-                                        className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Create a strong password"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
+                                {/* First and Last Name Fields */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="first_name" className="block text-white font-medium mb-2">
+                                            First Name *
+                                        </label>
+                                        <input
+                                            {...register('first_name')}
+                                            type="text"
+                                            id="first_name"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="First name"
+                                        />
+                                        {errors.first_name && (
+                                            <p className="text-error text-sm mt-1">{errors.first_name.message}</p>
                                         )}
-                                    </button>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="last_name" className="block text-white font-medium mb-2">
+                                            Last Name *
+                                        </label>
+                                        <input
+                                            {...register('last_name')}
+                                            type="text"
+                                            id="last_name"
+                                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="Last name"
+                                        />
+                                        {errors.last_name && (
+                                            <p className="text-error text-sm mt-1">{errors.last_name.message}</p>
+                                        )}
+                                    </div>
                                 </div>
-                                {errors.password && (
-                                    <p className="text-error text-sm mt-1">{errors.password.message}</p>
-                                )}
-                            </div>
 
-                            {/* Password Strength Indicator */}
-                            {watchedPassword && (
+                                {/* Password Field */}
+                                <div>
+                                    <label htmlFor="password" className="block text-white font-medium mb-2">
+                                        Password *
+                                    </label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            {...register('password')}
+                                            type={showPassword ? "text" : "password"}
+                                            id="password"
+                                            className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="Create a strong password"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="w-5 h-5" />
+                                            ) : (
+                                                <Eye className="w-5 h-5" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {errors.password && (
+                                        <p className="text-error text-sm mt-1">{errors.password.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Password Strength Indicator */}
+                                {watchedPassword && (
+                                    <div className="mt-2">
+                                        <PasswordStrengthIndicator
+                                            password={watchedPassword}
+                                            variant="detailed"
+                                            showSuggestions={true}
+                                            showScore={true}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Confirm Password Field */}
+                                <div>
+                                    <label htmlFor="confirmPassword" className="block text-white font-medium mb-2">
+                                        Confirm Password *
+                                    </label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            {...register('confirmPassword')}
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            id="confirmPassword"
+                                            className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                                            placeholder="Confirm your password"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                        >
+                                            {showConfirmPassword ? (
+                                                <EyeOff className="w-5 h-5" />
+                                            ) : (
+                                                <Eye className="w-5 h-5" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {errors.confirmPassword && (
+                                        <p className="text-error text-sm mt-1">{errors.confirmPassword.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Password Requirements Link */}
                                 <div className="mt-2">
-                                    <PasswordStrengthIndicator
-                                        password={watchedPassword}
-                                        variant="detailed"
-                                        showSuggestions={true}
-                                        showScore={true}
-                                    />
-                                </div>
-                            )}
-
-                            {/* Confirm Password Field */}
-                            <div>
-                                <label htmlFor="confirmPassword" className="block text-white font-medium mb-2">
-                                    Confirm Password *
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        {...register('confirmPassword')}
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        id="confirmPassword"
-                                        className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
-                                        placeholder="Confirm your password"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                    <Link
+                                        href="/help#password-requirements"
+                                        className="text-xs text-primary-blue-light hover:text-primary-blue underline"
                                     >
-                                        {showConfirmPassword ? (
-                                            <EyeOff className="w-5 h-5" />
+                                        View password requirements
+                                    </Link>
+                                </div>
+
+                                {/* Terms and Privacy */}
+                                <div className="space-y-4">
+                                    <label className="flex items-start space-x-3 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            {...register('acceptTerms')}
+                                            className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
+                                        />
+                                        <span className="text-sm text-gray-400">
+                                            I accept the{' '}
+                                            <Link href="/terms" className="text-primary-blue-light hover:text-primary-blue underline">
+                                                Terms and Conditions
+                                            </Link>
+                                        </span>
+                                    </label>
+                                    {errors.acceptTerms && (
+                                        <p className="text-error text-sm">{errors.acceptTerms.message}</p>
+                                    )}
+
+                                    <label className="flex items-start space-x-3 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            {...register('acceptPrivacy')}
+                                            className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
+                                        />
+                                        <span className="text-sm text-gray-400">
+                                            I accept the{' '}
+                                            <Link href="/privacy" className="text-primary-blue-light hover:text-primary-blue underline">
+                                                Privacy Policy
+                                            </Link>
+                                        </span>
+                                    </label>
+                                    {errors.acceptPrivacy && (
+                                        <p className="text-error text-sm">{errors.acceptPrivacy.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Form Actions */}
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-gradient-to-r from-primary-blue to-primary-purple text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-primary-blue/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                Creating Account...
+                                            </>
                                         ) : (
-                                            <Eye className="w-5 h-5" />
+                                            <>
+                                                Create Account
+                                                <ArrowRight className="w-4 h-4 ml-2" />
+                                            </>
                                         )}
                                     </button>
                                 </div>
-                                {errors.confirmPassword && (
-                                    <p className="text-error text-sm mt-1">{errors.confirmPassword.message}</p>
-                                )}
-                            </div>
-
-                            {/* Password Requirements Link */}
-                            <div className="mt-2">
-                                <Link
-                                    href="/help#password-requirements"
-                                    className="text-xs text-primary-blue-light hover:text-primary-blue underline"
-                                >
-                                    View password requirements
-                                </Link>
-                            </div>
-
-                            {/* Terms and Privacy */}
-                            <div className="space-y-4">
-                                <label className="flex items-start space-x-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        {...register('acceptTerms')}
-                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
-                                    />
-                                    <span className="text-sm text-gray-400">
-                                        I accept the{' '}
-                                        <Link href="/terms" className="text-primary-blue-light hover:text-primary-blue underline">
-                                            Terms and Conditions
-                                        </Link>
-                                    </span>
-                                </label>
-                                {errors.acceptTerms && (
-                                    <p className="text-error text-sm">{errors.acceptTerms.message}</p>
-                                )}
-
-                                <label className="flex items-start space-x-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        {...register('acceptPrivacy')}
-                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-white/10 text-primary-blue focus:ring-primary-blue focus:ring-2"
-                                    />
-                                    <span className="text-sm text-gray-400">
-                                        I accept the{' '}
-                                        <Link href="/privacy" className="text-primary-blue-light hover:text-primary-blue underline">
-                                            Privacy Policy
-                                        </Link>
-                                    </span>
-                                </label>
-                                {errors.acceptPrivacy && (
-                                    <p className="text-error text-sm">{errors.acceptPrivacy.message}</p>
-                                )}
-                            </div>
-
-                            {/* Form Actions */}
-                            <div className="pt-4">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full bg-gradient-to-r from-primary-blue to-primary-purple text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-primary-blue/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            Creating Account...
-                                        </>
-                                    ) : (
-                                        <>
-                                            Create Account
-                                            <ArrowRight className="w-4 h-4 ml-2" />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
+                            </form>
                         ) : (
                             <div className="text-center space-y-6">
                                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
@@ -351,8 +351,8 @@ export default function RegisterPage() {
                                     </p>
                                 </div>
                                 <div className="pt-4">
-                                    <Link 
-                                        href="/auth/login" 
+                                    <Link
+                                        href="/auth/login"
                                         className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-blue to-primary-purple text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary-blue/25 transition-all duration-300"
                                     >
                                         Go to Sign In

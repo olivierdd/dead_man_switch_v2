@@ -43,7 +43,8 @@ class VerificationToken(SQLModel, table=True):
     token_metadata: Optional[str] = Field(default=None, sa_column=Column(JSON))
 
     # Relationships
-    user: Optional["User"] = Relationship(back_populates="verification_tokens")
+    # user: Optional["User"] = Relationship(back_populates="verification_tokens")
+    # TODO: Re-enable when verification system is fully implemented
 
     class Config:
         arbitrary_types_allowed = True
