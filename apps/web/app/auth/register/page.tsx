@@ -276,7 +276,7 @@ export default function RegisterPage() {
                                         <PasswordStrengthIndicator
                                             password={watchedPassword}
                                             variant="detailed"
-                                            showSuggestions={true}
+                                            showSuggestions={false}
                                             showScore={true}
                                         />
                                     </div>
