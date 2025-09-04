@@ -292,14 +292,14 @@ export class TokenManager {
         try {
             // Try localStorage first
             localStorage.setItem(key, value)
-            
+
             // Also store in cookies for middleware access
             this.setCookie(key, value)
         } catch (error) {
             try {
                 // Fallback to sessionStorage
                 sessionStorage.setItem(key, value)
-                
+
                 // Still try to set cookie
                 this.setCookie(key, value)
             } catch (fallbackError) {
@@ -314,6 +314,11 @@ export class TokenManager {
      */
     private static setCookie(key: string, value: string): void {
         try {
+            // Only set cookies in browser environment
+            if (typeof window === 'undefined' || typeof document === 'undefined') {
+                return
+            }
+
             // Map internal keys to cookie names
             const cookieName = key === this.ACCESS_TOKEN_KEY ? 'secret_safe_access_token' :
                               key === this.REFRESH_TOKEN_KEY ? 'secret_safe_refresh_token' :
@@ -333,6 +338,11 @@ export class TokenManager {
      */
     private static clearCookies(): void {
         try {
+            // Only clear cookies in browser environment
+            if (typeof window === 'undefined' || typeof document === 'undefined') {
+                return
+            }
+
             const cookieNames = [
                 'secret_safe_access_token',
                 'secret_safe_refresh_token', 

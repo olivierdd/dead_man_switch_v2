@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
     // Get authentication status from cookies or headers
     const accessToken = request.cookies.get('secret_safe_access_token')?.value
     const refreshToken = request.cookies.get('secret_safe_refresh_token')?.value
-    const isAuthenticated = !!(accessToken && refreshToken)
+    const isAuthenticated = !!accessToken // Only require access token for now
 
     // Get user role from JWT token if available
     let userRole: string | undefined

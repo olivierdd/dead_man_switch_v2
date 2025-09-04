@@ -88,8 +88,11 @@ export const LoginFormSimple: React.FC<LoginFormSimpleProps> = ({
             })
 
             // Success handling
+            console.log('Login successful, redirecting to:', redirectTo)
             onSuccess?.()
+            console.log('About to call router.push with:', redirectTo)
             router.push(redirectTo)
+            console.log('router.push called')
 
         } catch (error: any) {
             console.error('Login error:', error)
