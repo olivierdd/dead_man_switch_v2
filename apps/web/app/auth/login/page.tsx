@@ -25,7 +25,7 @@ export default function LoginPage() {
                         showRegistrationLink={true}
                         showForgotPasswordLink={true}
                         redirectTo="/dashboard"
-                        onSuccess={() => console.log('Login successful')}
+                        onSuccess={() => {}}
                         onError={(error) => console.error('Login error:', error)}
                     />
                 </div>
