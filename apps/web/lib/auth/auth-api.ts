@@ -149,8 +149,10 @@ class AuthAPI {
         })
 
         // Store tokens securely using TokenManager
-        if (response.data.access_token && response.data.refresh_token) {
-            TokenManager.storeTokens(response.data.access_token, response.data.refresh_token)
+        if (response.data.access_token) {
+            // Use empty string for refresh token if not provided
+            const refreshToken = response.data.refresh_token || ''
+            TokenManager.storeTokens(response.data.access_token, refreshToken)
         }
 
         return response.data

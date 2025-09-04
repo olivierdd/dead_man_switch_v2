@@ -34,17 +34,27 @@ export class TokenManager {
      */
     static storeTokens(accessToken: string, refreshToken: string): void {
         try {
-            // Decode tokens to get expiration and issued times
+            // Decode access token to get expiration and issued times
             const accessPayload = this.decodeToken(accessToken)
-            const refreshPayload = this.decodeToken(refreshToken)
+            
+            if (!accessPayload) {
+                throw new Error('Invalid access token format')
+            }
 
-            if (!accessPayload || !refreshPayload) {
-                throw new Error('Invalid token format')
+            // Only decode refresh token if it's provided and not empty
+            let refreshPayload = null
+            if (refreshToken && refreshToken.trim() !== '') {
+                refreshPayload = this.decodeToken(refreshToken)
+                if (!refreshPayload) {
+                    console.warn('Invalid refresh token format, storing without refresh token')
+                }
             }
 
             // Store tokens with metadata
             this.setSecureItem(this.ACCESS_TOKEN_KEY, accessToken)
-            this.setSecureItem(this.REFRESH_TOKEN_KEY, refreshToken)
+            if (refreshToken && refreshToken.trim() !== '') {
+                this.setSecureItem(this.REFRESH_TOKEN_KEY, refreshToken)
+            }
             this.setSecureItem(this.TOKEN_EXPIRY_KEY, accessPayload.exp.toString())
             this.setSecureItem(this.TOKEN_ISSUED_KEY, accessPayload.iat.toString())
 

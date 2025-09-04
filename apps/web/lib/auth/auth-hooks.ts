@@ -15,7 +15,7 @@ export const useAuthActions = () => {
             const response = await authAPI.login(credentials)
 
             // Update store with user data and tokens
-            storeActions.login(response.access_token, response.refresh_token, {
+            storeActions.login(response.access_token, response.refresh_token || '', {
                 id: response.user.id,
                 email: response.user.email,
                 display_name: response.user.display_name,
