@@ -95,7 +95,8 @@ class SendGridProvider(EmailProvider):
                 content_objects.append(text_content_obj)
 
             # Create mail object
-            mail = Mail(from_email_obj, to_email_obj, subject, content_objects[0])
+            mail = Mail(from_email_obj, to_email_obj,
+                        subject, content_objects[0])
 
             # Add text content if provided
             if len(content_objects) > 1:
@@ -109,7 +110,8 @@ class SendGridProvider(EmailProvider):
             if attachments:
                 for attachment in attachments:
                     file_content = FileContent(attachment.get("content", ""))
-                    file_name = FileName(attachment.get("filename", "attachment"))
+                    file_name = FileName(
+                        attachment.get("filename", "attachment"))
                     file_type = FileType(
                         attachment.get("type", "application/octet-stream")
                     )
@@ -126,7 +128,8 @@ class SendGridProvider(EmailProvider):
             response = client.send(mail)
 
             if response.status_code in [200, 201, 202]:
-                logger.info(f"Email sent successfully via SendGrid to {to_email}")
+                logger.info(
+                    f"Email sent successfully via SendGrid to {to_email}")
                 return True
             else:
                 logger.error(
@@ -151,7 +154,8 @@ class SendGridProvider(EmailProvider):
                 from_email=Email(self.from_email),
                 to_emails=To("test@example.com"),
                 subject="Connection Test",
-                html_content=Content("text/html", "<p>This is a connection test.</p>"),
+                html_content=Content(
+                    "text/html", "<p>This is a connection test.</p>"),
             )
 
             # Don't actually send, just validate the mail object
@@ -361,7 +365,8 @@ class EmailService:
                     )
 
             except Exception as e:
-                logger.error(f"Provider {provider.__class__.__name__} error: {str(e)}")
+                logger.error(
+                    f"Provider {provider.__class__.__name__} error: {str(e)}")
                 continue
 
         logger.error("All email providers failed")
@@ -564,8 +569,10 @@ class EmailService:
             """
 
             # Create plain text content
+            frontend_url = os.getenv(
+                'FRONTEND_URL', 'https://app.yoursecretissafe.com')
             retry_message = (
-                f"You can retry the verification process: {os.getenv('FRONTEND_URL', 'https://app.yoursecretissafe.com')}/auth/verify-email"
+                f"You can retry the verification process: {frontend_url}/auth/verify-email"
                 if retry_available
                 else "Please contact support for assistance."
             )
