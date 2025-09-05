@@ -73,7 +73,7 @@ class AuthAPI {
     constructor() {
         // Use current domain for API calls in production, localhost for development
         const baseURL = process.env.NODE_ENV === 'production' 
-            ? `${window.location.origin}/api`
+            ? (typeof window !== 'undefined' ? `${window.location.origin}/api` : '/api')
             : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
             
         this.api = axios.create({
@@ -269,5 +269,27 @@ class AuthAPI {
     }
 }
 
-// Export singleton instance
-export const authAPI = new AuthAPI()
+// Lazy initialization to avoid SSR issues
+let authAPIInstance: AuthAPI | null = null
+
+export const authAPI = {
+  get instance() {
+    if (!authAPIInstance) {
+      authAPIInstance = new AuthAPI()
+    }
+    return authAPIInstance
+  },
+  
+  // Proxy all methods to the instance
+  login: (credentials: LoginRequest) => authAPI.instance.login(credentials),
+  register: (userData: RegisterRequest) => authAPI.instance.register(userData),
+  logout: () => authAPI.instance.logout(),
+  getCurrentUser: () => authAPI.instance.getCurrentUser(),
+  refreshToken: () => authAPI.instance.refreshToken(),
+  forgotPassword: (email: string) => authAPI.instance.forgotPassword(email),
+  resetPassword: (token: string, newPassword: string) => authAPI.instance.resetPassword(token, newPassword),
+  verifyEmail: (token: string) => authAPI.instance.verifyEmail(token),
+  resendVerification: () => authAPI.instance.resendVerification(),
+  isTokenExpired: () => authAPI.instance.isTokenExpired(),
+  getTokenPayload: () => authAPI.instance.getTokenPayload()
+}
