@@ -72,10 +72,10 @@ class AuthAPI {
 
     constructor() {
         // Use current domain for API calls in production, localhost for development
-        const baseURL = process.env.NODE_ENV === 'production' 
+        const baseURL = process.env.NODE_ENV === 'production'
             ? (typeof window !== 'undefined' ? `${window.location.origin}/api` : '/api')
             : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
-            
+
         this.api = axios.create({
             baseURL,
             timeout: 10000,
@@ -147,7 +147,7 @@ class AuthAPI {
         formData.append('username', credentials.username)
         formData.append('password', credentials.password)
 
-        const response: AxiosResponse<LoginResponse> = await this.api.post('/api/auth/login', formData, {
+        const response: AxiosResponse<LoginResponse> = await this.api.post('/auth/login', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -164,13 +164,13 @@ class AuthAPI {
     }
 
     async register(userData: RegisterRequest): Promise<RegisterResponse> {
-        const response: AxiosResponse<RegisterResponse> = await this.api.post('/api/auth/register', userData)
+        const response: AxiosResponse<RegisterResponse> = await this.api.post('/auth/register', userData)
         return response.data
     }
 
     async logout(): Promise<void> {
         try {
-            await this.api.post('/api/auth/logout')
+            await this.api.post('/auth/logout')
         } catch (error) {
             console.error('Logout error:', error)
         } finally {
@@ -179,7 +179,7 @@ class AuthAPI {
     }
 
     async getCurrentUser(): Promise<UserProfile> {
-        const response: AxiosResponse<UserProfile> = await this.api.get('/api/auth/me')
+        const response: AxiosResponse<UserProfile> = await this.api.get('/auth/me')
         return response.data
     }
 
@@ -189,7 +189,7 @@ class AuthAPI {
             throw new Error('No refresh token available')
         }
 
-        const response: AxiosResponse<{ access_token: string }> = await this.api.post('/api/auth/refresh', {
+        const response: AxiosResponse<{ access_token: string }> = await this.api.post('/auth/refresh', {
             refresh_token: refreshToken
         })
 
@@ -207,12 +207,12 @@ class AuthAPI {
 
 
     async forgotPassword(email: string): Promise<{ message: string }> {
-        const response: AxiosResponse<{ message: string }> = await this.api.post('/api/auth/forgot-password', { email })
+        const response: AxiosResponse<{ message: string }> = await this.api.post('/auth/forgot-password', { email })
         return response.data
     }
 
     async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-        const response: AxiosResponse<{ message: string }> = await this.api.post('/api/auth/reset-password', {
+        const response: AxiosResponse<{ message: string }> = await this.api.post('/auth/reset-password', {
             token,
             new_password: newPassword,
         })
@@ -273,23 +273,23 @@ class AuthAPI {
 let authAPIInstance: AuthAPI | null = null
 
 export const authAPI = {
-  get instance() {
-    if (!authAPIInstance) {
-      authAPIInstance = new AuthAPI()
-    }
-    return authAPIInstance
-  },
-  
-  // Proxy all methods to the instance
-  login: (credentials: LoginRequest) => authAPI.instance.login(credentials),
-  register: (userData: RegisterRequest) => authAPI.instance.register(userData),
-  logout: () => authAPI.instance.logout(),
-  getCurrentUser: () => authAPI.instance.getCurrentUser(),
-  refreshToken: () => authAPI.instance.refreshToken(),
-  forgotPassword: (email: string) => authAPI.instance.forgotPassword(email),
-  resetPassword: (token: string, newPassword: string) => authAPI.instance.resetPassword(token, newPassword),
-  verifyEmail: (token: string) => authAPI.instance.verifyEmail(token),
-  resendVerification: () => authAPI.instance.resendVerification(),
-  isTokenExpired: () => authAPI.instance.isTokenExpired(),
-  getTokenPayload: () => authAPI.instance.getTokenPayload()
+    get instance() {
+        if (!authAPIInstance) {
+            authAPIInstance = new AuthAPI()
+        }
+        return authAPIInstance
+    },
+
+    // Proxy all methods to the instance
+    login: (credentials: LoginRequest) => authAPI.instance.login(credentials),
+    register: (userData: RegisterRequest) => authAPI.instance.register(userData),
+    logout: () => authAPI.instance.logout(),
+    getCurrentUser: () => authAPI.instance.getCurrentUser(),
+    refreshToken: () => authAPI.instance.refreshToken(),
+    forgotPassword: (email: string) => authAPI.instance.forgotPassword(email),
+    resetPassword: (token: string, newPassword: string) => authAPI.instance.resetPassword(token, newPassword),
+    verifyEmail: (token: string) => authAPI.instance.verifyEmail(token),
+    resendVerification: () => authAPI.instance.resendVerification(),
+    isTokenExpired: () => authAPI.instance.isTokenExpired(),
+    getTokenPayload: () => authAPI.instance.getTokenPayload()
 }
