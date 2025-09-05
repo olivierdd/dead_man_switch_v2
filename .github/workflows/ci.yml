@@ -43,8 +43,6 @@ jobs:
           rm -rf node_modules/.cache
           rm -f tsconfig.tsbuildinfo
           
-
-        
       - name: Run linting
         working-directory: apps/web
         run: npm run lint
@@ -166,6 +164,8 @@ jobs:
           scope: ${{ secrets.VERCEL_ORG_ID }}
           working-directory: ./apps/web
 
+  # Note: Production deployment is handled automatically by Vercel
+  # when code is pushed to the main branch. No manual deployment needed.
   deploy-production:
     name: Deploy Production
     if: github.ref == 'refs/heads/main'
@@ -177,15 +177,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Deploy to Vercel (Production)
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          working-directory: ./apps/web
-          vercel-args: '--prod'
+      - name: Production Deployment Status
+        run: |
+          echo "✅ Production deployment is handled automatically by Vercel"
+          echo "🔗 Check your Vercel dashboard for deployment status"
+          echo "🌐 Your app should be available at your configured domain"
           
       # - name: Notify deployment
       #   uses: 8398a7/action-slack@v3
