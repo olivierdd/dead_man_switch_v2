@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
         // Test basic connection
         const { data, error } = await supabase
-            .from('users')
+            .from('user')
             .select('count')
             .limit(1)
 
