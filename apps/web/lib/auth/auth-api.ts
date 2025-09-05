@@ -71,8 +71,13 @@ class AuthAPI {
     private api: AxiosInstance
 
     constructor() {
+        // Use current domain for API calls in production, localhost for development
+        const baseURL = process.env.NODE_ENV === 'production' 
+            ? `${window.location.origin}/api`
+            : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+            
         this.api = axios.create({
-            baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+            baseURL,
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
