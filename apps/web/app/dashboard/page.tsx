@@ -5,7 +5,7 @@
 
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth, useAuthActions } from '@/lib/auth/auth-hooks'
 import { ParticleBackground } from '@/components/three/ParticleBackground'
 import { useRouter } from 'next/navigation'
@@ -15,6 +15,12 @@ export default function DashboardPage() {
     const { user, isLoading } = useAuth()
     const { logout } = useAuthActions()
     const router = useRouter()
+    const [isClient, setIsClient] = useState(false)
+
+    // Ensure we're on the client side before rendering
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     const handleLogout = async () => {
         try {
@@ -25,7 +31,8 @@ export default function DashboardPage() {
         }
     }
 
-    if (isLoading) {
+    // Show loading during SSR and initial client hydration
+    if (!isClient || isLoading) {
         return (
             <div className="relative min-h-screen">
                 <ParticleBackground />
@@ -36,6 +43,7 @@ export default function DashboardPage() {
         )
     }
 
+    // Only redirect on client side
     if (!user) {
         router.push('/auth/login')
         return null

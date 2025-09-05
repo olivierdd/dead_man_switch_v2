@@ -195,6 +195,11 @@ export class TokenManager {
      * Clear all stored tokens
      */
     static clearTokens(): void {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return
+        }
+
         try {
             // Remove from localStorage
             localStorage.removeItem(this.ACCESS_TOKEN_KEY)
@@ -268,6 +273,11 @@ export class TokenManager {
      * Decode JWT token without verification (client-side only)
      */
     private static decodeToken(token: string): TokenPayload | null {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined' || typeof atob === 'undefined') {
+            return null
+        }
+
         try {
             const base64Url = token.split('.')[1]
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
@@ -289,6 +299,11 @@ export class TokenManager {
      * Store item securely (localStorage with fallback to sessionStorage and cookies)
      */
     private static setSecureItem(key: string, value: string): void {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return
+        }
+
         try {
             // Try localStorage first
             localStorage.setItem(key, value)
@@ -362,6 +377,11 @@ export class TokenManager {
      * Retrieve item from secure storage
      */
     private static getSecureItem(key: string): string | null {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return null
+        }
+
         try {
             // Try localStorage first
             return localStorage.getItem(key)
@@ -380,6 +400,11 @@ export class TokenManager {
      * Schedule automatic token cleanup
      */
     private static scheduleCleanup(expiryTimestamp: number): void {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return
+        }
+
         try {
             // Clear any existing cleanup
             this.clearScheduledCleanup()
@@ -404,6 +429,11 @@ export class TokenManager {
      * Clear scheduled cleanup timeout
      */
     private static clearScheduledCleanup(): void {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return
+        }
+
         try {
             const timeoutId = sessionStorage.getItem('secret_safe_cleanup_timeout')
             if (timeoutId) {
@@ -444,6 +474,11 @@ export class TokenManager {
      * Get storage type currently being used
      */
     static getStorageType(): 'localStorage' | 'sessionStorage' | 'none' {
+        // Check if we're in a browser environment
+        if (typeof window === 'undefined') {
+            return 'none'
+        }
+
         try {
             const testKey = 'secret_safe_storage_test'
             const testValue = 'test'
