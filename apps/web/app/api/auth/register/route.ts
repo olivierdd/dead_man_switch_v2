@@ -84,8 +84,7 @@ export async function POST(request: NextRequest) {
             console.error('Auth error:', authError)
             console.error('Auth error details:', {
                 message: authError.message,
-                status: authError.status,
-                statusText: authError.statusText
+                status: authError.status
             })
             
             // Handle specific Supabase auth errors
