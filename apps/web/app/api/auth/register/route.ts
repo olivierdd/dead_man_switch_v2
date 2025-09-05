@@ -82,6 +82,20 @@ export async function POST(request: NextRequest) {
 
         if (authError) {
             console.error('Auth error:', authError)
+            console.error('Auth error details:', {
+                message: authError.message,
+                status: authError.status,
+                statusText: authError.statusText
+            })
+            
+            // Handle specific Supabase auth errors
+            if (authError.message.includes('Invalid email')) {
+                return NextResponse.json(
+                    { detail: 'Please enter a valid email address' },
+                    { status: 400 }
+                )
+            }
+            
             return NextResponse.json(
                 { detail: authError.message },
                 { status: 400 }
