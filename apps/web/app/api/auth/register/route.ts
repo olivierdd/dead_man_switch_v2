@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         // Check if user already exists
         console.log('Checking if user exists for email:', email)
         const { data: existingUser, error: checkError } = await supabase
-            .from('users')
+            .from('user')
             .select('id')
             .eq('email', email)
             .single()
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
                 message: authError.message,
                 status: authError.status
             })
-            
+
             // Handle specific Supabase auth errors
             if (authError.message.includes('Invalid email')) {
                 return NextResponse.json(
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
                     { status: 400 }
                 )
             }
-            
+
             return NextResponse.json(
                 { detail: authError.message },
                 { status: 400 }
@@ -108,9 +108,9 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Create user profile in your users table
+        // Create user profile in your user table
         const { error: profileError } = await supabase
-            .from('users')
+            .from('user')
             .insert({
                 id: authData.user.id,
                 email: authData.user.email,

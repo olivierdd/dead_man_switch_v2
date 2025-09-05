@@ -32,12 +32,12 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        // Get user profile from your users table
-        const { data: userProfile, error: profileError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', user.id)
-            .single()
+            // Get user profile from your user table
+    const { data: userProfile, error: profileError } = await supabase
+        .from('user')
+        .select('*')
+        .eq('id', user.id)
+        .single()
 
         if (profileError) {
             console.error('Profile fetch error:', profileError)
