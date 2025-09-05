@@ -11,11 +11,22 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
     try {
+        // Check if Supabase environment variables are set
+        if (!supabaseUrl || !supabaseKey) {
+            console.error('Missing Supabase environment variables')
+            return NextResponse.json(
+                { detail: 'Server configuration error' },
+                { status: 500 }
+            )
+        }
+
         const body = await request.json()
+        console.log('Registration request body:', body)
         const { email, password, first_name, last_name, display_name, role = 'writer' } = body
 
         // Validate required fields
         if (!email || !password || !first_name || !last_name || !display_name) {
+            console.log('Missing required fields:', { email: !!email, password: !!password, first_name: !!first_name, last_name: !!last_name, display_name: !!display_name })
             return NextResponse.json(
                 { detail: 'Missing required fields' },
                 { status: 400 }
@@ -31,13 +42,23 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if user already exists
-        const { data: existingUser } = await supabase
+        console.log('Checking if user exists for email:', email)
+        const { data: existingUser, error: checkError } = await supabase
             .from('users')
             .select('id')
             .eq('email', email)
             .single()
 
+        if (checkError && checkError.code !== 'PGRST116') {
+            console.error('Error checking existing user:', checkError)
+            return NextResponse.json(
+                { detail: 'Database error' },
+                { status: 500 }
+            )
+        }
+
         if (existingUser) {
+            console.log('User already exists')
             return NextResponse.json(
                 { detail: 'Email already registered' },
                 { status: 400 }
@@ -45,6 +66,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Create user in Supabase Auth
+        console.log('Creating user in Supabase Auth')
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
